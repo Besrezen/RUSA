@@ -1,0 +1,19 @@
+<!-- base.html -->
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Домашняя страница</title>
+</head>
+<body>
+    <header>
+        <!-- Меню навигации -->
+    </header>
+
+    <main>
+        {% block content %}
+        <p>Добро пожаловать, {{ request.user.username }}! {{ request.user.is_admin }}Ты вошёл как администратор.</p>
+        {% endblock %}
+    </main>
+</body>
+</html>
