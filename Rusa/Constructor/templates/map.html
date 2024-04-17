@@ -18,6 +18,7 @@
     <button id="backButton">Шаг назад</button>
     <button id="saveLineButton">Сохранить маршрут</button>
     <button id="getAllLinesButton">Загрузить маршруты</button>
+    <button id="removeAllLinesButton">Удалить все линии с карты</button>
     <div id="map">
         </div>
     <script>
@@ -121,6 +122,15 @@
                     }
                 };
                 xhr.send();
+            });
+
+            document.getElementById('removeAllLinesButton').addEventListener('click', function () {
+                for (var i = myMap.geoObjects.getLength() - 1; i >= 0; i--) {
+                    var geoObject = myMap.geoObjects.get(i);
+                    if (geoObject instanceof ymaps.Polyline) {
+                        myMap.geoObjects.remove(geoObject);
+                    }
+                }
             });
 
             // const el = document.createElement('img');
