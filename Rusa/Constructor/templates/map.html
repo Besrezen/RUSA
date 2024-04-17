@@ -1,0 +1,135 @@
+<!-- map/map.html -->
+{% load static %}
+<html>
+<head>
+    <title>Yandex Maps</title>
+    <style>
+    html, body, #map{
+        width:100%;
+        height:100vh;
+        margin:0;
+    }
+    </style>
+    <script src="https://api-maps.yandex.ru/2.1/?apikey=403f644f-4840-426e-b2df-bea42d662d87&lang=ru_RU" type="text/javascript"></script>
+</head>
+<body>
+    <div id="coordinates"></div>
+    <button id="deleteButton">Удалить линию</button>
+    <button id="backButton">Шаг назад</button>
+    <button id="saveLineButton">Сохранить маршрут</button>
+    <button id="getAllLinesButton">Загрузить маршруты</button>
+    <div id="map">
+        </div>
+    <script>
+        ymaps.ready(init);
+        function addLineToMap(coordinates) {
+        }
+
+        function init() {
+            var myMap = new ymaps.Map("map", {
+                center: [55.703697, 36.192678], // координаты центра карты
+                zoom: 9.5, // уровень масштабирования
+                controls: ['zoomControl'],
+                behaviors: ['drag'],
+                maxZoom: 15
+            });
+
+            var customIconImage = "{% static 'img/rusa.png' %}";
+           var myPlacemark = new ymaps.Placemark(
+                [55.703697, 36.192678],
+                {
+                    balloonContent: 'Руза'
+                },
+                {
+                    iconLayout: 'default#image',
+                    iconImageHref: customIconImage,
+                    iconImageSize: [30, 30] // Размеры изображения
+                }
+            );
+
+            myMap.geoObjects.add(myPlacemark);
+
+
+
+
+            // Создаем массив с координатами линии
+            var lineCoordinates = [];
+
+            // Создаем линию и добавляем ее на карту
+            var myPolyline = new ymaps.Polyline([], {}, {
+                strokeColor: "#0000FF", // цвет линии
+                strokeWidth: 4, // ширина линии
+                strokeOpacity: 0.5 // прозрачность линии
+            });
+            myMap.geoObjects.add(myPolyline);
+
+            // Добавляем слушатель события клика по карте
+            myMap.events.add('click', function (e) {
+                // Получаем координаты клика
+                var coords = e.get('coords');
+
+                // Добавляем новую координату в массив
+                document.getElementById('coordinates').innerText = 'Широта: ' + coords[0].toFixed(6) + ', Долгота: ' + coords[1].toFixed(6);
+                lineCoordinates.push(coords);
+
+                // Обновляем линию с новыми координатами
+                myPolyline.geometry.setCoordinates(lineCoordinates);
+            });
+
+            // Добавляем обработчик для кнопки удаления линии
+            document.getElementById('deleteButton').addEventListener('click', function () {
+                // Удаляем все координаты линии
+                lineCoordinates = [];
+                // Обновляем линию
+                myPolyline.geometry.setCoordinates(lineCoordinates);
+            });
+
+            document.getElementById('backButton').addEventListener('click', function () {
+                // Удаляем все координаты линии
+                lineCoordinates.pop();
+                // Обновляем линию
+                myPolyline.geometry.setCoordinates(lineCoordinates);
+            });
+
+            document.getElementById('saveLineButton').addEventListener('click', function () {
+                // Преобразуем координаты в формат JSON
+                var lineCoordinatesJSON = JSON.stringify(lineCoordinates, null, 2); // преобразование в JSON
+                var xhr = new XMLHttpRequest();
+                xhr.open("POST", "/save_coordinates/", true);
+                xhr.setRequestHeader('Content-Type', 'application/json; charset=UTF-8');
+                xhr.send(lineCoordinatesJSON);
+                // Удаляем все координаты линии
+                lineCoordinates = [];
+                myPolyline.geometry.setCoordinates(lineCoordinates);
+            });
+
+            document.getElementById('getAllLinesButton').addEventListener('click', function () {
+                var xhr = new XMLHttpRequest();
+                xhr.open("GET", "/get_lines/", true);
+                xhr.onload = function () {
+                    var lines = JSON.parse(this.responseText);
+                    console.log(lines);
+                    for (var i = 0; i < lines.length; i++) {
+                        var lineCoordinates = JSON.parse(lines[i]);
+                        console.log(lineCoordinates);
+                        var myPolyline = new ymaps.Polyline(lineCoordinates, {}, {
+                            strokeColor: "#0000FF", // цвет линии
+                            strokeWidth: 4, // ширина линии
+                            strokeOpacity: 0.5 // прозрачность линии
+                        });
+                        myMap.geoObjects.add(myPolyline);
+                    }
+                };
+                xhr.send();
+            });
+
+            // const el = document.createElement('img');
+            // el.className = 'my-marker';
+            // el.src = '{% static "img/rusa.png" %}';
+            // el.onclick = () => map.update({location: {center: [37.623082, 55.75254], zoom: 9, duration: 400}});
+            // map.addChild(new YMapMarker({coordinates: [37.623082, 55.75254], zoom: 9}.center, el));
+        }
+    </script>
+
+</body>
+</html>

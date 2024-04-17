@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "Registration",
+    "Constructor",
 ]
 
 MIDDLEWARE = [
@@ -127,3 +128,5 @@ STATIC_URL = "static/"
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+YANDEX_MAPS_API_KEY = '403f644f-4840-426e-b2df-bea42d662d87'
