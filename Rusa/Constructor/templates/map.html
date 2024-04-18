@@ -4,29 +4,74 @@
 <head>
     <title>Yandex Maps</title>
     <style>
-    html, body, #map{
-        width:100%;
-        height:100vh;
-        margin:0;
-    }
+        html, body, #map{
+            width:100%;
+            height:100vh;
+            margin:0;
+        }
+        #map {
+            position: relative; /* Делает карту относительно позиционированной */
+        }
+
+        #buttonContainer {
+            position: absolute; /* Позиционирует контейнер кнопок абсолютно */
+            top: 20px; /* Отступ сверху */
+            left: 50%; /* Отступ слева */
+            transform: translateX(-50%); /* Смещает контейнер влево на половину его ширины */
+            display: flex;
+            flex-direction: row;
+            z-index: 1; /* Помещает кнопки поверх карты */
+            gap: 10px;
+        }
+
+        #buttonContainer button {
+            display: block; /* Размещает каждую кнопку на новой строке */
+            margin-bottom: 10px; /* Добавляет отступ между кнопками */
+            background-color: #4CAF50; /* Зеленый фон */
+            color: white; /* Белый текст */
+            padding: 15px 32px; /* Отступы внутри кнопки */
+            text-align: center; /* Выравнивание текста по центру */
+            text-decoration: none; /* Убирает подчеркивание */
+            font-size: 16px; /* Размер шрифта */
+            cursor: pointer; /* Делает курсор руки при наведении */
+            border: none; /* Убирает границу */
+            border-radius: 12px;
+        }
+
+        #buttonContainer button:hover {
+            background-color: #45a049; /* Изменяет цвет фона при наведении */
+        }
     </style>
     <script src="https://api-maps.yandex.ru/2.1/?apikey=403f644f-4840-426e-b2df-bea42d662d87&lang=ru_RU" type="text/javascript"></script>
 </head>
 <body>
-    <div id="coordinates"></div>
-    <button id="deleteButton">Удалить линию</button>
-    <button id="backButton">Шаг назад</button>
-    <button id="saveLineButton">Сохранить маршрут</button>
-    <button id="getAllLinesButton">Загрузить маршруты</button>
-    <button id="removeAllLinesButton">Удалить все линии с карты</button>
     <div id="map">
+        <div id="buttonContainer">
+            <div id="coordinates"></div>
+            <button id="createLineButton">Создать объект линия</button>
+            <button id="deleteButton">Удалить линию</button>
+            <button id="backButton">Шаг назад</button>
+            <input type="text" id="lineName" placeholder="Введите название маршрута">
+            <button id="saveLineButton">Сохранить маршрут</button>
+            <button id="getAllLinesButton">Загрузить маршруты</button>
+            <button id="removeAllLinesButton">Удалить все линии с карты</button>
+            <div id="routesContainer"></div>
         </div>
+        
+    </div>
     <script>
         ymaps.ready(init);
-        function addLineToMap(coordinates) {
-        }
 
         function init() {
+            document.getElementById('removeAllLinesButton').addEventListener('click', function () {
+                for (var i = myMap.geoObjects.getLength() - 1; i >= 0; i--) {
+                    var geoObject = myMap.geoObjects.get(i);
+                    if (geoObject instanceof ymaps.Polyline) {
+                        myMap.geoObjects.remove(geoObject);
+                    }
+                }
+            });
+
             var myMap = new ymaps.Map("map", {
                 center: [55.703697, 36.192678], // координаты центра карты
                 zoom: 9.5, // уровень масштабирования
@@ -50,13 +95,7 @@
 
             myMap.geoObjects.add(myPlacemark);
 
-
-
-
-            // Создаем массив с координатами линии
             var lineCoordinates = [];
-
-            // Создаем линию и добавляем ее на карту
             var myPolyline = new ymaps.Polyline([], {}, {
                 strokeColor: "#0000FF", // цвет линии
                 strokeWidth: 4, // ширина линии
@@ -64,43 +103,39 @@
             });
             myMap.geoObjects.add(myPolyline);
 
-            // Добавляем слушатель события клика по карте
             myMap.events.add('click', function (e) {
-                // Получаем координаты клика
                 var coords = e.get('coords');
-
-                // Добавляем новую координату в массив
                 document.getElementById('coordinates').innerText = 'Широта: ' + coords[0].toFixed(6) + ', Долгота: ' + coords[1].toFixed(6);
                 lineCoordinates.push(coords);
-
-                // Обновляем линию с новыми координатами
                 myPolyline.geometry.setCoordinates(lineCoordinates);
             });
 
-            // Добавляем обработчик для кнопки удаления линии
+
             document.getElementById('deleteButton').addEventListener('click', function () {
-                // Удаляем все координаты линии
                 lineCoordinates = [];
-                // Обновляем линию
                 myPolyline.geometry.setCoordinates(lineCoordinates);
             });
 
             document.getElementById('backButton').addEventListener('click', function () {
-                // Удаляем все координаты линии
                 lineCoordinates.pop();
-                // Обновляем линию
                 myPolyline.geometry.setCoordinates(lineCoordinates);
             });
 
             document.getElementById('saveLineButton').addEventListener('click', function () {
                 // Преобразуем координаты в формат JSON
-                var lineCoordinatesJSON = JSON.stringify(lineCoordinates, null, 2); // преобразование в JSON
+                var lineName = document.getElementById('lineName').value;
+                var lineData = {
+                    name: lineName,
+                    coordinates: lineCoordinates
+                };
+                var lineCoordinatesJSON = JSON.stringify(lineData, null, 2); // преобразование в JSON
+                //console.log(lineCoordinatesJSON);
                 var xhr = new XMLHttpRequest();
                 xhr.open("POST", "/save_coordinates/", true);
                 xhr.setRequestHeader('Content-Type', 'application/json; charset=UTF-8');
                 xhr.send(lineCoordinatesJSON);
                 // Удаляем все координаты линии
-                lineCoordinates = [];
+                lineCoordinates = [];   
                 myPolyline.geometry.setCoordinates(lineCoordinates);
             });
 
@@ -109,10 +144,10 @@
                 xhr.open("GET", "/get_lines/", true);
                 xhr.onload = function () {
                     var lines = JSON.parse(this.responseText);
-                    console.log(lines);
+                    //console.log(lines);
                     for (var i = 0; i < lines.length; i++) {
                         var lineCoordinates = JSON.parse(lines[i]);
-                        console.log(lineCoordinates);
+                       // console.log(lineCoordinates);
                         var myPolyline = new ymaps.Polyline(lineCoordinates, {}, {
                             strokeColor: "#0000FF", // цвет линии
                             strokeWidth: 4, // ширина линии
@@ -133,12 +168,51 @@
                 }
             });
 
+
+            var xhr = new XMLHttpRequest();
+            xhr.open("GET", "/get_routes/", true);
+            xhr.onload = function () {
+                var data = JSON.parse(this.responseText);
+                var routesContainer = document.getElementById('routesContainer');
+                var routes = JSON.parse(data);
+                console.log(routes);
+                for (var i = 0; i < routes.length; i++) {
+                    console.log(routes[i]);
+                    var routeButton = document.createElement('button');  
+                    routeButton.textContent = routes[i].fields.name;
+                    routeButton.addEventListener('click', function () {
+                        console.log(routes[i].fields.coordinates);
+                        return function() {
+                            loadRoute(routes[i].fields.coordinates);
+                        }
+                    });
+                    routesContainer.appendChild(routeButton);
+                }
+            };
+            xhr.send();
+
             // const el = document.createElement('img');
             // el.className = 'my-marker';
             // el.src = '{% static "img/rusa.png" %}';
             // el.onclick = () => map.update({location: {center: [37.623082, 55.75254], zoom: 9, duration: 400}});
             // map.addChild(new YMapMarker({coordinates: [37.623082, 55.75254], zoom: 9}.center, el));
         }
+
+        function loadRoute(myMap, coordinates) {
+            // for (var i = myMap.geoObjects.getLength() - 1; i >= 0; i--) {
+            //         var geoObject = myMap.geoObjects.get(i);
+            //         if (geoObject instanceof ymaps.Polyline) {
+            //             myMap.geoObjects.remove(geoObject);
+            //         }
+            // }
+            var lineCoordinates = JSON.parse(coordinates);
+            var myPolyline = new ymaps.Polyline(lineCoordinates, {}, {
+                strokeColor: "#0000FF", // цвет линии
+                strokeWidth: 4, // ширина линии
+                strokeOpacity: 0.5 // прозрачность линии
+        });
+        myMap.geoObjects.add(myPolyline);
+}
     </script>
 
 </body>

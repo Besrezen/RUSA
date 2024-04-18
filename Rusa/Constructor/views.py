@@ -16,7 +16,7 @@ def map_view(request):
 def save_coordinates(request):
     if request.method == 'POST':
         data = json.loads(request.body)
-        line = Line(coordinates=data)
+        line = Line(name=data['name'], coordinates=data['coordinates'])
         line.save()
         return JsonResponse({"status": "success"}, status=200)
     
@@ -24,3 +24,8 @@ def get_lines(request):
     lines = Line.objects.all()
     coordinates_list = [line.coordinates for line in lines]
     return JsonResponse(coordinates_list, safe=False)
+
+def get_routes(request):
+    routes = Line.objects.all()
+    routes_json = serializers.serialize('json', routes)
+    return JsonResponse(routes_json, safe=False)
