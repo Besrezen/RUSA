@@ -1,4 +1,10 @@
 <!-- map/map.html -->
+{% extends 'base_generic.html' %}
+
+{% block title %}Profile{% endblock %}
+
+{% block content %}
+
 {% load static %}
 <html>
 <head>
@@ -81,13 +87,13 @@
 <body>
     <br>
     <p>Карта маршрутов</p>
-    <div id="map">
+    <div id="map" style="min-height: 600px">
         <div id="routesContainer"></div>
     </div>
     <br>
     <br>
     <p>Конструктор</p>
-    <div id="constructor">
+    <div id="constructor" style="min-height: 600px">
         <div id="buttonContainer">
             <div id="coordinates"></div>
             <button id="deleteButton">Удалить линию</button>
@@ -296,3 +302,4 @@
     </script>
 </body>
 </html>
+{% endblock %}

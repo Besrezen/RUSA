@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     "Registration",
     "Constructor",
     "Userprofile",
+    "django_bootstrap5",
 ]
 
 MIDDLEWARE = [
@@ -57,7 +58,7 @@ ROOT_URLCONF = "Rusa.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [],
+        "DIRS": [BASE_DIR / 'Rusa/templates'],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
