@@ -398,16 +398,16 @@
         <div id="rec743627515" class="r t-rec" style=" " data-animationappear="off" data-record-type="396"><!-- T396 -->
             <style>
                 #rec743627515 .t396__artboard {
-                    height: 780px;
+                    height: 1100px;
                     background-color: #ffffff;
                 }
 
                 #rec743627515 .t396__filter {
-                    height: 780px;
+                    height: 1100px;
                 }
 
                 #rec743627515 .t396__carrier {
-                    height: 780px;
+                    height: 1100px;
                     background-position: center center;
                     background-attachment: scroll;
                     background-image: url('{% static 'images/tild3337-6463-4439-b436-343465366539__-__resize__20x__vector_3.png' %}');
@@ -1100,10 +1100,17 @@
 
                     {% block content %}
                     <style>
+                        .container {
+                            display: flex;
+                            justify-content: center;
+                            align-items: center;
+                            height: 100vh; /* Высота контейнера на весь экран */
+                            margin: 0;
+                        }
                         .registration-form {
                             position: absolute;
                             top: 170px;
-                            left: 750px;
+                            left: 925px;
                             width: 350px;
                             z-index: 10;
                         }
@@ -1137,30 +1144,43 @@
                         .overlapping-element { /* Класс перекрывающего элемента */
                             z-index: 0; /* Установите меньшее значение z-index */
                         }
+                        @media screen and (max-width: 1199px) {}
+
+                        @media screen and (max-width: 959px) {}
+
+                        @media screen and (max-width: 639px) {}
+
+                        @media screen and (max-width: 479px) {}
                     </style>
 
+                    <div class='t396__elem tn-elem tn-elem__7436275151714745637922' data-elem-id='1714745637922'
+                    data-elem-type='form' data-field-top-value="0" data-field-left-value="-750"
+                    data-field-width-value="400" data-field-axisy-value="top" data-field-axisx-value="left"
+                    data-field-container-value="grid" data-field-topunits-value="px" data-field-leftunits-value="px"
+                    data-field-heightunits-value="px" data-field-widthunits-value="px">
                     <div class="registration-form">
-                        <h2>Регистрация пользователя</h2>
                         <form method="post" action="{% url 'signup_user' %}">
                             {% csrf_token %}
                             {{ form.as_p }}
                             <button class="tn-atom" type="submit">Зарегистрироваться</button>
                         </form>
                     </div>
-                    {% endblock %}
+                </div>
+
+                <div class='t396__elem tn-elem tn-elem__7436275151714745637922' data-elem-id='1714745637922'
+                    data-elem-type='button' data-field-top-value="870" data-field-left-value="0"
+                    data-field-height-value="30" data-field-width-value="400" data-field-axisy-value="top"
+                    data-field-axisx-value="left" data-field-container-value="grid" data-field-topunits-value="px"
+                    data-field-leftunits-value="px" data-field-heightunits-value="px"
+                    data-field-widthunits-value="px">
                     <form action="{% url 'view_login' %}" blank="target">
                         <button type="submit">
-                            <div class='t396__elem tn-elem tn-elem__7436275151714745637922' data-elem-id='1714745637922'
-                                data-elem-type='button' data-field-top-value="731" data-field-left-value="80"
-                                data-field-height-value="30" data-field-width-value="400" data-field-axisy-value="top"
-                                data-field-axisx-value="left" data-field-container-value="grid" data-field-topunits-value="px"
-                                data-field-leftunits-value="px" data-field-heightunits-value="px"
-                                data-field-widthunits-value="px">
                             <div class='tn-atom'>Войти</div>
-                            </div>
                         </button>
                     </form>
-            </div>
+                </div>
+                {% endblock %}
+
             <script>t_onReady(function () {
                     t_onFuncLoad('t396_init', function () {
                         t396_init('743627515');
