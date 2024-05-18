@@ -35,3 +35,4 @@ tzdata==2022.7
 tzlocal==4.3
 urllib3==1.26.14
 yarg==0.1.9
+pillow==10.3.0

@@ -2,14 +2,34 @@
 <html>
 <head>
     <title>Edit Profile</title>
+    {% load static %}
+    <link rel="stylesheet" type="text/css" href="{% static 'Userprofile/style.css' %}">
 </head>
 <body>
-    <h1>Edit Profile</h1>
-    <form method="post">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit">Save changes</button>
-    </form>
-    <a href="{% url 'view_profile' %}">Back to Profile</a>
+    <div class="container">
+        <header>
+            <h1>Edit Profile</h1>
+        </header>
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="form-group">
+                {{ form.name.label_tag }} {{ form.name }}
+            </div>
+            <div class="form-group">
+                {{ form.region.label_tag }} {{ form.region }}
+            </div>
+            <div class="form-group">
+                {{ form.birth_date.label_tag }} {{ form.birth_date }}
+            </div>
+            <div class="form-group">
+                {{ form.profession.label_tag }} {{ form.profession }}
+            </div>
+            <div class="form-group">
+                {{ form.personal_photo.label_tag }} {{ form.personal_photo }}
+            </div>
+            <button type="submit" class="save-btn">Save changes</button>
+        </form>
+        <a href="{% url 'view_profile' %}" class="back-btn">Back to Profile</a>
+    </div>
 </body>
 </html>

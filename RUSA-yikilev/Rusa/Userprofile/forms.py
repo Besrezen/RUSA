@@ -12,7 +12,7 @@ class UserProfileForm(forms.ModelForm):
 
     class Meta:
         model = UserProfile
-        fields = ('bio', 'location', 'birth_date')
+        fields = ('name', 'region', 'birth_date', 'profession', 'personal_photo')
 
     def clean_birth_date(self):
         birth_date = self.cleaned_data.get('birth_date')

@@ -2,12 +2,64 @@
 <html>
 <head>
     <title>User Profile</title>
+    {% load static %}
+    <link rel="stylesheet" type="text/css" href="{% static 'Userprofile/style.css' %}">
 </head>
 <body>
-    <h1>{{ profile.user.username }}</h1>
-    <p>Bio: {{ profile.bio }}</p>
-    <p>Location: {{ profile.location }}</p>
-    <p>Birth Date: {{ profile.birth_date }}</p>
-    <a href="{% url 'edit_profile' %}">Edit Profile</a>
+    <div class="container">
+        <header>
+            <h1>WEB Руза</h1>
+        </header>
+        <section class="profile-section">
+            <h2>Профиль</h2>
+            <div class="profile-card">
+                {% if profile.personal_photo %}
+                    <img src="{{ profile.personal_photo.url }}" alt="Personal Photo" class="profile-photo">
+                {% endif %}
+                <div class="profile-info">
+                    <div>
+                        <label>Имя пользователя</label>
+                        <span>{{ profile.user.username }}</span>
+                    </div>
+                    <div>
+                        <label>Ваше имя</label>
+                        <span>{{ profile.name }}</span>
+                    </div>
+                    <div>
+                        <label>Возраст</label>
+                        <span>{{ profile.age }} лет</span>
+                    </div>
+                    <div>
+                        <label>Регион</label>
+                        <span>{{ profile.region }}</span>
+                    </div>
+                    <div>
+                        <label>Дата рождения</label>
+                        <span>{{ profile.birth_date }}</span>
+                    </div>
+                    <div>
+                        <label>Профессия</label>
+                        <span>{{ profile.profession }}</span>
+                    </div>
+                    <div>
+                        <label>Контактные данные</label>
+                        <span>{{ profile.user.email }}</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <section class="specialty-section">
+            <label>Специальность</label>
+            <span>{{ profile.profession }}</span>
+        </section>
+        <section class="about-section">
+            <label>Информация о себе</label>
+            <textarea placeholder="Расскажите про себя..."></textarea>
+        </section>
+        <footer>
+            <a href="{% url 'edit_profile' %}" class="edit-btn">Редактировать профиль</a>
+            <button class="close-btn">Закрыть</button>
+        </footer>
+    </div>
 </body>
 </html>
