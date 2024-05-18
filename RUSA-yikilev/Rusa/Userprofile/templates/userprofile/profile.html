@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>User Profile</title>
+</head>
+<body>
+    <h1>{{ profile.user.username }}</h1>
+    <p>Bio: {{ profile.bio }}</p>
+    <p>Location: {{ profile.location }}</p>
+    <p>Birth Date: {{ profile.birth_date }}</p>
+    <a href="{% url 'edit_profile' %}">Edit Profile</a>
+</body>
+</html>
