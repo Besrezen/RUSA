@@ -9,7 +9,10 @@
     <header>
         <!-- Меню навигации -->
     </header>
-
+    <form action="{% url 'logout_view' %}" method="post">
+        {% csrf_token %}
+        <button type="submit">Logout</button>
+    </form>
     <main>
         {% block content %}
         <p>Добро пожаловать, {{ request.user.username }}! {{ request.user.is_admin }}Ты вошёл как администратор.</p>

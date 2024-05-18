@@ -1141,14 +1141,14 @@
 
                     <div class="registration-form">
                         <h2>Регистрация пользователя</h2>
-                        <form method="post">
+                        <form method="post" action="{% url 'signup_user' %}">
                             {% csrf_token %}
                             {{ form.as_p }}
                             <button class="tn-atom" type="submit">Зарегистрироваться</button>
                         </form>
                     </div>
                     {% endblock %}
-                    <form action="{% url 'show_login' %}" blank="target">
+                    <form action="{% url 'view_login' %}" blank="target">
                         <button type="submit">
                             <div class='t396__elem tn-elem tn-elem__7436275151714745637922' data-elem-id='1714745637922'
                                 data-elem-type='button' data-field-top-value="731" data-field-left-value="80"

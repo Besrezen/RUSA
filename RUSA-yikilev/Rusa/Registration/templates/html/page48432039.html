@@ -1105,7 +1105,7 @@
                     </div>
                     {% block content %}
                     <style>
-                        .registration-form {
+                        .login-form {
                             position: absolute;
                             top: 220px;
                             left: 750px;
@@ -1113,12 +1113,12 @@
                             z-index: 10;
                         }
 
-                        .registration-form form {
+                        .login-form form {
                             font-family: 'TildaSans', sans-serif;
                             color: #000000;
                         }
 
-                        .registration-form input, .registration-form textarea {
+                        .login-form input, .login-form textarea {
                             background-color: #ffffff;
                             border: 1px solid #000000;
                             font-size: 16px;
@@ -1128,7 +1128,7 @@
                             width: 100%; /* Осуществляет ширину на весь доступный размер в родителе */
                         }
 
-                        .registration-form button {
+                        .login-form button {
                             width: 100%;
                             height: 30px;
                             background-color: #a816eb;
@@ -1145,22 +1145,26 @@
                         }
                     </style>
 
-                    <div class="registration-form">
-                        <form method="post">
+                    <div class="login-form">
+                        <form method="post" action="{% url 'my_view_login' %}" >
                             {% csrf_token %}
                             {{ form.as_p }}
                             <button class="tn-atom" type="submit">Войти</button>
                         </form>
                     </div>
                     {% endblock %}
-                    <div class='t396__elem tn-elem tn-elem__7443004101714745637922' data-elem-id='1714745637922'
-                        data-elem-type='button' data-field-top-value="454" data-field-left-value="180"
-                        data-field-height-value="30" data-field-width-value="200" data-field-axisy-value="top"
-                        data-field-axisx-value="left" data-field-container-value="grid" data-field-topunits-value="px"
-                        data-field-leftunits-value="px" data-field-heightunits-value="px"
-                        data-field-widthunits-value="px">
-                        <div class='tn-atom'>Зарегистрироваться</div>
-                    </div>
+                    <form action="{% url 'signup_user' %}" blank="target">
+                        <button type="submit">
+                            <div class='t396__elem tn-elem tn-elem__7443004101714745637922' data-elem-id='1714745637922'
+                                data-elem-type='button' data-field-top-value="454" data-field-left-value="180"
+                                data-field-height-value="30" data-field-width-value="200" data-field-axisy-value="top"
+                                data-field-axisx-value="left" data-field-container-value="grid" data-field-topunits-value="px"
+                                data-field-leftunits-value="px" data-field-heightunits-value="px"
+                                data-field-widthunits-value="px">
+                                <div class='tn-atom'>Зарегистрироваться</div>
+                            </div>
+                        </button>
+                    </form>
                 </div>
             </div>
             <script>t_onReady(function () {

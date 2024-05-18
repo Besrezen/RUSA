@@ -2,7 +2,8 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import login
 from .forms import UserSignUpForm, AdminSignUpForm
 from django.contrib.auth.forms import AuthenticationForm
-
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth import logout
 
 def view_adres(request):
     return render(request, "html/page48229631.html")
@@ -10,15 +11,22 @@ def view_adres(request):
 def view_user(request):
     return render(request, "html/page48543075.html")
 
+def logout_view(request):
+    logout(request)
+    return redirect('view_login')
+
+@login_required
 def view_admin(request):
     return render(request, "html/home_admin.html")
 
 def view_login(request):
-    return render(request, "html/page48432039.html")
+    form = AuthenticationForm()
+    return render(request, "html/page48432039.html", {'form': form})
 
 def show_login(request):
     return redirect('view_login')
 
+@login_required
 def view_main(request):
     return render(request, "html/page48558703.html")
 
