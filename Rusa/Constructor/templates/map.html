@@ -107,7 +107,7 @@
                 [55.492003, 35.400976], 
                 [56.009654, 36.830914]
             ];
-            var LITTLE_ZOOM_RANGE = [9.5, 15];
+            // var LITTLE_ZOOM_RANGE = [9.5, 15];
 
             var myMap = new ymaps.Map('map', {
                 center: [55.703697, 36.192678], // координаты центра карты
@@ -119,8 +119,8 @@
                 // Зададим ограниченную область прямоугольником, 
                 restrictMapArea: LITTLE_RESTRICT_AREA
             });
-            myMap.options.set('minZoom', LITTLE_ZOOM_RANGE[0]);
-            myMap.options.set('maxZoom', LITTLE_ZOOM_RANGE[1]);
+            // myMap.options.set('minZoom', LITTLE_ZOOM_RANGE[0]);
+            // myMap.options.set('maxZoom', LITTLE_ZOOM_RANGE[1]);
 
             putRusaIcon(myMap);
             loadAllRoutes(myMap);
@@ -164,7 +164,7 @@
             myMap.geoObjects.add(myPlacemark);
         }
 
-        function saveLine(myMap, coordinates) {
+        /*function saveLine(myMap, coordinates) {
             var lineCoordinates = JSON.parse(coordinates);
             var myPolyline = new ymaps.Polyline(lineCoordinates, {}, {
                 strokeColor: "#0000FF", // цвет линии
@@ -172,7 +172,7 @@
                 strokeOpacity: 0.5 // прозрачность линии
             });
             myMap.geoObjects.add(myPolyline);
-        }
+        }*/
 
         function getRoute(myMap, coordinates) {
             deleteLineObjects(myMap);
@@ -182,9 +182,57 @@
                 strokeWidth: 4, // ширина линии
                 strokeOpacity: 0.5 // прозрачность линии
             });
+            /*
+            myPolyline.editor.options.set({
+                // Задаём для меток вершин опции с постфиксами, привязанными к текущему состоянию вершины.
+                // Класс макета для меток на вершинах ломаной линии.
+                vertexLayout: 'default#image',
+                // URL графического файла.
+                vertexIconImageHref: 'images/button3.png',
+                // Размеры слоя с картинкой.
+                vertexIconImageSize: [16, 16],
+                // Смещение картинки относительно точки привязки.
+                vertexIconImageOffset: [-8, -8],
+
+                // Опции с данным постфиксом применяются при наведении на вершину указателя мыши.
+                vertexLayoutHover: 'default#image',
+                vertexIconImageSizeHover: [28, 28],
+                vertexIconImageOffsetHover: [-14, -14],
+
+                // Опции с данным постфиксом применяются, когда для вершины открыто контекстное меню.
+                vertexLayoutActive: 'default#image',
+                vertexIconImageHrefActive: 'images/button4.png',
+                vertexIconImageSizeActive: [16, 16],
+                vertexIconImageOffsetActive: [-8, -8],
+
+                // Опции с данным постфиксом применяются при перетаскивании вершины.
+                vertexLayoutDrag: 'default#image',
+                vertexIconImageHrefDrag: 'images/button4.png',
+                vertexIconImageSizeDrag: [16, 16],
+                vertexIconImageOffsetDrag: [-8, -8],
+
+                // Задаём для промежуточных меток опции с постфиксами, привязанными к текущему состоянию промежуточных меток.
+                edgeLayout: 'default#image',
+                edgeIconImageHref: 'images/button1.png',
+                edgeIconImageSize: [16, 16],
+                edgeIconImageOffset: [-8, -8],
+
+                // Опции с данным постфиксом применяются при наведении на промежуточную метку указателя мыши.
+                edgeLayoutHover: 'default#image',
+                edgeIconImageSizeHover: [28, 28],
+                edgeIconImageOffsetHover: [-14, -14],
+
+                // Опции с данным постфиксом применяются при перетаскивании промежуточной метки.
+                edgeLayoutDrag: 'default#image',
+                edgeIconImageHrefDrag: 'images/button2.png',
+                edgeIconImageSizeDrag: [16, 16],
+                edgeIconImageOffsetDrag: [-8, -8]
+            });
+            */
             myMap.geoObjects.add(myPolyline);
             myMap.setCenter(lineCoordinates[0], 15);
         }
+
         function deleteLineObjects(myMap) {
             for (var i = myMap.geoObjects.getLength() - 1; i >= 0; i--) {
                 var geoObject = myMap.geoObjects.get(i);
@@ -204,7 +252,7 @@
                 [55.492003, 35.400976], 
                 [56.009654, 36.830914]
             ];
-            var LITTLE_ZOOM_RANGE = [9.5, 15];
+            //var LITTLE_ZOOM_RANGE = [9.5, 15];
 
             var myMap = new ymaps.Map('constructor', {
                 center: [55.703697, 36.192678], // координаты центра карты
@@ -216,8 +264,8 @@
                 // Зададим ограниченную область прямоугольником, 
                 restrictMapArea: LITTLE_RESTRICT_AREA
             });
-            myMap.options.set('minZoom', LITTLE_ZOOM_RANGE[0]);
-            myMap.options.set('maxZoom', LITTLE_ZOOM_RANGE[1]);
+            // myMap.options.set('minZoom', LITTLE_ZOOM_RANGE[0]);
+            // myMap.options.set('maxZoom', LITTLE_ZOOM_RANGE[1]);
             
             var lineCoordinates = [];
 
@@ -232,8 +280,12 @@
 
             myMap.events.add('click', function (e) {
                 var coords = e.get('coords');
-                document.getElementById('coordinates').innerText = 'Широта: ' + coords[0].toFixed(6) + ', Долгота: ' + coords[1].toFixed(6);
+                var length = 0;
                 lineCoordinates.push(coords);
+                for (var i = 0; i < lineCoordinates.length - 1; i++) {
+                    length += ymaps.coordSystem.geo.getDistance(lineCoordinates[i], lineCoordinates[i + 1]);
+                }
+                document.getElementById('coordinates').innerText = 'Широта: ' + coords[0].toFixed(6) + ', Долгота: ' + coords[1].toFixed(6) + "\n" + "Длина маршрута: " + length.toFixed(2) + " м";
                 myPolyline.geometry.setCoordinates(lineCoordinates);
             });
 
@@ -280,7 +332,7 @@
             myMap.geoObjects.add(myPlacemark);
         }
 
-        function saveLine(myMap, coordinates) {
+        /*function saveLine(myMap, coordinates) {
             var lineCoordinates = JSON.parse(coordinates);
             var myPolyline = new ymaps.Polyline(lineCoordinates, {}, {
                 strokeColor: "#0000FF", // цвет линии
@@ -288,7 +340,7 @@
                 strokeOpacity: 0.5 // прозрачность линии
             });
             myMap.geoObjects.add(myPolyline);
-        }
+        }*/
 
     </script>
 </body>
