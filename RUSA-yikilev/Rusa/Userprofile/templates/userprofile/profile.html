@@ -4,94 +4,88 @@
 
 {% block content %}
 <!DOCTYPE html>
-<html lang="ru">
+<html>
 <head>
     <title>User Profile</title>
     {% load static %}
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
-    <style>
-        .profile-photo {
-            max-width: 150px;
-            border-radius: 50%;
-        }
-        .profile-card {
-            border: 1px solid #ddd;
-            border-radius: 10px;
-            padding: 20px;
-            margin-bottom: 20px;
-            background-color: #f9f9f9;
-        }
-        .edit-btn, .close-btn {
-            margin-top: 20px;
-        }
-        .buttons-container {
-            margin-bottom: 40px;
-        }
-    </style>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="{% static 'Userprofile/style.css' %}">
 </head>
 <body>
-    <div class="container">
-        <header class="my-4">
-            <h1 class="text-center">WEB Руза</h1>
+    <div class="container mt-5">
+        <header class="text-center mb-4">
+            <h1>Профиль</h1>
         </header>
         <section class="profile-section mb-4">
-            <h2 class="mb-3">Профиль</h2>
-            <div class="profile-card row">
-                {% if profile.personal_photo %}
-                    <div class="col-md-3 text-center">
-                        <img src="{{ profile.personal_photo.url }}" alt="Personal Photo" class="profile-photo img-fluid">
-                    </div>
-                {% endif %}
-                <div class="profile-info col-md-9">
-                    <div class="form-group">
-                        <label>Имя пользователя</label>
-                        <p class="form-control-plaintext">{{ profile.user.username }}</p>
-                    </div>
-                    <div class="form-group">
-                        <label>Ваше имя</label>
-                        <p class="form-control-plaintext">{{ profile.name }}</p>
-                    </div>
-                    <div class="form-group">
-                        <label>Возраст</label>
-                        <p class="form-control-plaintext">{{ profile.age }} лет</p>
-                    </div>
-                    <div class="form-group">
-                        <label>Регион</label>
-                        <p class="form-control-plaintext">{{ profile.region }}</p>
-                    </div>
-                    <div class="form-group">
-                        <label>Дата рождения</label>
-                        <p class="form-control-plaintext">{{ profile.birth_date }}</p>
-                    </div>
-                    <div class="form-group">
-                        <label>Профессия</label>
-                        <p class="form-control-plaintext">{{ profile.profession }}</p>
-                    </div>
-                    <div class="form-group">
-                        <label>Контактные данные</label>
-                        <p class="form-control-plaintext">{{ profile.user.email }}</p>
+            <div class="card">
+                <div class="card-body">
+                    <div class="row">
+                        {% if profile.personal_photo %}
+                            <div class="col-md-4 text-center">
+                                <img src="{{ profile.personal_photo.url }}" alt="Personal Photo" class="img-fluid mb-3">
+                            </div>
+                        {% endif %}
+                        <div class="col-md-8">
+                            <div class="profile-info">
+                                <div class="mb-2">
+                                    <label><strong>Имя пользователя:</strong></label>
+                                    <span>{{ profile.user.username }}</span>
+                                </div>
+                                <div class="mb-2">
+                                    <label><strong>Ваше имя:</strong></label>
+                                    <span>{{ profile.name }}</span>
+                                </div>
+                                <div class="mb-2">
+                                    <label><strong>Возраст:</strong></label>
+                                    <span>{{ profile.age }} лет</span>
+                                </div>
+                                <div class="mb-2">
+                                    <label><strong>Регион:</strong></label>
+                                    <span>{{ profile.region }}</span>
+                                </div>
+                                <div class="mb-2">
+                                    <label><strong>Дата рождения:</strong></label>
+                                    <span>{{ profile.birth_date }}</span>
+                                </div>
+                                <div class="mb-2">
+                                    <label><strong>Профессия:</strong></label>
+                                    <span>{{ profile.profession }}</span>
+                                </div>
+                                <div class="mb-2">
+                                    <label><strong>Контактные данные:</strong></label>
+                                    <span>{{ profile.user.email }}</span>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
         </section>
         <section class="specialty-section mb-4">
-            <h3>Специальность</h3>
-            <p>{{ profile.profession }}</p>
+            <div class="card">
+                <div class="card-body">
+                    <label><strong>Специальность:</strong></label>
+                    <span>{{ profile.profession }}</span>
+                </div>
+            </div>
         </section>
         <section class="about-section mb-4">
-            <h3>Информация о себе</h3>
-            <textarea class="form-control" rows="5" placeholder="Расскажите про себя..."></textarea>
-        </section>
-        <footer class="text-center">
-            <div class="buttons-container">
-                <a href="{% url 'edit_profile' %}" class="btn btn-primary edit-btn">Редактировать профиль</a>
-                <button class="btn btn-secondary close-btn">Закрыть</button>
+            <div class="card">
+                <div class="card-body">
+                    <label><strong>Информация о себе:</strong></label>
+                    <textarea class="form-control" placeholder="Расскажите про себя..."></textarea>
+                </div>
             </div>
+        </section>
+        <footer class="text-center mt-4">
+            <a href="{% url 'edit_profile' %}" class="btn btn-primary">Редактировать профиль</a>
+            <button class="btn btn-secondary">Закрыть</button>
         </footer>
     </div>
-    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
 </html>
+
 {% endblock %}

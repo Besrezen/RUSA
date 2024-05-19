@@ -97,7 +97,7 @@
                             <a class="nav-link custom-font-size btn-custom" aria-current="page" href="{% url 'home' %}">Главная</a>
                         </li>
                         <li class="nav-item" style="flex: 0 0 auto; margin-right: 5px;">
-                            <a class="nav-link custom-font-size btn-custom" href="{% url 'view_user' %}">Популярное</a>
+                            <a class="nav-link custom-font-size btn-custom" href="{% url 'popular' %}">Популярное</a>
                         </li>
                         <li class="nav-item" style="flex: 0 0 auto; margin-right: 5px;">
                             <a class="nav-link custom-font-size btn-custom" href="{% url 'view_profile' %}">Профиль <i class="bi bi-person"></i></a>
@@ -122,9 +122,8 @@
                     </div>
                     <div class="col-md-6 text-md-end mb-4">
                         <nav>
-                            <a href="#">Маршруты</a>
-                            <a href="#">О нас</a>
-                            <a href="#">Блог</a>
+                            <a href="{% url 'popular' %}">Маршруты</a>
+                            <a href="{% url 'about' %}">О нас</a>
                             <a href="#">Контакты</a>
                         </nav>
                     </div>
@@ -132,7 +131,7 @@
                 <div class="footer-separator"></div>
                 <div class="row">
                     <div class="col-md-6 text-md-start">
-                        <p>© 2023 WEB Руза</p>
+                        <p>© 2024 WEB Руза</p>
                     </div>
                     <div class="col-md-6 text-md-end footer-social-icons">
                         <a href="#"><i class="fab fa-instagram"></i></a>

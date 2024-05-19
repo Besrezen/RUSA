@@ -8,9 +8,6 @@ from django.contrib.auth import logout
 def view_adres(request):
     return render(request, "html/page48229631.html")
 
-def view_user(request):
-    return render(request, "html/page48543075.html")
-
 def logout_view(request):
     logout(request)
     return redirect('view_login')
