@@ -16,7 +16,7 @@ def map_view(request):
 def save_coordinates(request):
     if request.method == 'POST':
         data = json.loads(request.body)
-        line = Line(name=data['name'], coordinates=data['coordinates'])
+        line = Line(name=data['name'], coordinates=data['coordinates'], seasons=data['seasons'], difficulty=data['difficulty'], length=data['length'])
         line.save()
         return JsonResponse({"status": "success"}, status=200)
     
@@ -29,3 +29,12 @@ def get_routes(request):
     routes = Line.objects.all()
     routes_json = serializers.serialize('json', routes)
     return JsonResponse(routes_json, safe=False)
+
+@csrf_exempt
+def update_route_lengths(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        line = Line.objects.get(id=data['id'])
+        line.length = data['length']
+        line.save()
+    return JsonResponse({"status": "success"}, status=200)

@@ -22,7 +22,7 @@
         #buttonContainer {
             position: absolute; /* Позиционирует контейнер кнопок абсолютно */
             top: 20px; /* Отступ сверху */
-            left: 50%; /* Отступ слева */
+            left: 40%; /* Отступ слева */
             transform: translateX(-50%); /* Смещает контейнер влево на половину его ширины */
             display: flex;
             flex-direction: row;
@@ -100,6 +100,47 @@
             <button id="backButton">Шаг назад</button>
             <input type="text" id="lineName" placeholder="Введите название маршрута">
             <button id="saveLineButton">Сохранить маршрут</button>
+            <form id="seasonForm">
+                <input type="checkbox" id="any" name="season" value="any">
+                <label for="any">Любой</label><br>
+                <input type="checkbox" id="winter" name="season" value="winter">
+                <label for="winter">Зима</label><br>
+                <input type="checkbox" id="spring" name="season" value="spring">
+                <label for="spring">Весна</label><br>
+                <input type="checkbox" id="summer" name="season" value="summer">
+                <label for="summer">Лето</label><br>
+                <input type="checkbox" id="autumn" name="season" value="autumn">
+                <label for="autumn">Осень</label><br>
+            </form>
+
+            <label for="lineDifficulty">Сложность:</label>
+            <select id="lineDifficulty" name="lineDifficulty">
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+                <option value="5">5</option>
+                <option value="6">6</option>
+                <option value="7">7</option>
+                <option value="8">8</option>
+                <option value="9">9</option>
+                <option value="10">10</option>
+            </select>
+            <script>
+                document.getElementById('any').addEventListener('change', function () {
+                    var otherCheckboxes = document.querySelectorAll('#seasonForm input[type=checkbox]:not(#any)');
+                    if (this.checked) {
+                        otherCheckboxes.forEach(function (checkbox) {
+                            checkbox.checked = false;
+                            checkbox.disabled = true;
+                        });
+                    } else {
+                        otherCheckboxes.forEach(function (checkbox) {
+                            checkbox.disabled = false;
+                        });
+                    }
+                });
+            </script>
             <!--<button id="removeAllLinesButton">Удалить все линии с карты</button>-->
         </div>
 
@@ -134,26 +175,93 @@
         }
 
         function loadAllRoutes(myMap) {
-           var xhr = new XMLHttpRequest();
+    var xhr = new XMLHttpRequest();
+    xhr.open("GET", "/get_routes/", true);
+    xhr.onload = function () {
+        var data = JSON.parse(this.responseText);
+        var routesContainer = document.getElementById('routesContainer');
+        var routes = JSON.parse(data);
+        var updates = [];
+        for (var i = 0; i < routes.length; i++) {
+            var routeButton = document.createElement('button');
+            routeButton.textContent = routes[i].fields.name;
+            var currentRoute = routes[i]; // создаем локальную копию текущего маршрута
+            // Проверяем, равна ли длина NULL
+            if (routes[i].fields.length == null) {
+                console.log(routes[i].fields.name + ' ' + routes[i].pk.toFixed());
+                // Вычисляем длину маршрута
+                var length = 0;
+                var coordinates = JSON.parse(routes[i].fields.coordinates);
+                for (var j = 0; j < coordinates.length - 1; j++) {
+                    length += ymaps.coordSystem.geo.getDistance(coordinates[j], coordinates[j + 1]);
+                }
+
+                var lineData = {
+                    id: routes[i].pk,
+                    length: length
+                };
+                updates.push(lineData);
+            }
+            (function(route) {
+                routeButton.addEventListener('click', function () {
+                    getRoute(myMap, route.fields.coordinates);
+                });
+            })(routes[i]);
+            routesContainer.appendChild(routeButton);
+        }
+        var updatesJSON = JSON.stringify(updates, null, 2);
+        var updateXhr = new XMLHttpRequest();
+        updateXhr.open("POST", "/update_route_lengths/", true);
+        updateXhr.setRequestHeader('Content-Type', 'application/json; charset=UTF-8');
+        updateXhr.send(updatesJSON);
+    };
+    xhr.send();
+}
+
+
+        function updateLength() {
+            var xhr = new XMLHttpRequest();
             xhr.open("GET", "/get_routes/", true);
             xhr.onload = function () {
-                var data = JSON.parse(this.responseText);
-                var routesContainer = document.getElementById('routesContainer');
-                var routes = JSON.parse(data);
-                for (var i = 0; i < routes.length; i++) {
-                    var routeButton = document.createElement('button');  
-                    routeButton.textContent = routes[i].fields.name;
-                    var currentRoute = routes[i]; // создаем локальную копию текущего маршрута
-                    (function(route) {
-                        routeButton.addEventListener('click', function () {
-                            getRoute(myMap, route.fields.coordinates);
-                        });
-                    })(routes[i]);
-                    routesContainer.appendChild(routeButton);
+            var data = JSON.parse(this.responseText);
+            var routesContainer = document.getElementById('routesContainer');
+            var routes = JSON.parse(data);
+            for (var i = 0; i < routes.length; i++) {
+                var routeButton = document.createElement('button');
+                routeButton.textContent = routes[i].fields.name;
+                var currentRoute = routes[i]; // создаем локальную копию текущего маршрута
+                // Проверяем, равна ли длина NULL
+                if (routes[i].fields.length == null) {
+                    console.log(routes[i].fields.name + routes[i].pk.toFixed(2));
+                    // Вычисляем длину маршрута
+                    var length = 0;
+                    var coordinates = JSON.parse(routes[i].fields.coordinates);
+                    for (var j = 0; j < coordinates.length - 1; j++) {
+                        length += ymaps.coordSystem.geo.getDistance(coordinates[j], coordinates[j + 1]);
+                    }
+
+                    var lineData = {
+                        id: routes[i].pk,
+                        length: length.toFixed(2)
+                    };
+                    var lineCoordinatesJSON = JSON.stringify(lineData, null, 2);
+                    var xhr = new XMLHttpRequest();
+                    xhr.open("POST", "/update_route_length/", true);
+                    xhr.setRequestHeader('Content-Type', 'application/json; charset=UTF-8');
+                    xhr.send(lineCoordinatesJSON);
                 }
+                (function(route) {
+                    routeButton.addEventListener('click', function () {
+                        getRoute(myMap, route.fields.coordinates);
+                    });
+                })(routes[i]);
+                routesContainer.appendChild(routeButton);
+
+            }
             };
             xhr.send();
         }
+
         
         function putRusaIcon(myMap) {
             var customIconImage = "{% static 'img/rusa.png' %}";
@@ -193,6 +301,7 @@
             myMap.geoObjects.add(myPolyline);
             myMap.setCenter(lineCoordinates[0], 15);
         }
+
         function deleteLineObjects(myMap) {
             for (var i = myMap.geoObjects.getLength() - 1; i >= 0; i--) {
                 var geoObject = myMap.geoObjects.get(i);
@@ -212,7 +321,7 @@
                 [55.492003, 35.400976], 
                 [56.009654, 36.830914]
             ];
-            var LITTLE_ZOOM_RANGE = [9.5, 15];
+            //var LITTLE_ZOOM_RANGE = [9.5, 15];
 
             var myMap = new ymaps.Map('constructor', {
                 center: [55.703697, 36.192678], // координаты центра карты
@@ -225,10 +334,11 @@
                 // примерно описывающим Санкт-Петербург.
                 restrictMapArea: LITTLE_RESTRICT_AREA
             });
-            myMap.options.set('minZoom', LITTLE_ZOOM_RANGE[0]);
-            myMap.options.set('maxZoom', LITTLE_ZOOM_RANGE[1]);
+            // myMap.options.set('minZoom', LITTLE_ZOOM_RANGE[0]);
+            // myMap.options.set('maxZoom', LITTLE_ZOOM_RANGE[1]);
             
             var lineCoordinates = [];
+            var length = 0;
 
             putRusaIcon(myMap);
 
@@ -241,33 +351,50 @@
 
             myMap.events.add('click', function (e) {
                 var coords = e.get('coords');
-                document.getElementById('coordinates').innerText = 'Широта: ' + coords[0].toFixed(6) + ', Долгота: ' + coords[1].toFixed(6);
+                length = 0;
                 lineCoordinates.push(coords);
+                for (var i = 0; i < lineCoordinates.length - 1; i++) {
+                    length += ymaps.coordSystem.geo.getDistance(lineCoordinates[i], lineCoordinates[i + 1]);
+                }
+                document.getElementById('coordinates').innerText = "Длина маршрута: " + length.toFixed(2) + " м";
                 myPolyline.geometry.setCoordinates(lineCoordinates);
             });
 
             document.getElementById('deleteButton').addEventListener('click', function () {
                 lineCoordinates = [];
+                length = 0;
+                document.getElementById('coordinates').innerText = "Длина маршрута: " + length.toFixed(2) + " м";
                 myPolyline.geometry.setCoordinates(lineCoordinates);
             });
             
             document.getElementById('backButton').addEventListener('click', function () {
                 lineCoordinates.pop();
+                length = 0;
+                for (var i = 0; i < lineCoordinates.length - 1; i++) {
+                    length += ymaps.coordSystem.geo.getDistance(lineCoordinates[i], lineCoordinates[i + 1]);
+                }
+                document.getElementById('coordinates').innerText = "Длина маршрута: " + length.toFixed(2) + " м";
                 myPolyline.geometry.setCoordinates(lineCoordinates);
             });
             
             document.getElementById('saveLineButton').addEventListener('click', function () {
                 var lineName = document.getElementById('lineName').value;
+                var lineDifficulty = document.getElementById('lineDifficulty').value;
+                var seasons = Array.from(document.querySelectorAll('input[name="season"]:checked')).map(function(el) { return el.value; });
                 var lineData = {
                     name: lineName,
-                    coordinates: lineCoordinates
+                    coordinates: lineCoordinates,
+                    seasons: seasons,
+                    difficulty: lineDifficulty,
+                    length: length.toFixed(2)
                 };
                 var lineCoordinatesJSON = JSON.stringify(lineData, null, 2);
                 var xhr = new XMLHttpRequest();
                 xhr.open("POST", "/save_coordinates/", true);
                 xhr.setRequestHeader('Content-Type', 'application/json; charset=UTF-8');
                 xhr.send(lineCoordinatesJSON);
-                lineCoordinates = [];   
+                lineCoordinates = [];
+                length = 0;  
                 myPolyline.geometry.setCoordinates(lineCoordinates);
             });
         }
