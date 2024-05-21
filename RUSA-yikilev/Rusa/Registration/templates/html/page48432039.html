@@ -1096,19 +1096,19 @@
                         data-field-heightunits-value="" data-field-widthunits-value="px">
                         <div class='tn-atom' field='tn_text_1714744105686'>Авторизация</div>
                     </div>
-                    <div class='t396__elem tn-elem tn-elem__7443004101714744223326' data-elem-id='1714744223326'
-                        data-elem-type='text' data-field-top-value="179" data-field-left-value="95"
-                        data-field-width-value="175" data-field-axisy-value="top" data-field-axisx-value="left"
-                        data-field-container-value="grid" data-field-topunits-value="px" data-field-leftunits-value="px"
-                        data-field-heightunits-value="" data-field-widthunits-value="px">
-                        <div class='tn-atom' field='tn_text_1714744223326'>Вход в аккаунт</div>
-                    </div>
                     {% block content %}
                     <style>
+                        .container {
+                            display: flex;
+                            justify-content: center;
+                            align-items: center;
+                            height: 100vh; /* Высота контейнера на весь экран */
+                            margin: 0;
+                        }
                         .login-form {
                             position: absolute;
-                            top: 220px;
-                            left: 750px;
+                            top: 170px;
+                            left: 925px;
                             width: 350px;
                             z-index: 10;
                         }
@@ -1128,7 +1128,7 @@
                             width: 100%; /* Осуществляет ширину на весь доступный размер в родителе */
                         }
 
-                        .login-form button {
+                        .login-form button, .btn-link {
                             width: 100%;
                             height: 30px;
                             background-color: #a816eb;
@@ -1136,37 +1136,54 @@
                             font-size: 14px;
                             font-weight: 600;
                             text-align: center;
+                            border-radius: 20px;
+                            cursor: pointer;
                             z-index: 10;
                         }
+                        .btn-link {
+                            padding: 10px 10px;
+                            height: 13px;
+                            margin-top: 10px;
+                            text-decoration: none;
+                            align-items: center;
+                            border-radius: 20px;
+                            text-align: center;
+                            display: inline-block;
+                        }
 
+
+                        .btn-link .tn-atom {
+                            display: inline-block;
+                            width: 100%;
+                        }
 
                         .overlapping-element { /* Класс перекрывающего элемента */
                             z-index: 0; /* Установите меньшее значение z-index */
                         }
-                    </style>
 
-                    <div class="login-form">
-                        <form method="post" action="{% url 'my_view_login' %}" >
-                            {% csrf_token %}
-                            {{ form.as_p }}
-                            <button class="tn-atom" type="submit">Войти</button>
-                        </form>
+                        @media screen and (max-width: 1199px) {}
+
+                        @media screen and (max-width: 959px) {}
+
+                        @media screen and (max-width: 639px) {}
+
+                        @media screen and (max-width: 479px) {}
+                    </style>
+                    <div class='t396__elem tn-elem tn-elem__7436275151714745637922' data-elem-id='1714745637923'
+                        data-elem-type='form' data-field-top-value="0" data-field-left-value="-750"
+                        data-field-width-value="400" data-field-axisy-value="top" data-field-axisx-value="left"
+                        data-field-container-value="grid" data-field-topunits-value="px" data-field-leftunits-value="px"
+                        data-field-heightunits-value="px" data-field-widthunits-value="px">
+                        <div class="login-form">
+                            <form method="post" action="{% url 'my_view_login' %}">
+                                {% csrf_token %}
+                                {{ form.as_p }}
+                                <button class="tn-atom" type="submit">Войти</button>
+                            </form>
+                            <a href="{% url 'signup_user' %}" ><div class="btn-link">Зарегистрироваться</div></a>
+                        </div>
                     </div>
                     {% endblock %}
-                    <form action="{% url 'signup_user' %}" blank="target">
-                        <button type="submit">
-                            <div class='t396__elem tn-elem tn-elem__7443004101714745637922' data-elem-id='1714745637922'
-                                data-elem-type='button' data-field-top-value="454" data-field-left-value="180"
-                                data-field-height-value="30" data-field-width-value="200" data-field-axisy-value="top"
-                                data-field-axisx-value="left" data-field-container-value="grid" data-field-topunits-value="px"
-                                data-field-leftunits-value="px" data-field-heightunits-value="px"
-                                data-field-widthunits-value="px">
-                                <div class='tn-atom'>Зарегистрироваться</div>
-                            </div>
-                        </button>
-                    </form>
-                </div>
-            </div>
             <script>t_onReady(function () {
                     t_onFuncLoad('t396_init', function () {
                         t396_init('744300410');
@@ -2392,20 +2409,6 @@
                 });</script><!-- /T396 -->
         </div>
     </div><!--/allrecords--><!-- Tilda copyright. Don't remove this line -->
-    <div class="t-tildalabel " id="tildacopy" data-tilda-sign="9427879#48432039"><a href="https://tilda.ru/"
-            class="t-tildalabel__link">
-            <div class="t-tildalabel__wrapper">
-                <div class="t-tildalabel__txtleft">Made on </div>
-                <div class="t-tildalabel__wrapimg"><img src="{% static 'images/tildacopy.png' %}" class="t-tildalabel__img"
-                        fetchpriority="low" alt=""></div>
-                <div class="t-tildalabel__txtright">Tilda</div>
-            </div>
-        </a></div><!-- Stat -->
-    <script type="text/javascript">if (!window.mainTracker) { window.mainTracker = 'tilda'; }
-        window.tildastatcookie = 'no';
-        setTimeout(function () {
-            (function (d, w, k, o, g) { var n = d.getElementsByTagName(o)[0], s = d.createElement(o), f = function () { n.parentNode.insertBefore(s, n); }; s.type = "text/javascript"; s.async = true; s.key = k; s.id = "tildastatscript"; s.src = g; if (w.opera == "[object Opera]") { d.addEventListener("DOMContentLoaded", f, false); } else { f(); } })(document, window, '96a7e7eb87d7ac57f2ebd3cc3c570973', 'script', '{% static 'js/tilda-stat-1.0.min.js' %}');
-        }, 2000); </script>
 </body>
 
 </html>

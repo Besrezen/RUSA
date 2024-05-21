@@ -1,0 +1,37 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}" />
+    <title>Group Detail</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+    <h2>Группа для маршрута: {{ group.name }}</h2>
+    <h3>Участники:</h3>
+    <ul id="user-list">
+        {% for user in group.users.all %}
+            <li>{{ user.username }}</li>
+        {% endfor %}
+    </ul>
+    <button id="join-group">Присоединиться к группе</button>
+    <script>
+        $('#join-group').click(function() {
+            $.ajax({
+                url: "{% url 'join_group' group.id %}",
+                type: 'POST',
+                data: {
+                    csrfmiddlewaretoken: '{{ csrf_token }}'
+                },
+                success: function(response) {
+                    if (response.success) {
+                        $('#user-list').append('<li>{{ request.user.username }}</li>');
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>

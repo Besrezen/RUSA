@@ -1,0 +1,23 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Список групп</title>
+    <link rel="stylesheet" type="text/css" href="{% static 'css/styles.css' %}">
+</head>
+<body>
+    <div class="container">
+        <h2>Список групп</h2>
+        <ul>
+            {% for group in groups %}
+                <li>
+                    <a href="{% url 'group_detail' group.id %}">{{ group.id }} - {{ group.created_at }}</a>
+                    <h1>{{ group.id }} - {{ group.created_at }}</h1>
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
+</body>
+</html>
