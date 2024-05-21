@@ -38,3 +38,11 @@ def update_route_lengths(request):
         line.length = data['length']
         line.save()
     return JsonResponse({"status": "success"}, status=200)
+
+def route_list(request):
+    sort_by = request.GET.get('sort_by', 'name')  # Default sorting by name
+    if sort_by not in ['name', 'length', 'difficulty', 'popularity']:
+        sort_by = 'name'
+    
+    routes = Line.objects.all().order_by(sort_by)
+    return render(request, 'route_list.html', {'routes': routes, 'sort_by': sort_by})
