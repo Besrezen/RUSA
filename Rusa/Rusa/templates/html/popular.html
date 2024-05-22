@@ -1,0 +1,96 @@
+{% extends 'base_generic.html' %}
+
+{% block title %}Popular Travel Destinations{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1 class="text-center mb-4">Popular Travel Destinations</h1>
+    
+    <!-- Filter Section -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <label for="difficulty">Difficulty</label>
+            <select id="difficulty" class="form-control">
+                <option value="">All</option>
+                <option value="easy">Easy</option>
+                <option value="medium">Medium</option>
+                <option value="hard">Hard</option>
+            </select>
+        </div>
+        <div class="col-md-3">
+            <label for="duration">Duration</label>
+            <select id="duration" class="form-control">
+                <option value="">All</option>
+                <option value="short">Short</option>
+                <option value="medium">Medium</option>
+                <option value="long">Long</option>
+            </select>
+        </div>
+        <div class="col-md-3">
+            <label for="popularity">Popularity</label>
+            <select id="popularity" class="form-control">
+                <option value="">All</option>
+                <option value="popular">Popular</option>
+                <option value="moderate">Moderate</option>
+                <option value="less_known">Less Known</option>
+            </select>
+        </div>
+    </div>
+    
+    <!-- Travel Destinations -->
+    <div class="row" id="destinations">
+        <!-- Destination Card Example -->
+        <div class="col-md-4 mb-4">
+            <div class="card">
+                <img src="https://via.placeholder.com/350x200" class="card-img-top" alt="Destination Image">
+                <div class="card-body">
+                    <h5 class="card-title">Destination Name</h5>
+                    <p class="card-text">Description of the travel destination.</p>
+                    <p class="card-text"><strong>Difficulty:</strong> Medium</p>
+                    <p class="card-text"><strong>Duration:</strong> Long</p>
+                    <p class="card-text"><strong>Popularity:</strong> Popular</p>
+                </div>
+            </div>
+        </div>
+        <!-- Add more destination cards as needed -->
+    </div>
+</div>
+
+<!-- Include Bootstrap JS and dependencies -->
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script>
+    // JavaScript for filtering (basic example)
+    document.addEventListener('DOMContentLoaded', function () {
+        const difficultyFilter = document.getElementById('difficulty');
+        const durationFilter = document.getElementById('duration');
+        const popularityFilter = document.getElementById('popularity');
+        
+        function filterDestinations() {
+            const difficulty = difficultyFilter.value;
+            const duration = durationFilter.value;
+            const popularity = popularityFilter.value;
+            const destinations = document.querySelectorAll('#destinations .col-md-4');
+            
+            destinations.forEach(destination => {
+                const difficultyText = destination.querySelector('.card-text:nth-child(3)').textContent;
+                const durationText = destination.querySelector('.card-text:nth-child(4)').textContent;
+                const popularityText = destination.querySelector('.card-text:nth-child(5)').textContent;
+                
+                if ((difficulty === '' || difficultyText.includes(difficulty)) &&
+                    (duration === '' || durationText.includes(duration)) &&
+                    (popularity === '' || popularityText.includes(popularity))) {
+                    destination.style.display = '';
+                } else {
+                    destination.style.display = 'none';
+                }
+            });
+        }
+        
+        difficultyFilter.addEventListener('change', filterDestinations);
+        durationFilter.addEventListener('change', filterDestinations);
+        popularityFilter.addEventListener('change', filterDestinations);
+    });
+</script>
+{% endblock %}

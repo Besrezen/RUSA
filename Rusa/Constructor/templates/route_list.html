@@ -1,0 +1,44 @@
+{% extends 'base_generic.html' %}
+{% block title %}Routes{% endblock %}
+{% block content %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Routes</title>
+</head>
+<body>
+    <h1>Routes</h1>
+    <div>
+        <span>Sort by:</span>
+        <a href="?sort_by=name">Name</a> |
+        <a href="?sort_by=length">Length</a> |
+        <a href="?sort_by=difficulty">Difficulty</a> |
+        <a href="?sort_by=popularity">Popularity</a>
+    </div>
+    <table>
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Length</th>
+                <th>Difficulty</th>
+                <th>Popularity</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for route in routes %}
+            <tr>
+                <td>{{ route.name }}</td>
+                <td>{{ route.length }}</td>
+                <td>{{ route.difficulty }}</td>
+                <td>{{ route.popularity }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>
+
+{% endblock %}

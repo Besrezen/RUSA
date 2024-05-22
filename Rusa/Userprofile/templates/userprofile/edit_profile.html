@@ -1,0 +1,51 @@
+{% extends 'base_generic.html' %}
+
+{% block title %}Profile{% endblock %}
+
+{% block content %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Edit Profile</title>
+    {% load static %}
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="{% static 'Userprofile/style.css' %}">
+</head>
+<body>
+    <div class="container mt-5">
+        <header class="mb-4">
+            <h1 class="text-center">Edit Profile</h1>
+        </header>
+        <form method="post" enctype="multipart/form-data" class="needs-validation" novalidate>
+            {% csrf_token %}
+            <div class="form-group">
+                {{ form.name.label_tag }} 
+                {{ form.name }}
+            </div>
+            <div class="form-group">
+                {{ form.region.label_tag }} 
+                {{ form.region }}
+            </div>
+            <div class="form-group">
+                {{ form.birth_date.label_tag }} 
+                {{ form.birth_date }}
+            </div>
+            <div class="form-group">
+                {{ form.profession.label_tag }} 
+                {{ form.profession }}
+            </div>
+            <div class="form-group">
+                {{ form.personal_photo.label_tag }} 
+                {{ form.personal_photo }}
+            </div>
+            <button type="submit" class="btn btn-primary btn-block">Save changes</button>
+        </form>
+        <a href="{% url 'view_profile' %}" class="btn btn-secondary btn-block mt-3">Back to Profile</a>
+    </div>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
+{% endblock %}

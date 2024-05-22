@@ -1,0 +1,91 @@
+{% extends 'base_generic.html' %}
+
+{% block title %}Profile{% endblock %}
+
+{% block content %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>User Profile</title>
+    {% load static %}
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="{% static 'Userprofile/style.css' %}">
+</head>
+<body>
+    <div class="container mt-5">
+        <header class="text-center mb-4">
+            <h1>Профиль</h1>
+        </header>
+        <section class="profile-section mb-4">
+            <div class="card">
+                <div class="card-body">
+                    <div class="row">
+                        {% if profile.personal_photo %}
+                            <div class="col-md-4 text-center">
+                                <img src="{{ profile.personal_photo.url }}" alt="Personal Photo" class="img-fluid mb-3">
+                            </div>
+                        {% endif %}
+                        <div class="col-md-8">
+                            <div class="profile-info">
+                                <div class="mb-2">
+                                    <label><strong>Имя пользователя:</strong></label>
+                                    <span>{{ profile.user.username }}</span>
+                                </div>
+                                <div class="mb-2">
+                                    <label><strong>Ваше имя:</strong></label>
+                                    <span>{{ profile.name }}</span>
+                                </div>
+                                <div class="mb-2">
+                                    <label><strong>Возраст:</strong></label>
+                                    <span>{{ profile.age }} лет</span>
+                                </div>
+                                <div class="mb-2">
+                                    <label><strong>Регион:</strong></label>
+                                    <span>{{ profile.region }}</span>
+                                </div>
+                                <div class="mb-2">
+                                    <label><strong>Дата рождения:</strong></label>
+                                    <span>{{ profile.birth_date }}</span>
+                                </div>
+                                <div class="mb-2">
+                                    <label><strong>Профессия:</strong></label>
+                                    <span>{{ profile.profession }}</span>
+                                </div>
+                                <div class="mb-2">
+                                    <label><strong>Контактные данные:</strong></label>
+                                    <span>{{ profile.user.email }}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <section class="specialty-section mb-4">
+            <div class="card">
+                <div class="card-body">
+                    <label><strong>Специальность:</strong></label>
+                    <span>{{ profile.profession }}</span>
+                </div>
+            </div>
+        </section>
+        <section class="about-section mb-4">
+            <div class="card">
+                <div class="card-body">
+                    <label><strong>Информация о себе:</strong></label>
+                    <textarea class="form-control" placeholder="Расскажите про себя..."></textarea>
+                </div>
+            </div>
+        </section>
+        <footer class="text-center mt-4">
+            <a href="{% url 'edit_profile' %}" class="btn btn-primary">Редактировать профиль</a>
+            <button class="btn btn-secondary">Закрыть</button>
+        </footer>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
+
+{% endblock %}
