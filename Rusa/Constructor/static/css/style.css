@@ -1,0 +1,74 @@
+html, body{
+    width:100%;
+    margin:0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+#constructor, #map {
+    position: relative; /* Делает карту относительно позиционированной */
+    width:150vh;
+    height:75vh;
+    margin-top: 5px;
+}
+
+#buttonContainer {
+    position: relative; /* Позиционирует контейнер кнопок абсолютно */
+    top: 10px; /* Отступ сверху */
+    display: flex;
+    flex-direction: row;
+    z-index: 1; /* Помещает кнопки поверх карты */
+    gap: 5px;
+    height: 15vh;
+}
+
+#buttonContainer button {
+    background-color: #4CAF50; /* Зеленый фон */
+    color: white; /* Белый текст */
+    text-align: center; /* Выравнивание текста по центру */
+    text-decoration: none; /* Убирает подчеркивание */
+    font-size: 16px; /* Размер шрифта */
+    cursor: pointer; /* Делает курсор руки при наведении */
+    border: none; /* Убирает границу */
+    border-radius: 3px;
+}
+
+#buttonContainer button:hover {
+    background-color: #45a049; /* Изменяет цвет фона при наведении */
+}
+
+#routesContainer {
+    position: absolute; /* Позиционирует контейнер кнопок абсолютно */
+    top: 100px; /* Отступ сверху */
+    right: 15px; /* Отступ слева */
+    display: flex;
+    flex-direction: column;
+    z-index: 1; /* Помещает кнопки поверх карты */
+    background-color: rgb(153, 154, 228);
+    padding: 15px 32px;
+    border-radius: 12px;
+    opacity: 0.5;
+    overflow: auto;
+    max-height: 500px;
+}
+
+#routesContainer:hover {
+    opacity: 1;
+}
+
+#routesContainer button {
+    display: block; /* Размещает каждую кнопку на новой строке */
+    margin-bottom: 10px; /* Добавляет отступ между кнопками */
+    background-color: #4CAF50; /* Зеленый фон */
+    color: white; /* Белый текст */
+    padding: 15px 32px; /* Отступы внутри кнопки */
+    text-align: center; /* Выравнивание текста по центру */
+    text-decoration: none; /* Убирает подчеркивание */
+    font-size: 16px; /* Размер шрифта */
+    cursor: pointer; /* Делает курсор руки при наведении */
+    border: none; /* Убирает границу */
+}
+
+#routesContainer button:hover {
+    background-color: #45a049; /* Изменяет цвет фона при наведении */
+}
