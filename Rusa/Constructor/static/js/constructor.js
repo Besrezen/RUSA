@@ -8,8 +8,7 @@ function init() {
     var LITTLE_ZOOM_RANGE = [9.5, 20];
     var centerCoordinates = [55.703697, 36.192678];
     var addingPlacemark = false;
-    var notes;
-
+    var notes = [];
     var myMap = new ymaps.Map('constructor', {
         center: centerCoordinates, // координаты центра карты
         zoom: 9.5, // уровень масштабирования
@@ -77,7 +76,7 @@ function init() {
     
     document.getElementById('saveLineButton').addEventListener('click', function () {
         console.log(notes);
-        saveData(myPolyline, lineCoordinates, notes);
+        saveData(myMap, myPolyline, lineCoordinates, notes, length);
     });
     document.getElementById('addPlacemarkButton').addEventListener('click', function () {
         addingPlacemark = true;
@@ -88,7 +87,7 @@ function init() {
     function onMapClick(e) {
         var coords = e.get('coords');
         var comment = prompt('Введите комментарий для метки:');
-
+        var myNote = [coords, comment];
         if (comment !== null && comment.trim() !== "") {
             var placemark = new ymaps.Placemark(coords, {
                 balloonContent: comment
@@ -96,7 +95,7 @@ function init() {
                 preset: 'islands#icon',
                 iconColor: '#0095b6'
             });
-            notes.push(comment);
+            notes.push(myNote);
             myMap.geoObjects.add(placemark);
             myMap.events.remove('click', onMapClick);
             addingPlacemark = false;
@@ -144,7 +143,7 @@ function putRusaIcon(myMap, myPlacemark) {
     myMap.geoObjects.add(myPlacemark);
 }
 
-function saveData(myPolyline, lineCoordinates, notes) {
+function saveData(myMap, myPolyline, lineCoordinates, notes, length) {
     var lineName = document.getElementById('lineName').value;
         var lineDifficulty = document.getElementById('lineDifficulty').value;
         var seasons = Array.from(document.querySelectorAll('input[name="season"]:checked')).map(function(el) { return el.value; });
@@ -156,13 +155,15 @@ function saveData(myPolyline, lineCoordinates, notes) {
             length: length.toFixed(2),
             notes: notes
         };
-        var lineCoordinatesJSON = JSON.stringify(lineData, null, 2);
+        var lineDataJSON = JSON.stringify(lineData, null, 2);
+        console.log(lineDataJSON);
         var xhr = new XMLHttpRequest();
         xhr.open("POST", "/save_coordinates/", true);
         xhr.setRequestHeader('Content-Type', 'application/json; charset=UTF-8');
-        xhr.send(lineCoordinatesJSON);
+        xhr.send(lineDataJSON);
         lineCoordinates = [];
         length = 0;  
         myPolyline.geometry.setCoordinates(lineCoordinates);
+        document.getElementById('coordinates').innerText = "";
         deleteAllPlacemarks(myMap, centerCoordinates);
 }

@@ -29,6 +29,7 @@ function loadAllRoutes(myMap) {
     var data = JSON.parse(this.responseText);
     var routesContainer = document.getElementById('routesContainer');
     var routes = JSON.parse(data);
+    console.log(routes);
     for (var i = 0; i < routes.length; i++) {
         var routeButton = document.createElement('button');
         routeButton.textContent = routes[i].fields.name;
@@ -59,20 +60,9 @@ function putRusaIcon(myMap) {
     myMap.geoObjects.add(myPlacemark);
 }
 
-function loadRouteData() {
-    var xhr = new XMLHttpRequest();
-    xhr.open("GET", "/get_routes/", true);
-    xhr.onload = function () {
-    var data = JSON.parse(this.responseText);
-    // var routesContainer = document.getElementById('routesContainer');
-    var routes = JSON.parse(data);
-    console.log(routes);
-    };
-    xhr.send();
-}
-
 
 function getRoute(myMap, coordinates, difficulty, length, name, notes, seasons, id) {
+    console.log(notes);
     var existingRectangle = document.getElementById("rectangleDiv");
     if (existingRectangle) {
         existingRectangle.parentNode.removeChild(existingRectangle);
@@ -94,7 +84,7 @@ function getRoute(myMap, coordinates, difficulty, length, name, notes, seasons, 
         strokeColor: "#0000FF", // цвет линии
         strokeWidth: 4, // ширина линии
         strokeOpacity: 0.5, // прозрачность линии
-        animationTime: 500
+        animationTime: 2000
     });
     myMap.geoObjects.add(myPolyline);
     myMap.setCenter(lineCoordinates[0], 12);
@@ -133,16 +123,16 @@ function getRoute(myMap, coordinates, difficulty, length, name, notes, seasons, 
             });
             var container = document.getElementById("map"); // Замените "yourDivId" на id вашего div
             container.insertBefore(rectangle, container.firstChild);
-            console.log("ID road: ->" + id + "|||");
-            loadRouteData();
+            console.log("ID road: -> " + id);
+        })
+        .then(function() {
+            var placemarkNotes = JSON.parse(notes);
+            console.log(placemarkNotes);
+            placemarkNotes.forEach(function(note) {
+                console.log(note);
+                putPlaceMark(myMap, note[0], note[1]);
+            });
         });
-        // .then(function() {
-        //     var placemarkNotes = JSON.parse(notes);
-        //     placemarkNotes.forEach(function(note, index) {
-        //         putPlaceMark(myMap, note);
-
-        //     });
-        // });
 }
 
 function putPlaceMark(myMap, coords, text) {
