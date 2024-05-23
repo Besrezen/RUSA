@@ -9,80 +9,9 @@
 <html>
 <head>
     <title>Yandex Maps</title>
-    <style>
-        html, body, #constructor, #map {
-            width:100%;
-            height:75vh;
-            margin:0;
-        }
-        #constructor, #map {
-            position: relative; /* Делает карту относительно позиционированной */
-        }
-
-        #buttonContainer {
-            position: absolute; /* Позиционирует контейнер кнопок абсолютно */
-            top: 20px; /* Отступ сверху */
-            left: 40%; /* Отступ слева */
-            transform: translateX(-50%); /* Смещает контейнер влево на половину его ширины */
-            display: flex;
-            flex-direction: row;
-            z-index: 1; /* Помещает кнопки поверх карты */
-            gap: 10px;
-        }
-
-        #buttonContainer button {
-            display: block; /* Размещает каждую кнопку на новой строке */
-            margin-bottom: 10px; /* Добавляет отступ между кнопками */
-            background-color: #4CAF50; /* Зеленый фон */
-            color: white; /* Белый текст */
-            padding: 15px 32px; /* Отступы внутри кнопки */
-            text-align: center; /* Выравнивание текста по центру */
-            text-decoration: none; /* Убирает подчеркивание */
-            font-size: 16px; /* Размер шрифта */
-            cursor: pointer; /* Делает курсор руки при наведении */
-            border: none; /* Убирает границу */
-            border-radius: 12px;
-        }
-
-        #buttonContainer button:hover {
-            background-color: #45a049; /* Изменяет цвет фона при наведении */
-        }
-
-        #routesContainer {
-            position: absolute; /* Позиционирует контейнер кнопок абсолютно */
-            top: 100px; /* Отступ сверху */
-            right: 15px; /* Отступ слева */
-            display: flex;
-            flex-direction: column;
-            z-index: 1; /* Помещает кнопки поверх карты */
-            background-color: rgb(153, 154, 228);
-            padding: 15px 32px;
-            border-radius: 12px;
-            opacity: 0.5;
-        }
-
-        #routesContainer:hover {
-            opacity: 1;
-        }
-
-        #routesContainer button {
-            display: block; /* Размещает каждую кнопку на новой строке */
-            margin-bottom: 10px; /* Добавляет отступ между кнопками */
-            background-color: #4CAF50; /* Зеленый фон */
-            color: white; /* Белый текст */
-            padding: 15px 32px; /* Отступы внутри кнопки */
-            text-align: center; /* Выравнивание текста по центру */
-            text-decoration: none; /* Убирает подчеркивание */
-            font-size: 16px; /* Размер шрифта */
-            cursor: pointer; /* Делает курсор руки при наведении */
-            border: none; /* Убирает границу */
-        }
-
-        #routesContainer button:hover {
-            background-color: #45a049; /* Изменяет цвет фона при наведении */
-        }
-    </style>
+    <link rel="stylesheet" type="text/css" href="../static/css/style.css"> 
     <script src="https://api-maps.yandex.ru/2.1/?apikey=403f644f-4840-426e-b2df-bea42d662d87&lang=ru_RU" type="text/javascript"></script>
+    <script>var customIconImage = "{% static 'img/rusa.png' %}";</script>
 </head>
 <body>
     <br>
@@ -92,341 +21,49 @@
     </div>
     <br>
     <br>
-    <p>Конструктор</p>
-    <div id="constructor" style="min-height: 600px">
-        <div id="buttonContainer">
-            <div id="coordinates"></div>
-            <button id="deleteButton">Удалить линию</button>
-            <button id="backButton">Шаг назад</button>
-            <input type="text" id="lineName" placeholder="Введите название маршрута">
-            <button id="saveLineButton">Сохранить маршрут</button>
-            <form id="seasonForm">
-                <input type="checkbox" id="any" name="season" value="any">
-                <label for="any">Любой</label><br>
-                <input type="checkbox" id="winter" name="season" value="winter">
-                <label for="winter">Зима</label><br>
-                <input type="checkbox" id="spring" name="season" value="spring">
-                <label for="spring">Весна</label><br>
-                <input type="checkbox" id="summer" name="season" value="summer">
-                <label for="summer">Лето</label><br>
-                <input type="checkbox" id="autumn" name="season" value="autumn">
-                <label for="autumn">Осень</label><br>
-            </form>
+    <p> Конструктор</p>
+    <div id="buttonContainer">
+        <div id="coordinates"></div>
+        <button id="deleteButton">Удалить линию</button>
+        <button id="backButton">Шаг назад</button>
+        <input type="text" id="lineName" placeholder="Введите название маршрута">
+        <button id="saveLineButton">Сохранить маршрут</button>
+        <button id="addPlacemarkButton">Добавить метку с комментарием</button>
+        <form id="seasonForm">
+            <p>Сезон:</p>
+            <input type="checkbox" id="any" name="season" value="any">
+            <label for="any">Любой</label><br>
+            <input type="checkbox" id="winter" name="season" value="winter">
+            <label for="winter">Зима</label><br>
+            <input type="checkbox" id="spring" name="season" value="spring">
+            <label for="spring">Весна</label><br>
+            <input type="checkbox" id="summer" name="season" value="summer">
+            <label for="summer">Лето</label><br>
+            <input type="checkbox" id="autumn" name="season" value="autumn">
+            <label for="autumn">Осень</label><br>
+        </form>
 
-            <label for="lineDifficulty">Сложность:</label>
-            <select id="lineDifficulty" name="lineDifficulty">
-                <option value="1">1</option>
-                <option value="2">2</option>
-                <option value="3">3</option>
-                <option value="4">4</option>
-                <option value="5">5</option>
-                <option value="6">6</option>
-                <option value="7">7</option>
-                <option value="8">8</option>
-                <option value="9">9</option>
-                <option value="10">10</option>
-            </select>
-            <script>
-                document.getElementById('any').addEventListener('change', function () {
-                    var otherCheckboxes = document.querySelectorAll('#seasonForm input[type=checkbox]:not(#any)');
-                    if (this.checked) {
-                        otherCheckboxes.forEach(function (checkbox) {
-                            checkbox.checked = false;
-                            checkbox.disabled = true;
-                        });
-                    } else {
-                        otherCheckboxes.forEach(function (checkbox) {
-                            checkbox.disabled = false;
-                        });
-                    }
-                });
-            </script>
-            <!--<button id="removeAllLinesButton">Удалить все линии с карты</button>-->
-        </div>
-
-        
+        <label for="lineDifficulty">Сложность:</label>
+        <select id="lineDifficulty" name="lineDifficulty">
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+            <option value="4">4</option>
+            <option value="5">5</option>
+            <option value="6">6</option>
+            <option value="7">7</option>
+            <option value="8">8</option>
+            <option value="9">9</option>
+            <option value="10">10</option>
+        </select>
+        <script src="../static/js/set_seasons.js"></script>
+        <!--<button id="removeAllLinesButton">Удалить все линии с карты</button>-->
     </div>
-    <script>
-        ymaps.ready(init);
-
-        function init() {
-            var LITTLE_RESTRICT_AREA = [
-                [55.492003, 35.400976], 
-                [56.009654, 36.830914]
-            ];
-            var LITTLE_ZOOM_RANGE = [9.5, 15];
-
-            var myMap = new ymaps.Map('map', {
-                center: [55.703697, 36.192678], // координаты центра карты
-                zoom: 9.5, // уровень масштабирования
-                controls: ['zoomControl'],
-                behaviors: ['drag'],
-                maxZoom: 15,
-            }, {
-                // Зададим ограниченную область прямоугольником, 
-                // примерно описывающим Санкт-Петербург.
-                restrictMapArea: LITTLE_RESTRICT_AREA
-            });
-            myMap.options.set('minZoom', LITTLE_ZOOM_RANGE[0]);
-            myMap.options.set('maxZoom', LITTLE_ZOOM_RANGE[1]);
-
-            putRusaIcon(myMap);
-            loadAllRoutes(myMap);
-        }
-
-        function loadAllRoutes(myMap) {
-    var xhr = new XMLHttpRequest();
-    xhr.open("GET", "/get_routes/", true);
-    xhr.onload = function () {
-        var data = JSON.parse(this.responseText);
-        var routesContainer = document.getElementById('routesContainer');
-        var routes = JSON.parse(data);
-        var updates = [];
-        for (var i = 0; i < routes.length; i++) {
-            var routeButton = document.createElement('button');
-            routeButton.textContent = routes[i].fields.name;
-            var currentRoute = routes[i]; // создаем локальную копию текущего маршрута
-            // Проверяем, равна ли длина NULL
-            if (routes[i].fields.length == null) {
-                console.log(routes[i].fields.name + ' ' + routes[i].pk.toFixed());
-                // Вычисляем длину маршрута
-                var length = 0;
-                var coordinates = JSON.parse(routes[i].fields.coordinates);
-                for (var j = 0; j < coordinates.length - 1; j++) {
-                    length += ymaps.coordSystem.geo.getDistance(coordinates[j], coordinates[j + 1]);
-                }
-
-                var lineData = {
-                    id: routes[i].pk,
-                    length: length
-                };
-                updates.push(lineData);
-            }
-            (function(route) {
-                routeButton.addEventListener('click', function () {
-                    getRoute(myMap, route.fields.coordinates);
-                });
-            })(routes[i]);
-            routesContainer.appendChild(routeButton);
-        }
-        var updatesJSON = JSON.stringify(updates, null, 2);
-        var updateXhr = new XMLHttpRequest();
-        updateXhr.open("POST", "/update_route_lengths/", true);
-        updateXhr.setRequestHeader('Content-Type', 'application/json; charset=UTF-8');
-        updateXhr.send(updatesJSON);
-    };
-    xhr.send();
-}
-
-
-        function updateLength() {
-            var xhr = new XMLHttpRequest();
-            xhr.open("GET", "/get_routes/", true);
-            xhr.onload = function () {
-            var data = JSON.parse(this.responseText);
-            var routesContainer = document.getElementById('routesContainer');
-            var routes = JSON.parse(data);
-            for (var i = 0; i < routes.length; i++) {
-                var routeButton = document.createElement('button');
-                routeButton.textContent = routes[i].fields.name;
-                var currentRoute = routes[i]; // создаем локальную копию текущего маршрута
-                // Проверяем, равна ли длина NULL
-                if (routes[i].fields.length == null) {
-                    console.log(routes[i].fields.name + routes[i].pk.toFixed(2));
-                    // Вычисляем длину маршрута
-                    var length = 0;
-                    var coordinates = JSON.parse(routes[i].fields.coordinates);
-                    for (var j = 0; j < coordinates.length - 1; j++) {
-                        length += ymaps.coordSystem.geo.getDistance(coordinates[j], coordinates[j + 1]);
-                    }
-
-                    var lineData = {
-                        id: routes[i].pk,
-                        length: length.toFixed(2)
-                    };
-                    var lineCoordinatesJSON = JSON.stringify(lineData, null, 2);
-                    var xhr = new XMLHttpRequest();
-                    xhr.open("POST", "/update_route_length/", true);
-                    xhr.setRequestHeader('Content-Type', 'application/json; charset=UTF-8');
-                    xhr.send(lineCoordinatesJSON);
-                }
-                (function(route) {
-                    routeButton.addEventListener('click', function () {
-                        getRoute(myMap, route.fields.coordinates);
-                    });
-                })(routes[i]);
-                routesContainer.appendChild(routeButton);
-
-            }
-            };
-            xhr.send();
-        }
-
-        
-        function putRusaIcon(myMap) {
-            var customIconImage = "{% static 'img/rusa.png' %}";
-            var myPlacemark = new ymaps.Placemark(
-                [55.703697, 36.192678],
-                {
-                    balloonContent: 'Руза'
-                },
-                {
-                    iconLayout: 'default#image',
-                    iconImageHref: customIconImage,
-                    iconImageSize: [30, 30] // Размеры изображения
-                }
-            );
-
-            myMap.geoObjects.add(myPlacemark);
-        }
-
-        function saveLine(myMap, coordinates) {
-            var lineCoordinates = JSON.parse(coordinates);
-            var myPolyline = new ymaps.Polyline(lineCoordinates, {}, {
-                strokeColor: "#0000FF", // цвет линии
-                strokeWidth: 4, // ширина линии
-                strokeOpacity: 0.5 // прозрачность линии
-            });
-            myMap.geoObjects.add(myPolyline);
-        }
-
-        function getRoute(myMap, coordinates) {
-            deleteLineObjects(myMap);
-            var lineCoordinates = JSON.parse(coordinates);
-            var myPolyline = new ymaps.Polyline(lineCoordinates, {}, {
-                strokeColor: "#0000FF", // цвет линии
-                strokeWidth: 4, // ширина линии
-                strokeOpacity: 0.5 // прозрачность линии
-            });
-            myMap.geoObjects.add(myPolyline);
-            myMap.setCenter(lineCoordinates[0], 15);
-        }
-
-        function deleteLineObjects(myMap) {
-            for (var i = myMap.geoObjects.getLength() - 1; i >= 0; i--) {
-                var geoObject = myMap.geoObjects.get(i);
-                if (geoObject instanceof ymaps.Polyline) {
-                    myMap.geoObjects.remove(geoObject);
-                }
-            }
-        }
-
-    </script>
-
-    <script>
-        ymaps.ready(init);
-
-        function init() {
-            var LITTLE_RESTRICT_AREA = [
-                [55.492003, 35.400976], 
-                [56.009654, 36.830914]
-            ];
-            //var LITTLE_ZOOM_RANGE = [9.5, 15];
-
-            var myMap = new ymaps.Map('constructor', {
-                center: [55.703697, 36.192678], // координаты центра карты
-                zoom: 9.5, // уровень масштабирования
-                controls: ['zoomControl'],
-                behaviors: ['drag'],
-                maxZoom: 15,
-            }, {
-                // Зададим ограниченную область прямоугольником, 
-                // примерно описывающим Санкт-Петербург.
-                restrictMapArea: LITTLE_RESTRICT_AREA
-            });
-            // myMap.options.set('minZoom', LITTLE_ZOOM_RANGE[0]);
-            // myMap.options.set('maxZoom', LITTLE_ZOOM_RANGE[1]);
-            
-            var lineCoordinates = [];
-            var length = 0;
-
-            putRusaIcon(myMap);
-
-            var myPolyline = new ymaps.Polyline([], {}, {
-                strokeColor: "#0000FF", // цвет линии
-                strokeWidth: 4, // ширина линии
-                strokeOpacity: 0.5 // прозрачность линии
-            });
-            myMap.geoObjects.add(myPolyline);
-
-            myMap.events.add('click', function (e) {
-                var coords = e.get('coords');
-                length = 0;
-                lineCoordinates.push(coords);
-                for (var i = 0; i < lineCoordinates.length - 1; i++) {
-                    length += ymaps.coordSystem.geo.getDistance(lineCoordinates[i], lineCoordinates[i + 1]);
-                }
-                document.getElementById('coordinates').innerText = "Длина маршрута: " + length.toFixed(2) + " м";
-                myPolyline.geometry.setCoordinates(lineCoordinates);
-            });
-
-            document.getElementById('deleteButton').addEventListener('click', function () {
-                lineCoordinates = [];
-                length = 0;
-                document.getElementById('coordinates').innerText = "Длина маршрута: " + length.toFixed(2) + " м";
-                myPolyline.geometry.setCoordinates(lineCoordinates);
-            });
-            
-            document.getElementById('backButton').addEventListener('click', function () {
-                lineCoordinates.pop();
-                length = 0;
-                for (var i = 0; i < lineCoordinates.length - 1; i++) {
-                    length += ymaps.coordSystem.geo.getDistance(lineCoordinates[i], lineCoordinates[i + 1]);
-                }
-                document.getElementById('coordinates').innerText = "Длина маршрута: " + length.toFixed(2) + " м";
-                myPolyline.geometry.setCoordinates(lineCoordinates);
-            });
-            
-            document.getElementById('saveLineButton').addEventListener('click', function () {
-                var lineName = document.getElementById('lineName').value;
-                var lineDifficulty = document.getElementById('lineDifficulty').value;
-                var seasons = Array.from(document.querySelectorAll('input[name="season"]:checked')).map(function(el) { return el.value; });
-                var lineData = {
-                    name: lineName,
-                    coordinates: lineCoordinates,
-                    seasons: seasons,
-                    difficulty: lineDifficulty,
-                    length: length.toFixed(2)
-                };
-                var lineCoordinatesJSON = JSON.stringify(lineData, null, 2);
-                var xhr = new XMLHttpRequest();
-                xhr.open("POST", "/save_coordinates/", true);
-                xhr.setRequestHeader('Content-Type', 'application/json; charset=UTF-8');
-                xhr.send(lineCoordinatesJSON);
-                lineCoordinates = [];
-                length = 0;  
-                myPolyline.geometry.setCoordinates(lineCoordinates);
-            });
-        }
-
-        function putRusaIcon(myMap) {
-            var customIconImage = "{% static 'img/rusa.png' %}";
-            var myPlacemark = new ymaps.Placemark(
-                [55.703697, 36.192678],
-                {
-                    balloonContent: 'Руза'
-                },
-                {
-                    iconLayout: 'default#image',
-                    iconImageHref: customIconImage,
-                    iconImageSize: [30, 30] // Размеры изображения
-                }
-            );
-
-            myMap.geoObjects.add(myPlacemark);
-        }
-
-        function saveLine(myMap, coordinates) {
-            var lineCoordinates = JSON.parse(coordinates);
-            var myPolyline = new ymaps.Polyline(lineCoordinates, {}, {
-                strokeColor: "#0000FF", // цвет линии
-                strokeWidth: 4, // ширина линии
-                strokeOpacity: 0.5 // прозрачность линии
-            });
-            myMap.geoObjects.add(myPolyline);
-        }
-
-    </script>
+    <br>
+    <div id="constructor" style="min-height: 600px"></div>
+    <script src="../static/js/map.js?v={{ now|date:'U' }}"></script>
+    <script src="../static/js/constructor.js?v={{ now|date:'U' }}"></script>
+    <script src="../static/js/animated_line.js"></script>
 </body>
 </html>
 {% endblock %}

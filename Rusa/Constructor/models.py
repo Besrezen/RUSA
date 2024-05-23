@@ -6,3 +6,4 @@ class Line(models.Model):
     length = models.DecimalField(max_digits=7, decimal_places=2, null=True)
     difficulty = models.DecimalField(max_digits=5, decimal_places=2, null=True)
     seasons = models.TextField(null=True)
+    notes = models.TextField(null=True)
