@@ -7,4 +7,4 @@ class Line(models.Model):
     difficulty = models.DecimalField(max_digits=5, decimal_places=2, null=True)
     seasons = models.TextField(null=True)
     popularity = models.DecimalField(max_digits=7, decimal_places=0, null=True)
-
+    notes = models.TextField(null=True)

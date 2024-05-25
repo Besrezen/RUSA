@@ -16,7 +16,7 @@ def map_view(request):
 def save_coordinates(request):
     if request.method == 'POST':
         data = json.loads(request.body)
-        line = Line(name=data['name'], coordinates=data['coordinates'], seasons=data['seasons'], difficulty=data['difficulty'], length=data['length'])
+        line = Line(name=data['name'], coordinates=data['coordinates'], seasons=data['seasons'], difficulty=data['difficulty'], length=data['length'], notes=data['notes'])
         line.save()
         return JsonResponse({"status": "success"}, status=200)
     
