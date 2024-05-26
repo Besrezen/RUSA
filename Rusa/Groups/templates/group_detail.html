@@ -16,18 +16,33 @@
             <li>{{ user.username }}</li>
         {% endfor %}
     </ul>
-    <button id="join-group">Присоединиться к группе</button>
+    <button id="group-action">
+        {% if request.user in group.users.all %}
+            Покинуть группу
+        {% else %}
+            Присоединиться к группе
+        {% endif %}
+    </button>
     <script>
-        $('#join-group').click(function() {
+        $('#group-action').click(function() {
+            var action = $(this).text().trim() === 'Присоединиться к группе' ? 'join' : 'leave';
             $.ajax({
-                url: "{% url 'join_group' group.id %}",
+                url: "{% url 'join_group' group.id %}".replace('join', action),
                 type: 'POST',
                 data: {
                     csrfmiddlewaretoken: '{{ csrf_token }}'
                 },
                 success: function(response) {
                     if (response.success) {
-                        $('#user-list').append('<li>{{ request.user.username }}</li>');
+                        if (response.action === 'joined') {
+                            $('#user-list').append('<li>{{ request.user.username }}</li>');
+                            $('#group-action').text('Покинуть группу');
+                        } else if (response.action === 'left') {
+                            $('#user-list li').filter(function() {
+                                return $(this).text() === '{{ request.user.username }}';
+                            }).remove();
+                            $('#group-action').text('Присоединиться к группе');
+                        }
                     }
                 }
             });

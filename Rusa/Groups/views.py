@@ -22,10 +22,28 @@ def group_list(request):
     groups = Group.objects.all()
     return render(request, 'group_list.html', {'groups': groups})
 
-@login_required
+'''@login_required
 def join_group(request, group_id):
     group = get_object_or_404(Group, id=group_id)
     if request.method == 'POST':
         group.users.add(request.user)
         return JsonResponse({'success': True})
+    return JsonResponse({'success': False})
+    '''
+@login_required
+def join_group(request, group_id):
+    group = get_object_or_404(Group, id=group_id)
+    if request.method == 'POST':
+        if request.user not in group.users.all():
+            group.users.add(request.user)
+            return JsonResponse({'success': True, 'action': 'joined'})
+    return JsonResponse({'success': False})
+
+@login_required
+def leave_group(request, group_id):
+    group = get_object_or_404(Group, id=group_id)
+    if request.method == 'POST':
+        if request.user in group.users.all():
+            group.users.remove(request.user)
+            return JsonResponse({'success': True, 'action': 'left'})
     return JsonResponse({'success': False})
