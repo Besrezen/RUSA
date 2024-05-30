@@ -7,24 +7,24 @@ class UserProfileForm(forms.ModelForm):
     birth_date = forms.DateField(
         required=False,
         widget=forms.TextInput(attrs={'placeholder': 'YYYY-MM-DD'}),
-        input_formats=['%Y-%m-%d', '%d/%m/%Y', '%d-%m-%Y']
+        input_formats=['%Y-%m-%d', '%d/%m/%Y', '%d-%m-%Y', '%Y.%m.%d']
     )
 
     class Meta:
         model = UserProfile
-        fields = ('name', 'region', 'birth_date', 'profession', 'personal_photo')
+        fields = ('name', 'region', 'birth_date', 'profession', 'personal_photo', 'bio')
 
     def clean_birth_date(self):
         birth_date = self.cleaned_data.get('birth_date')
         if birth_date:
-            try:
-                datetime.strptime(str(birth_date), '%Y-%m-%d')
-            except ValueError:
+            valid_formats = ['%Y-%m-%d', '%d/%m/%Y', '%d-%m-%Y', '%Y.%m.%d']
+            for fmt in valid_formats:
                 try:
-                    datetime.strptime(str(birth_date), '%d/%m/%Y')
+                    # Parse the date using the format
+                    date_obj = datetime.strptime(birth_date, fmt)
+                    # Return the date in YYYY-MM-DD format
+                    return date_obj.strftime('%Y-%m-%d')
                 except ValueError:
-                    try:
-                        datetime.strptime(str(birth_date), '%d-%m-%Y')
-                    except ValueError:
-                        raise ValidationError("Enter a valid date.")
+                    continue
+            raise ValidationError("Enter a valid date.")
         return birth_date

@@ -1,91 +1,172 @@
-{% extends 'base_generic.html' %}
-
-{% block title %}Profile{% endblock %}
-
-{% block content %}
 <!DOCTYPE html>
 <html>
 <head>
     <title>User Profile</title>
     {% load static %}
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <link rel="stylesheet" type="text/css" href="{% static 'Userprofile/style.css' %}">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400&display=swap" rel="stylesheet"> 
+    <link href="https://fonts.googleapis.com/css2?family=Inder:wght@200;300;400&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@100;300;400&display=swap" rel="stylesheet">
+    
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@100;300;400;500;700;900&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="{% static 'userprofile/profile.css' %}" />
 </head>
 <body>
-    <div class="container mt-5">
-        <header class="text-center mb-4">
+    <body>
+        <div class="all_page_container">
+          <div class="header_top">
+            <div class="logo">
+              <div class="web">
+              WEB Руза
+              </div>
+              <img class="vector-1" src="{% static 'userprofile/assets/vectors/vector1_x2.svg' %}" />
+            </div>
+          </div>
+          
+        <header class="profile_text">
             <h1>Профиль</h1>
         </header>
-        <section class="profile-section mb-4">
-            <div class="card">
-                <div class="card-body">
-                    <div class="row">
-                        {% if profile.personal_photo %}
-                            <div class="col-md-4 text-center">
-                                <img src="{{ profile.personal_photo.url }}" alt="Personal Photo" class="img-fluid mb-3">
-                            </div>
-                        {% endif %}
-                        <div class="col-md-8">
-                            <div class="profile-info">
-                                <div class="mb-2">
-                                    <label><strong>Имя пользователя:</strong></label>
-                                    <span>{{ profile.user.username }}</span>
-                                </div>
-                                <div class="mb-2">
-                                    <label><strong>Ваше имя:</strong></label>
-                                    <span>{{ profile.name }}</span>
-                                </div>
-                                <div class="mb-2">
-                                    <label><strong>Возраст:</strong></label>
-                                    <span>{{ profile.age }} лет</span>
-                                </div>
-                                <div class="mb-2">
-                                    <label><strong>Регион:</strong></label>
-                                    <span>{{ profile.region }}</span>
-                                </div>
-                                <div class="mb-2">
-                                    <label><strong>Дата рождения:</strong></label>
-                                    <span>{{ profile.birth_date }}</span>
-                                </div>
-                                <div class="mb-2">
-                                    <label><strong>Профессия:</strong></label>
-                                    <span>{{ profile.profession }}</span>
-                                </div>
-                                <div class="mb-2">
-                                    <label><strong>Контактные данные:</strong></label>
-                                    <span>{{ profile.user.email }}</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-        <section class="specialty-section mb-4">
-            <div class="card">
-                <div class="card-body">
-                    <label><strong>Специальность:</strong></label>
-                    <span>{{ profile.profession }}</span>
-                </div>
-            </div>
-        </section>
-        <section class="about-section mb-4">
-            <div class="card">
-                <div class="card-body">
-                    <label><strong>Информация о себе:</strong></label>
-                    <textarea class="form-control" placeholder="Расскажите про себя..."></textarea>
-                </div>
-            </div>
-        </section>
-        <footer class="text-center mt-4">
-            <a href="{% url 'edit_profile' %}" class="btn btn-primary">Редактировать профиль</a>
-            <button class="btn btn-secondary">Закрыть</button>
-        </footer>
-    </div>
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-</body>
-</html>
 
-{% endblock %}
+      <form method="post">
+          {% csrf_token %}
+        <div class="code-section">
+            <div class="row">
+              <div class="photo">
+                {% if profile.personal_photo %}
+                <img src="{{ profile.personal_photo.url }}" alt="Ваше фото">
+                {% endif %}
+              </div>
+
+              <div class="info">
+
+                <div class="title_gray_fild">
+                    <label class="label_tag"><strong>Ваше имя:</strong></label>
+                </div>
+                <div class="description_gray_fild">
+                    <span class="name">{{ profile.name }}</span>
+                </div>
+                
+
+                <div class="title_gray_fild">
+                    <label class="label_tag"><strong>Регион:</strong></label>
+                </div>
+                <div class="description_gray_fild">
+                    <span class="region">{{ profile.region }}</span>
+                </div>
+              </div>
+        
+          
+              <div class="contacts">
+
+                <div class="title_gray_fild">
+                    <label class="label_tag"><strong>Дата рождения:</strong></label>
+                </div>
+                <div class="description_gray_fild">
+                    <span class="age">{{ profile.birth_date }}</span>
+                </div>
+            
+                <div class="title_gray_fild">
+                    <label class="label_tag"><strong>Контактные данные:</strong></label>
+                </div>
+                <div class="description_gray_fild">
+                    <span class="email">{{ profile.user.email }}</span>
+                </div>
+              </div>
+
+              <button href="{% url 'update_profile' %}" class="edit_profile">Редактировать</button>
+            </div>
+          </div>
+
+          <div class="profile">Портфолио</div>
+              <div class="slider">
+                  <ul>
+                      <li style="background-image: url('{% static 'userprofile/assets/png/image2.png' %}')"></li>
+                      <li style="background-image: url('{% static 'userprofile/assets/png/image3.png' %}')"></li>
+                      <li style="background-image: url('{% static 'userprofile/assets/png/image4.png' %}')"></li>
+                      <li style="background-image: url('{% static 'userprofile/assets/png/image2.png' %}')"></li>
+                      <li style="background-image: url('{% static 'userprofile/assets/png/image3.png' %}')"></li>
+                      <li style="background-image: url('{% static 'userprofile/assets/png/image4.png' %}')"></li>
+                    </ul>
+          
+                  <button class="prev"><</button>
+                  <button class="next">></button>
+              </div>
+        
+            
+              <script src="{% static 'userprofile/slider.js' %}"></script>
+            
+              <div class="mini_header">Специальность</div>
+              <div class="spicalization_container">
+                   <span class="text_spcecialization">{{ profile.profession }}</span>
+                   <!-- <img class="edit" src="assets/vectors/pencil-square.svg"> --> <!-- Значок редактирования. Можно размутить, но он не нужен-->
+              </div>
+              <div class="info_about_me">Информация о себе</div>
+              <span class="text_area">{{ profile.about_me }}</span>
+                
+            <div class="ground_button_container">
+
+                <button class="close_profile">Закрыть</button>
+            </div>
+          </form>
+
+            <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+            <script src="{% static 'userprofile/edit_profile.js' %}"></script>
+            
+          <div class="footer_container">
+            <div class="footer_nav">
+              <div class="logo">
+                <div class="web_1">
+                  WEB Руза
+                </div>
+                <img class="vector-2" src="{% static 'userprofile/assets/vectors/vector2_x2.svg' %}" />
+              </div>
+              
+              
+              <div class="info_container">
+                <a href="https://example.com" class="routes">
+                  Маршруты
+                </a>
+                <a href="https://example.com" class="about_us">
+                  О нас
+                </a>
+                <a href="https://example.com" class="blog">
+                  Блог
+                </a>
+                <a href="https://example.com" class="contacts">
+                  Контакты
+                </a>
+                <button class="take_atrip">
+                  В путешествие
+                </button>
+              </div>
+                
+               </div>
+               <div class="footer_links_container">
+                <div class="copyrightmail-ru-2023">
+                copyright@mail.ru 2023
+                </div>
+                <div class="links">
+                  <img class="instagram" src="{% static 'userprofile/assets/vectors/instagram_x2.svg' %}" />
+                  <img class="linkedin" src="{% static 'userprofile/assets/vectors/linkedin_x2.svg' %}" />
+                  <div class="facebook">
+                    <img class="vector-65" src="{% static 'userprofile/assets/vectors/vector9_x2.svg' %}" />
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </body>
+          </html>
+</body>
+</html> 
+
