@@ -29,8 +29,10 @@
             <div class="card mb-4 shadow-sm">
                 <img class="card-img-top" src="https://via.placeholder.com/500x300" alt="Изображение маршрута">
                 <div class="card-body">
-                    <h5 class="card-title">{{ route.name }}</h5>
-                    <p class="card-text">Длина: {{ route.length }} км</p>
+                    <h5 class="card-title">
+                        <a href="{% url 'route_page' route.id %}">{{ route.name }}</a>
+                    </h5>
+                    <p class="card-text">Длина: {{ route.length }} м</p>
                     <p class="card-text">Сложность: {{ route.difficulty }}</p>
                     <p class="card-text">Популярность: {{ route.popularity }}</p>
                 </div>

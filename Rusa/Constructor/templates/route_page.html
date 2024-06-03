@@ -1,0 +1,50 @@
+{% extends 'base_generic.html' %}
+
+{% block title %}Profile{% endblock %}
+
+{% block content %}
+
+{% load static %}
+<html>
+<head>
+    <title>Yandex Maps</title>
+    <link rel="stylesheet" type="text/css" href="../../static/css/route_page.css"> 
+    <script src="https://api-maps.yandex.ru/2.1/?apikey=403f644f-4840-426e-b2df-bea42d662d87&lang=ru_RU" type="text/javascript"></script>
+    <input type="hidden" id="route-id" value="{{ route.id }}">
+    <script>
+    var customIconImage = "{% static 'img/rusa.png' %}";
+    var customFinishImage = "{% static 'img/finish_flag.png' %}";
+    const routeId = document.getElementById('route-id').value;
+    </script>
+</head>
+<body>
+    <div class="container">
+        <div class="left-column">
+            <div class="route-header">
+                <img src="{% static 'img/route2.png' %}" alt="Route Image">
+                <h2>{{ route.name }}</h2>
+            </div>
+            <br>
+            <div id="map"></div>
+            <br>
+            <h3>Author: Besrezen</h3> <!-- Предположим, что у вас есть поле author_name в модели -->
+        </div>
+        <div class="right-column">
+            <div class="right-el">
+                <h6 style="color:cadetblue;">ОСНОВНАЯ ИНФОРМАЦИЯ</h6>
+                <p class="card-text">Номер маршрута: {{ route.id }}</p>
+                <p>Сложность: {{ route_difficulty }}</p>
+                <p>Популярность: {{ route_popularity }} </p>
+            </div>
+            <div class="right-el">
+                <h6 style="color:cadetblue;">РАССТОЯНИЕ И ВРЕМЯ</h6>
+                <p>Длина: {{ route_length }} км</p>
+                <p>Время: {{ route_time }} </p>
+            </div>
+        </div>
+    </div>
+    <script src="../../static/js/current_route.js?v={{ now|date:'U' }}"></script>
+    <script src="../../static/js/animated_line.js"></script>
+</body>
+</html>
+{% endblock %}

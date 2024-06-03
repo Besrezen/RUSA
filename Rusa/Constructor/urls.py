@@ -8,4 +8,5 @@ urlpatterns = [
     path('get_routes/', views.get_routes, name='get_routes'),
     path('update_route_lengths/', views.update_route_lengths, name='update_route_lengths'),
     path('routes/', views.route_list, name='route_list'),
+    path('route/<int:route_id>/', views.route_page, name='route_page'),
 ]
