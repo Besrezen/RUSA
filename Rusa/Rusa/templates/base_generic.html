@@ -84,6 +84,8 @@
             background-color: #00c6ad;
         }
     </style>
+    {% block extra_head %}
+    {% endblock %}
 </head>
 
 <body class="d-flex flex-column min-vh-100">
@@ -107,7 +109,7 @@
             </div>
         </nav>
     </header>
-    
+
     {% block content %}
     {% endblock content %}
 

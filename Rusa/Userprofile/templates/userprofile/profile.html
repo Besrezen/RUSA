@@ -1,25 +1,26 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>User Profile</title>
-    {% load static %}
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@&display=swap" rel="stylesheet">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400&display=swap" rel="stylesheet">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Inder:wght@200;300;400&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@100;300;400&display=swap" rel="stylesheet">
+{% extends 'base_generic.html' %}
+{% load static %}
+{% block title %}Profile Page{% endblock %}
 
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@100;300;400;500;700;900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="{% static 'userprofile/profile.css' %}" />
-</head>
-<body>
+{% block extra_head %}
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inder:wght@200;300;400&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@100;300;400&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@100;300;400;500;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{% static 'userprofile/profile.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="container">
     <div class="all_page_container">
         <div class="header_top">
             <div class="logo">
@@ -36,13 +37,13 @@
             {% csrf_token %}
             <div class="code-section">
                 <div class="row">
-                    <div class="photo">
+                    <div class="col-md-4 photo">
                         <img src="{{ profile.personal_photo.url }}" alt="Ваше фото" id="profile-photo">
                         <input type="file" name="personal_photo" id="id_personal_photo" style="display: none;">
-                        <button type="button" id="upload-photo-btn" style="display: none;">Изменить фото</button>
+                        <button type="button" id="upload-photo-btn" style="display: none;" class="change-photo-btn">Изменить фото</button>
                     </div>
 
-                    <div class="info">
+                    <div class="col-md-4 info">
                         <div class="title_gray_fild">
                             <label class="label_tag"><strong>Ваше имя:</strong></label>
                         </div>
@@ -58,7 +59,7 @@
                         </div>
                     </div>
 
-                    <div class="contacts">
+                    <div class="col-md-4 contacts">
                         <div class="title_gray_fild">
                             <label class="label_tag"><strong>Дата рождения:</strong></label>
                         </div>
@@ -73,18 +74,6 @@
                             <span class="email">{{ profile.user.email }}</span>
                         </div>
                     </div>
-
-                    <div class="mini_header">Специальность</div>
-                    <div class="spicalization_container">
-                      <span class="text_spcecialization">{{ profile.profession }}</span>
-                    </div>
-                    <div class="info_about_me">Информация о себе</div>
-                      <span class="text_area">{{ profile.about_me }}</span>
-                    <div class="ground_button_container">
-                      <button class="close_profile">Закрыть</button>
-                    </div>
-
-                    <button type="button" class="edit_profile">Редактировать</button>
                 </div>
             </div>
 
@@ -98,8 +87,19 @@
                 <button class="prev"><</button>
                 <button class="next">></button>
             </div>
+            <script src="{% static 'userprofile/slider.js' %}"></script>
         </form>
 
+        <div class="mini_header">Специальность</div>
+        <div class="spicalization_container">
+            <span class="text_spcecialization">{{ profile.profession }}</span>
+        </div>
+        <div class="info_about_me">Информация о себе</div>
+        <span class="text_area">{{ profile.bio }}</span>
+        <div class="ground_button_container">
+            <button class="close_profile">Закрыть</button>
+            <button type="button" class="edit_profile">Редактировать</button>
+        </div>
         <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
         <script src="{% static 'userprofile/edit_profile.js' %}"></script>
         <script>
@@ -113,33 +113,6 @@
                 }
             });
         </script>
-
-        <div class="footer_container">
-            <div class="footer_nav">
-                <div class="logo">
-                    <div class="web_1">WEB Руза</div>
-                    <img class="vector-2" src="{% static 'userprofile/assets/vectors/vector2_x2.svg' %}" />
-                </div>
-
-                <div class="info_container">
-                    <a href="https://example.com" class="routes">Маршруты</a>
-                    <a href="https://example.com" class="about_us">О нас</a>
-                    <a href="https://example.com" class="blog">Блог</a>
-                    <a href="https://example.com" class="contacts">Контакты</a>
-                    <button class="take_atrip">В путешествие</button>
-                </div>
-            </div>
-            <div class="footer_links_container">
-                <div class="copyrightmail-ru-2023">copyright@mail.ru 2023</div>
-                <div class="links">
-                    <img class="instagram" src="{% static 'userprofile/assets/vectors/instagram_x2.svg' %}" />
-                    <img class="linkedin" src="{% static 'userprofile/assets/vectors/linkedin_x2.svg' %}" />
-                    <div class="facebook">
-                        <img class="vector-65" src="{% static 'userprofile/assets/vectors/vector9_x2.svg' %}" />
-                    </div>
-                </div>
-            </div>
-        </div>
     </div>
-</body>
-</html>
+</div>
+{% endblock content %}
