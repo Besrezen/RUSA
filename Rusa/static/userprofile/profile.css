@@ -1,4 +1,4 @@
-/* ДЛЯ ПРОСМОТРА ГРАНИЦ ВСЕХ ЭЛЕМЕНТОВ */
+/* пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ */
 
 /* *{
     outline: 4px solid green !important;
@@ -7,9 +7,9 @@
 body {
     display: flex;
     justify-content: center;
-    margin: 0 auto; /* Центрирование по горизонтали */
+    margin: 0 auto; /* пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ */
     min-height: 100vh;
-    /* background: #f0f0f0; Задайте фоновый цвет, если требуется */
+    /* background: #f0f0f0; пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ */
   }
 
 .all_page_container {
@@ -21,27 +21,28 @@ body {
     max-width: 1512px;
     max-height: 2669px;
     width: 100%;
-    height: 100%; 
+    height: 100%;
     box-sizing: border-box;
     display: inline-block;
-    
+
+
     /* background: rgb(247, 211, 211); */
   }
 
 
   .header_top {
-    margin: 0 10% 0px 128px; 
+    margin: 0 10% 0px 128px;
     display: flex;
     white-space: nowrap;
     flex-direction: row;
     overflow-wrap: break-word;
-    max-width: calc(100% - 128px - 10%); /* Корректируем ширину с учётом отступов */
-    height: 50px; /* Фиксируем высоту, чтобы избежать растягивания */
-    
+    max-width: calc(100% - 128px - 10%); /* пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ */
+    height: 50px; /* пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ */
+
     font-family: 'Inter', sans-serif;
     font-weight: 800;
     font-size: 25px;
-    line-height: normal; 
+    line-height: normal;
     /* background: #03e84c; */
     color: #000;
     box-sizing: border-box;
@@ -49,7 +50,7 @@ body {
 
     /* box-sizing: border-box; */
   }
-  
+
   .logo {
     display: flex;
     flex-direction: column;
@@ -68,26 +69,26 @@ body {
     font-size: 25px;
     font-style: normal;
     font-weight: 800;
-    line-height: normal; 
+    line-height: normal;
   }
 
 .vector-1 {
     margin-top: -5px;
     width: 129px;
     height: 35px;
-  
+
     stroke-width: 4px;
-    stroke: #000000; 
-  } 
+    stroke: #000000;
+  }
   h1 {
     all: unset;
   }
-  
+
   .profile_text {
 
     margin-left: 3.3%;
     margin-top: 5%;
-    
+
     color: #000;
     font-family: Inter;
     font-size: 48px;
@@ -100,7 +101,7 @@ body {
   .profile-section{
     background-color: red;
   }
-/* Секция кода */
+/* пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ */
 .code-section {
     /* background-color: aquamarine; */
     display: flex;
@@ -110,8 +111,8 @@ body {
     /* padding: 20px; */
     /* border: 1px solid #ccc; */
   }
-  
-  /* Ряд с флекс элементами */
+
+  /* пїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ */
   .code-section .row {
     margin-top: 5.6%;
     /* margin-top: 93px; */
@@ -120,34 +121,34 @@ body {
     flex-wrap: wrap;
     gap: 100px;
   }
-  
-  /* Флекс элемент для фотографии */
+
+  /* пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ */
   .code-section .photo {
     width: 341px;
     /* height: 453px; */
- 
-    flex-shrink: 0;  
+
+    flex-shrink: 0;
     border-radius: 20px;
-      
+
     /* flex-basis: 100%; */
     /* max-width: 20%; */
 
     /* margin: 20px; */
     padding: 20px;
     /* border: 1px solid #ddd; */
-    
+
     text-align: center;
   }
-  
+
   .code-section .photo img {
    max-width: 100%;
    border-radius: 25px;
    height: auto;
   }
-  
-  /* Флекс элемент для имени, региона */
+
+  /* пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅпїЅпїЅпїЅ */
   .code-section .info {
-    flex-basis: 20%; 
+    flex-basis: 20%;
     /* flex-basis: 20%; */
     max-width: 100%;
     margin: 10px;
@@ -159,14 +160,14 @@ body {
     flex-direction: column;
     gap: 21px;
   }
-  
+
   .code-section .info .name {
     display: flex;
     width: 233px;
     height: 32px;
-    flex-shrink: 0; 
+    flex-shrink: 0;
     flex-wrap: nowrap;
-    white-space: nowrap; 
+    white-space: nowrap;
 
     margin-top: 8px;
     margin-left: 16px;
@@ -175,18 +176,18 @@ body {
     font-size: 31px;
     font-style: normal;
     font-weight: 400;
-    line-height: normal; 
+    line-height: normal;
   }
-  
+
   .age_input{
     display: flex;
     width: 233px;
     height: 32px;
-    flex-shrink: 0; 
+    flex-shrink: 0;
     flex-wrap: nowrap;
-    white-space: nowrap; 
+    white-space: nowrap;
 
-    background: hsl(0, 0%, 85%); 
+    background: hsl(0, 0%, 85%);
     margin-top: 8px;
     margin-left: 16px;
     color: #000;
@@ -194,18 +195,18 @@ body {
     font-size: 31px;
     font-style: normal;
     font-weight: 400;
-    line-height: normal; 
+    line-height: normal;
   }
 
   .name_input{
     display: flex;
     width: 233px;
     height: 32px;
-    flex-shrink: 0; 
+    flex-shrink: 0;
     flex-wrap: nowrap;
-    white-space: nowrap; 
+    white-space: nowrap;
 
-    background: hsl(0, 0%, 85%); 
+    background: hsl(0, 0%, 85%);
     margin-top: 8px;
     margin-left: 16px;
     color: #000;
@@ -213,18 +214,18 @@ body {
     font-size: 31px;
     font-style: normal;
     font-weight: 400;
-    line-height: normal; 
+    line-height: normal;
   }
 
   .email_input{
     display: flex;
     width: 233px;
     height: 32px;
-    flex-shrink: 0; 
+    flex-shrink: 0;
     flex-wrap: nowrap;
-    white-space: nowrap; 
+    white-space: nowrap;
 
-    background: hsl(0, 0%, 85%); 
+    background: hsl(0, 0%, 85%);
     margin-top: 8px;
     margin-left: 16px;
     color: #000;
@@ -232,18 +233,18 @@ body {
     font-size: 31px;
     font-style: normal;
     font-weight: 400;
-    line-height: normal; 
+    line-height: normal;
   }
 
   .region_input{
     display: flex;
     width: 233px;
     height: 32px;
-    flex-shrink: 0; 
+    flex-shrink: 0;
     flex-wrap: nowrap;
-    white-space: nowrap; 
+    white-space: nowrap;
 
-    background: hsl(0, 0%, 85%); 
+    background: hsl(0, 0%, 85%);
     margin-top: 8px;
     margin-left: 16px;
     color: #000;
@@ -251,7 +252,7 @@ body {
     font-size: 31px;
     font-style: normal;
     font-weight: 400;
-    line-height: normal; 
+    line-height: normal;
   }
 
   .code-section .info .region {
@@ -261,19 +262,19 @@ body {
     margin-top: 8px;
     margin-left: 16px;
     flex-wrap: nowrap;
-    white-space: nowrap; 
+    white-space: nowrap;
 
-    flex-shrink: 0;     
+    flex-shrink: 0;
     color: #000;
     font-family: Inter;
     font-size: 31px;
     font-style: normal;
     font-weight: 400;
-    line-height: normal; 
+    line-height: normal;
     color: #000000;
   }
-  
-  /* Флекс элемент для возраста и email */
+
+  /* пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ email */
   .code-section .contacts {
     flex-basis: 20%;
     /* flex-basis: 25%; */
@@ -288,14 +289,14 @@ body {
     flex-direction: column;
     gap: 21px;
   }
-  
+
   .code-section .contacts .age {
     display: flex;
     width: 233px;
     height: 32px;
-    flex-shrink: 0; 
-   
-    white-space: nowrap; 
+    flex-shrink: 0;
+
+    white-space: nowrap;
 
     margin-top: 8px;
     margin-left: 16px;
@@ -304,17 +305,17 @@ body {
     font-size: 31px;
     font-style: normal;
     font-weight: 400;
-    line-height: normal; 
+    line-height: normal;
   }
-  
+
   .code-section .contacts .email {
     color: #000000;
     display: flex;
     width: 233px;
     height: 32px;
-    flex-shrink: 0; 
+    flex-shrink: 0;
     flex-wrap: nowrap;
-    white-space: nowrap; 
+    white-space: nowrap;
 
     margin-top: 8px;
     margin-left: 16px;
@@ -323,7 +324,7 @@ body {
     font-size: 31px;
     font-style: normal;
     font-weight: 400;
-    line-height: normal; 
+    line-height: normal;
   }
 .label{
     all: unset;
@@ -337,16 +338,16 @@ body {
     max-width: 90%;
     /* width: 260px; */
     height: 40px;
-    flex-shrink: 0; 
+    flex-shrink: 0;
     border-radius: 5px;
-    background: hsl(0, 0%, 85%); 
+    background: hsl(0, 0%, 85%);
 }
 
 .label_tag{
     margin-top: 5px;
     margin-left: 18px;
     height: 31px;
-    flex-shrink: 0; 
+    flex-shrink: 0;
 
 
     color: #000;
@@ -354,7 +355,7 @@ body {
     font-size: 21px;
     font-style: normal;
     font-weight: 400;
-    line-height: normal; 
+    line-height: normal;
 }
 
 .description_gray_fild{
@@ -386,12 +387,12 @@ body {
 .slider {
     position: relative;
     display: flex;
-    max-width: 1442px; /* Ширина слайдера */
+    max-width: 1442px; /* пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ */
     width: 95%;
     height: 300px;
     overflow: hidden;
     margin-top: 76px;
-    padding: 20px; /* Добавляем отступы по бокам */
+    padding: 20px; /* пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅ */
 }
 
 .slider ul {
@@ -404,12 +405,12 @@ body {
 
 .slider li {
     display: flex;
-    width: 447px; /* Ширина слайда (1442 - 2 * 20) / 3 */
+    width: 447px; /* пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ (1442 - 2 * 20) / 3 */
     height: 300px;
     background-size: cover;
     background-position: center;
     border-radius: 50px;
-    margin-right: 50px; /* Пробел между слайдами */
+    margin-right: 50px; /* пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ */
 }
 
 .slider button {
@@ -427,14 +428,14 @@ body {
 }
 
 .slider button:first-child {
-    left: 0; /* Устанавливаем отступ слева */
+    left: 0; /* пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ */
 }
 
 .slider button:last-child {
-    right: 0; /* Устанавливаем отступ справа */
+    right: 0; /* пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ */
 }
 
-/* Скрываем точки */
+/* пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ */
 .slider ul li::marker {
     display: none;
 }
@@ -462,8 +463,8 @@ body {
 }
 
 .spicalization_container{
-    
-    display: flex; 
+
+    display: flex;
     flex-direction: row;
 }
 
@@ -479,9 +480,9 @@ body {
     font-size: 41px;
     font-style: normal;
     font-weight: 500;
-    line-height: normal; 
+    line-height: normal;
     border-bottom: 2px solid #000; /* Set border style, color, and thickness */
-    padding-bottom: 5px; /* Add padding below the text for spacing */ 
+    padding-bottom: 5px; /* Add padding below the text for spacing */
 }
 
 .specialization_input{
@@ -495,9 +496,9 @@ body {
   font-size: 41px;
   font-style: normal;
   font-weight: 500;
-  line-height: normal; 
+  line-height: normal;
   border-bottom: 2px solid #000; /* Set border style, color, and thickness */
-  padding-bottom: 5px; /* Add padding below the text for spacing */ 
+  padding-bottom: 5px; /* Add padding below the text for spacing */
 }
 
 .edit{
@@ -522,7 +523,7 @@ body {
     font-size: 41px;
     font-style: normal;
     font-weight: 400;
-    line-height: normal;    
+    line-height: normal;
 }
 
 .text_area{
@@ -585,6 +586,7 @@ body {
     flex-direction: row;
     align-content: space-between;
     margin-top: 3%;
+    margin-bottom: 40px;
     /* width: 100%; */
     justify-content: space-between;
     margin-left: 15%;
@@ -650,7 +652,7 @@ body {
     padding: 74px 136px 57px 129px;
     width: 1512px;
     width: 100%;
-    
+
     box-sizing: border-box;
     /* background: #03e84c; */
   }
@@ -688,22 +690,22 @@ body {
     /* height: 22px; */
   /* } */
 
-  
+
 /* .info_container { */
     /* position: absolute;
     display: flex;
     flex-direction: row;
-  
+
     margin-top: 16px;
     right: 259px;
-  
+
     gap: 30px;
     color: #000;
     font-family: Inter;
     font-size: 16px;
     font-style: normal;
     font-weight: 500;
-    line-height: normal; 
+    line-height: normal;
     overflow-wrap: break-word; */
 
 
@@ -712,7 +714,7 @@ body {
         position: absolute;
         display: flex;
         flex-direction: row;
-      
+
         /* margin-left: 749px; */
         /* margin-left: 549px; */
         /* background: red; */
@@ -725,35 +727,35 @@ body {
         font-size: 16px;
         font-style: normal;
         font-weight: 500;
-        line-height: normal; 
+        line-height: normal;
         overflow-wrap: break-word;
       }
 
   a{
     text-decoration: none;
   }
-  
+
   .footer_nav a{
     color: #FFF;
   }
-  
+
   .header a{
-    color: #000; 
+    color: #000;
   }
 
-  
+
 .footer_nav .take_atrip{
     border-radius: 38px;
-    border: 2px solid #ffffff; 
-  
+    border: 2px solid #ffffff;
+
     color: #FFF;
     display: inline-flex;
     margin-top: -14px;
     padding: 14px 38px;
     justify-content: center;
     align-items: center;
-    gap: 10px; 
-  
+    gap: 10px;
+
     background: none;
   }
 
@@ -821,4 +823,66 @@ body {
     width: 11px;
     height: 20px;
     box-sizing: border-box;
+  }
+
+  .birth_date_input {
+    width: 100%;
+    max-width: 250px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: #f9f9f9;
+    font-size: 16px;
+    font-family: 'Inter', sans-serif;
+    color: #333;
+    transition: border-color 0.3s, box-shadow 0.3s;
+  }
+
+  .birth_date_input:focus {
+    border-color: #24E4C0;
+    box-shadow: 0 0 5px rgba(36, 228, 192, 0.5);
+    outline: none;
+  }
+
+  .birth_date_input::-webkit-calendar-picker-indicator {
+    background-color: #24E4C0;
+    border-radius: 5px;
+    padding: 5px;
+    cursor: pointer;
+  }
+
+  .birth_date {
+    width: 100%;
+    max-width: 250px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+
+    font-size: 50px;
+    font-family: 'Inter', sans-serif;
+    color: #333;
+    transition: border-color 0.3s, box-shadow 0.3s;
+  }
+
+  .photo-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .change-photo-btn {
+    border-radius: 50px;
+    background: #24E4C0;
+    color: #000;
+    font-family: 'Inter', sans-serif;
+    font-size: 18px;
+    font-weight: 600;
+    padding: 10px 20px;
+    margin-top: 10px;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+
+  .change-photo-btn:hover {
+    background-color: #1bb298;
   }

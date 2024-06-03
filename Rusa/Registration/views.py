@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import login
-from .forms import UserSignUpForm, AdminSignUpForm
+from .forms import UserSignUpForm, AdminSignUpForm, CustomAuthenticationForm
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import logout
@@ -17,7 +17,7 @@ def view_admin(request):
     return render(request, "html/home_admin.html")
 
 def view_login(request):
-    form = AuthenticationForm()
+    form = CustomAuthenticationForm()
     return render(request, "html/page48432039.html", {'form': form})
 
 def show_login(request):
@@ -54,7 +54,7 @@ def admin_signup(request):
 
 def my_login_view(request):
     if request.method == "POST":
-        form = AuthenticationForm(request, data=request.POST)
+        form = CustomAuthenticationForm(request, data=request.POST)
         if form.is_valid():
             user = form.get_user()
             if user.is_admin == 0:
@@ -64,5 +64,5 @@ def my_login_view(request):
                 login(request, user)
                 return redirect('view_main')
     else:
-        form = AuthenticationForm()
+        form = CustomAuthenticationForm()
     return render(request, 'html/page48432039.html', {'form': form})
