@@ -76,25 +76,29 @@
                     </div>
                 </div>
             </div>
-
-            <div class="profile">Портфолио</div>
-            <div class="slider">
-                <ul>
-                    <li style="background-image: url('{% static 'userprofile/assets/png/image2.png' %}')"></li>
-                    <li style="background-image: url('{% static 'userprofile/assets/png/image3.png' %}')"></li>
-                    <li style="background-image: url('{% static 'userprofile/assets/png/image4.png' %}')"></li>
-                </ul>
-                <button class="prev"><</button>
-                <button class="next">></button>
-            </div>
-            <script src="{% static 'userprofile/slider.js' %}"></script>
         </form>
 
-        <div class="mini_header">Специальность</div>
+
+        <div class="profile">Портфолио</div>
+        <div class="slider">
+            <ul>
+                <li style="background-image: url('{% static 'userprofile/assets/png/image2.png' %}')"></li>
+                <li style="background-image: url('{% static 'userprofile/assets/png/image3.png' %}')"></li>
+                <li style="background-image: url('{% static 'userprofile/assets/png/image4.png' %}')"></li>
+                <li style="background-image: url('{% static 'userprofile/assets/png/image2.png' %}')"></li>
+                <li style="background-image: url('{% static 'userprofile/assets/png/image3.png' %}')"></li>
+                <li style="background-image: url('{% static 'userprofile/assets/png/image4.png' %}')"></li>
+            </ul>
+            <button class="prev"><</button>
+            <button class="next">></button>
+        </div>
+        <script src="{% static 'userprofile/slider.js' %}"></script>
+
+        <div class="profile">Специальность</div>
         <div class="spicalization_container">
             <span class="text_spcecialization">{{ profile.profession }}</span>
         </div>
-        <div class="info_about_me">Информация о себе</div>
+        <div class="profile">Информация о себе</div>
         <span class="text_area">{{ profile.bio }}</span>
         <div class="ground_button_container">
             <button class="close_profile">Закрыть</button>
