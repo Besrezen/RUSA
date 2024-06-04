@@ -21,7 +21,7 @@
     <div class="container">
         <div class="left-column">
             <div class="route-header">
-                <img src="{% static 'img/route2.png' %}" alt="Route Image">
+                <img src="{% static 'img/main_r_img.png' %}" alt="Route Image">
                 <h2>{{ route.name }}</h2>
             </div>
             <br>
@@ -32,14 +32,24 @@
         <div class="right-column">
             <div class="right-el">
                 <h6 style="color:cadetblue;">ОСНОВНАЯ ИНФОРМАЦИЯ</h6>
-                <p class="card-text">Номер маршрута: {{ route.id }}</p>
-                <p>Сложность: {{ route_difficulty }}</p>
-                <p>Популярность: {{ route_popularity }} </p>
+                <div class="parameter">
+                    <p class="card-text"><span>Номер маршрута:</span><br><img src="{% static 'img/route_img.png' %}" alt="Route Image"><i class="icon-class"></i><i class="icon-class"></i><b>&nbsp;&nbsp;{{ route.id }}</b></p>
+                </div>
+                <div class="parameter">
+                    <p><span>Сложность:</span><br><img src="{% static 'img/difficulty_img.png' %}" alt="Route Image"><i class="icon-class"></i><b>&nbsp;&nbsp;{{ route_difficulty }}</b></p>
+                </div>
+                <div class="parameter">
+                    <p><span>Популярность:</span><br><img src="{% static 'img/popularity_img.png' %}" alt="Route Image"><i class="icon-class"></i><i class="icon-class"></i><b>&nbsp;&nbsp;{{ route_popularity }}</b></p>
+                </div>
             </div>
             <div class="right-el">
                 <h6 style="color:cadetblue;">РАССТОЯНИЕ И ВРЕМЯ</h6>
-                <p>Длина: {{ route_length }} км</p>
-                <p>Время: {{ route_time }} </p>
+                <div class="parameter">
+                    <p><span>Длина:</span><br><img src="{% static 'img/length_img.png' %}" alt="Route Image"><i class="icon-class"></i><i class="icon-class"></i><b>&nbsp;&nbsp;{{ route_length }} км</b></p>
+                </div>
+                <div class="parameter">
+                    <p><span>Время:</span><br><img src="{% static 'img/time_img.png' %}" alt="Route Image"><i class="icon-class"></i><i class="icon-class"></i><b>&nbsp;&nbsp;{{ route_time }}</b></p>
+                </div>    
             </div>
         </div>
     </div>
