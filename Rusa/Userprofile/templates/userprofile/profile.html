@@ -38,7 +38,11 @@
             <div class="code-section">
                 <div class="row">
                     <div class="col-md-4 photo">
+                        {% if profile.personal_photo %}
                         <img src="{{ profile.personal_photo.url }}" alt="Ваше фото" id="profile-photo">
+                        {% else %}
+                        <img src="{% static 'userprofile/assets/png/anon.png' %}" alt="Ваше фото" id="profile-photo">
+                        {% endif %}
                         <input type="file" name="personal_photo" id="id_personal_photo" style="display: none;">
                         <button type="button" id="upload-photo-btn" style="display: none;" class="change-photo-btn">Изменить фото</button>
                     </div>

@@ -31,7 +31,7 @@ def update_profile(request):
 
         # Обработка загрузки фото профиля
         if 'personal_photo' in request.FILES:
-            if profile.personal_photo and profile.personal_photo.url != 'def/anonim.png':
+            if profile.personal_photo and profile.personal_photo.url != 'img/anonim.png':
                 if os.path.isfile(profile.personal_photo.path):
                     os.remove(profile.personal_photo.path)
             profile.personal_photo = request.FILES['personal_photo']
