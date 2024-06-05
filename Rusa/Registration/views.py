@@ -25,7 +25,7 @@ def show_login(request):
 
 @login_required
 def view_main(request):
-    return render(request, "html/page48558703.html")
+    return redirect('view_profile')
 
 def user_signup(request):
     if request.method == 'POST':

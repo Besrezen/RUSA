@@ -22,13 +22,6 @@
 {% block content %}
 <div class="container">
     <div class="all_page_container">
-        <div class="header_top">
-            <div class="logo">
-                <div class="web">WEB Руза</div>
-                <img class="vector-1" src="{% static 'userprofile/assets/vectors/vector1_x2.svg' %}" />
-            </div>
-        </div>
-
         <header class="profile_text">
             <h1>Профиль</h1>
         </header>
@@ -105,7 +98,7 @@
         <div class="profile">Информация о себе</div>
         <span class="text_area">{{ profile.bio }}</span>
         <div class="ground_button_container">
-            <button class="close_profile">Закрыть</button>
+            <button class="close_profile" onclick="window.location.href='{% url 'logout' %}';">Выйти из аккаунта</button>
             <button type="button" class="edit_profile">Редактировать</button>
         </div>
         <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
