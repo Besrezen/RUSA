@@ -65,4 +65,4 @@ def my_login_view(request):
                 return redirect('view_main')
     else:
         form = CustomAuthenticationForm()
-    return render(request, 'html/page48432039.html', {'form': form})
+    return render(request, 'html/login.html', {'form': form})
