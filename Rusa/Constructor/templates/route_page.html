@@ -51,6 +51,9 @@
                     <p><span>Время:</span><br><img src="{% static 'img/time_img.png' %}" alt="Route Image"><i class="icon-class"></i><i class="icon-class"></i><b>&nbsp;&nbsp;{{ route_time }}</b></p>
                 </div>    
             </div>
+            <h5 class="card-title">
+                <a href="{% url 'groups_list_page' route.id %}">Перейти к списку групп по маршруту</a>
+            </h5>
         </div>
     </div>
     <script src="../../static/js/current_route.js?v={{ now|date:'U' }}"></script>

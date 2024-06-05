@@ -11,9 +11,12 @@
     <link rel="stylesheet" type="text/css" href="../static/css/style.css"> 
     <script src="https://api-maps.yandex.ru/2.1/?apikey=403f644f-4840-426e-b2df-bea42d662d87&lang=ru_RU" type="text/javascript"></script>
     <script>var customIconImage = "{% static 'img/rusa.png' %}";</script>
+    <input type="hidden" id="user_id" value="{{ user_id }}">
+    <script>var userId = "{{ user_id }}";</script>
 </head>
 <body>
     <br>
+    <p>ID -> {{ user_id }}</p>
     <p>Карта маршрутов</p>
     <div id="map" style="min-height: 600px">
         <div id="routesContainer"></div>
