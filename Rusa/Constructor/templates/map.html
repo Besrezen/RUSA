@@ -51,14 +51,15 @@
         .intro p {
             margin: 1em 0;
         }
-        .intro button {
+        .intro .button {
             background-color: #8bc34a;
             color: white;
             border: none;
             padding: 1em 2em;
             font-size: 1em;
             cursor: pointer;
-            border-radius: 5px;
+            border-radius: 10px;
+            text-decoration: none;
         }
         .steps {
             display: flex;
@@ -87,14 +88,15 @@
             border: 1px solid #ddd;
             margin-bottom: 1em;
         }
-        .route-selector button {
+        .route-selector .button {
             background-color: #8bc34a;
             color: white;
             border: none;
             padding: 1em 2em;
             font-size: 1em;
             cursor: pointer;
-            border-radius: 5px;
+            border-radius: 10px;
+            text-decoration: none;
         }
         .testimonials {
             width: 100%;
@@ -130,14 +132,15 @@
             color: white;
             width: 100%;
         }
-        .cta button {
+        .cta .button {
             background-color: #8bc34a;
             color: white;
             border: none;
             padding: 1em 2em;
             font-size: 1em;
             cursor: pointer;
-            border-radius: 5px;
+            border-radius: 10px;
+            text-decoration: none;
         }
     </style>
 </head>
@@ -145,7 +148,7 @@
     <div class="intro">
         <h1>Путешествуйте в интересной компании</h1>
         <p>Мы помогаем людям найти попутчиков, а также составить маршруты путешествий.</p>
-        <button onclick="window.location.href='{% url 'route_list' %}'">В путешествие</button>
+        <a href="{% url 'route_list' %}" class="button">В путешествие</a>
     </div>
     <div class="steps">
         <div>
@@ -166,7 +169,7 @@
         <div id="map" style="min-height: 600px">
             <div id="routesContainer"></div>
         </div>
-        <button style="margin-top: 10px" onclick="window.location.href='{% url 'constructor' %}'">Создать маршрут</button>
+        <a href="{% url 'constructor' %}" class="button" style="margin-top: 10px">Создать маршрут</a>
     </div>
     <div class="testimonials">
         <h2>Начни</h2>
@@ -206,8 +209,8 @@
         </div>
     </div>
     <div class="cta">
-        <h2>Готов попробовать?</h2>
-        <button onclick="window.location.href='{% url 'signup_user' %}'">Зарегистрируйся</button>
+        <h2 style="margin-bottom: 20px">Готов попробовать?</h2>
+        <a href="{% url 'signup_user' %}" class="button">Зарегистрируйся</a>
     </div>
 </body>
 </html>
