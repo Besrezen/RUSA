@@ -6,7 +6,7 @@ const nextButton = slider.querySelector('.next');
 let currentSlide = 0;
 
 function showSlide(index) {
-    ul.style.left = -index * (447 + 50) + 'px';
+    ul.style.left = -index * (366 + 50) + 'px';
     currentSlide = index;
 }
 
