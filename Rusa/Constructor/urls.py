@@ -3,6 +3,7 @@ from . import views
 
 urlpatterns = [
     path('', views.map_view, name='home'),
+    path('constructor/', views.constructor_view, name='constructor'),
     path('save_coordinates/', views.save_coordinates, name='save_coordinates'),
     path('get_lines/', views.get_lines, name='get_lines'),
     path('get_routes/', views.get_routes, name='get_routes'),

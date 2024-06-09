@@ -18,7 +18,7 @@ def view_admin(request):
 
 def view_login(request):
     form = CustomAuthenticationForm()
-    return render(request, "html/page48432039.html", {'form': form})
+    return render(request, "html/login.html", {'form': form})
 
 def show_login(request):
     return redirect('view_login')
@@ -37,7 +37,7 @@ def user_signup(request):
             return redirect('view_main')
     else:
         form = UserSignUpForm()
-    return render(request, 'html/page48229631.html', {'form': form})
+    return render(request, 'html/signup_user.html', {'form': form})
 
 def admin_signup(request):
     if request.method == 'POST':

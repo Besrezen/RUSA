@@ -1,5 +1,6 @@
 from django.shortcuts import render, get_object_or_404
 from django.conf import settings
+from django.contrib.auth.decorators import login_required
 import requests
 from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse
@@ -13,6 +14,12 @@ def map_view(request):
     api_key = settings.YANDEX_MAPS_API_KEY
     context = {'api_key': api_key}
     return render(request, 'map.html', context)
+
+@login_required
+def constructor_view(request):
+    api_key = settings.YANDEX_MAPS_API_KEY
+    context = {'api_key': api_key}
+    return render(request, 'constructor.html', context)
 
 @csrf_exempt
 def save_coordinates(request):
