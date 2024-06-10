@@ -15,6 +15,8 @@ def view_profile(request):
     for route in user_routes:
         route.map_url = create_map_url(route)
         route.is_not_empty_coords = not (str(route.coordinates) == "[]")
+        route.len_km = round(route.length / 1000, 1)
+        route.diff_rounded = round(route.difficulty)
     context = {
         'profile': profile,
         'user_routes': user_routes

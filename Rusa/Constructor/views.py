@@ -68,6 +68,8 @@ def route_list(request):
     for route in routes:
         route.map_url = create_map_url(route)
         route.is_not_empty_coords = not (str(route.coordinates) == "[]")
+        route.len_km = round(route.length / 1000, 1)
+        route.diff_rounded = round(route.difficulty)
     context = {
         'routes': routes
         }

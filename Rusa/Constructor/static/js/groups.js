@@ -11,11 +11,11 @@ document.addEventListener('DOMContentLoaded', function() {
         // console.log(leaderId);
         if (buttonsElement){
             if (participants.includes(userId) && (userId != leaderId)) {
-                document.getElementById('buttons_' + groupId).innerHTML = '<button class="btn btn-danger" onclick="removeUserFromGroup(' + groupId + ')">Выйти из группы</button>';
+                document.getElementById('buttons_' + groupId).innerHTML = '<button style="margin-top: 60px;" class="btn btn-danger" onclick="removeUserFromGroup(' + groupId + ')">Выйти из группы</button>';
             } else if (userId != leaderId){
-                document.getElementById('buttons_' + groupId).innerHTML = '<button class="btn btn-success" onclick="addUserInGroup(' + groupId + ')">Присоединиться к походу</button>';
+                document.getElementById('buttons_' + groupId).innerHTML = '<button style="margin-top: 60px;" class="btn btn-success" onclick="addUserInGroup(' + groupId + ')">Присоединиться к походу</button>';
             } else {
-                document.getElementById('buttons_' + groupId).innerHTML = '<br><h6 style="color:green;">Вы - создатель этой группы</h6>' +
+                document.getElementById('buttons_' + groupId).innerHTML = '<br><h6 style="color:green; margin-top: 10px;">Вы - создатель этой группы</h6>' +
                 '<button class="btn btn-danger">Удалить группу</button>';
             }
         }
@@ -60,7 +60,7 @@ function addUserInGroup(groupId) {
     xhr.onreadystatechange = function () {
     if (xhr.readyState == 4 && xhr.status == 200) {
         // Обновите DOM здесь
-        document.getElementById('buttons_' + groupId).innerHTML = '<button class="btn btn-danger" onclick="removeUserFromGroup(' + groupId + ')">Выйти из группы</button>';
+        document.getElementById('buttons_' + groupId).innerHTML = '<button style="margin-top: 60px;" class="btn btn-danger" onclick="removeUserFromGroup(' + groupId + ')">Выйти из группы</button>';
         // Добавьте имя пользователя в div "participants"
         var participantsDiv = document.getElementById('all_participants_' + groupId);
         var newParticipant = document.createElement('span');
@@ -89,7 +89,7 @@ function removeUserFromGroup(groupId) {
     xhr.onreadystatechange = function () {
     if (xhr.readyState == 4 && xhr.status == 200) {
         // Обновите DOM здесь
-        document.getElementById('buttons_' + groupId).innerHTML = '<button class="btn btn-success" onclick="addUserInGroup(' + groupId + ')">Присоединиться к походу</button>';
+        document.getElementById('buttons_' + groupId).innerHTML = '<button style="margin-top: 60px;"  class="btn btn-success" onclick="addUserInGroup(' + groupId + ')">Присоединиться к походу</button>';
         // Добавьте имя пользователя в div "participants"
         var participantsDiv = document.getElementById('all_participants_' + groupId);
         var participantToRemove = participantsDiv.querySelector('[id^="' + userId + '"]');
