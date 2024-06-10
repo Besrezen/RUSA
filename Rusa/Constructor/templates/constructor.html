@@ -1,0 +1,72 @@
+{% extends 'base_generic.html' %}
+
+{% block title %}Profile{% endblock %}
+
+{% block content %}
+
+{% load static %}
+<html>
+<head>
+    <title>Yandex Maps</title>
+    <link rel="stylesheet" type="text/css" href="../static/css/style.css"> 
+    <script src="https://api-maps.yandex.ru/2.1/?apikey=403f644f-4840-426e-b2df-bea42d662d87&lang=ru_RU" type="text/javascript"></script>
+    <script>var customIconImage = "{% static 'img/rusa.png' %}";</script>
+</head>
+<body>
+    <br>
+    <h1 class="mb-3" style="font-family: 'Inter', sans-serif; font-size: 48px;">Конструктор маршрута</h1>
+    <div id="buttonContainer">
+        <div id="coordinates"></div>
+        <button id="deleteButton">Удалить линию</button>
+        <button id="backButton">Шаг назад</button>
+        <input type="text" id="lineName" placeholder="Введите название маршрута">
+        <button id="saveLineButton">Сохранить маршрут</button>
+        <button id="addPlacemarkButton">Добавить метку с комментарием</button>
+        <form id="seasonForm">
+            <p>Сезон:</p>
+            <input type="checkbox" id="any" name="season" value="any">
+            <label for="any">Любой</label><br>
+            <input type="checkbox" id="winter" name="season" value="winter">
+            <label for="winter">Зима</label><br>
+            <input type="checkbox" id="spring" name="season" value="spring">
+            <label for="spring">Весна</label><br>
+            <input type="checkbox" id="summer" name="season" value="summer">
+            <label for="summer">Лето</label><br>
+            <input type="checkbox" id="autumn" name="season" value="autumn">
+            <label for="autumn">Осень</label><br>
+        </form>
+
+        <label for="lineDifficulty">Сложность:</label>
+        <select id="lineDifficulty" name="lineDifficulty">
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+            <option value="4">4</option>
+            <option value="5">5</option>
+            <option value="6">6</option>
+            <option value="7">7</option>
+            <option value="8">8</option>
+            <option value="9">9</option>
+            <option value="10">10</option>
+        </select>
+        <script src="../static/js/set_seasons.js"></script>
+        <!--<button id="removeAllLinesButton">Удалить все линии с карты</button>-->
+    </div>
+    <br>
+    <div id="constructor" style="min-height: 600px"></div>
+    <script src="../static/js/map.js?v={{ now|date:'U' }}"></script>
+    <script src="../static/js/constructor.js?v={{ now|date:'U' }}"></script>
+    <script src="../static/js/animated_line.js"></script>
+    <div class="container mt-4 mb-3" id="description">
+        <h2 style="text-align: center;">Описание конструктора маршрута</h2>
+        <p>Конструктор маршрута позволяет создавать и настраивать маршруты на карте. Вы можете добавлять линии, метки с комментариями и сохранять маршруты с заданными параметрами. Для каждого маршрута можно указать название, сезон и сложность. Используйте кнопки для удаления линий, шаг назад, добавления меток и сохранения маршрутов.</p>
+        <ul>
+            <li><strong>Удалить линию:</strong> Удаляет последнюю нарисованную линию.</li>
+            <li><strong>Шаг назад:</strong> Отменяет последнее действие.</li>
+            <li><strong>Добавить метку с комментарием:</strong> Добавляет на карту метку с возможностью оставить комментарий.</li>
+            <li><strong>Сохранить маршрут:</strong> Сохраняет созданный маршрут с заданными параметрами.</li>
+        </ul>
+    </div>
+</body>
+</html>
+{% endblock %}

@@ -405,8 +405,8 @@ body {
 
 .slider li {
     display: flex;
-    width: 447px; /* ������ ������ (1442 - 2 * 20) / 3 */
-    height: 300px;
+    width: 366px; /* ������ ������ (1442 - 2 * 20) / 3 */
+    height: 270px;
     background-size: cover;
     background-position: center;
     border-radius: 50px;
