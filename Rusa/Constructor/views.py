@@ -24,7 +24,10 @@ def map_view(request):
 @login_required
 def constructor_view(request):
     api_key = settings.YANDEX_MAPS_API_KEY
-    context = {'api_key': api_key}
+    user_id = request.user.id
+    context = {'api_key': api_key,
+               'user_id': user_id
+            }
     return render(request, 'constructor.html', context)
 
 @csrf_exempt
@@ -97,7 +100,8 @@ def route_page(request, route_id):
         'route_time': route_time_str,
         'route_length': round(route_length, 1),
         'route_popularity': route.popularity, 
-        'route_difficulty': round(route.difficulty)
+        'route_difficulty': round(route.difficulty),
+        'route_author': get_person_name(route.author_id)
     }
     return render(request, 'route_page.html', context)
 
@@ -156,12 +160,24 @@ def groups_list_page(request, route_id):
     groups = Group.objects.filter(route_id=route)
     user_id = request.user.id
     for group in groups:
+        ids = ast.literal_eval(group.participants)
         group.leader_name = get_person_name(group.leader_id)
-        group.participant_quantity = len(ast.literal_eval(group.participants))
+        group.participant_quantity = len(ids)
+        group.participants_names = []
+        group.participants_ids = []
+        for id in ids:
+                group.participants_names.append(get_person_name(id))
+                group.participants_ids.append(id)
+                group.zipped_participants = zip(ids, group.participants_names)
+        for id, name in zip(ids, group.participants_names):
+            print("----------------------------------------------------------------------")
+            print(id, name)
+            print("----------------------------------------------------------------------")
     context = {
-        'groups': groups,
-        'user_id': user_id,
-        'route_id': route_id
+    'groups': groups,
+    'user_id': user_id,
+    'route_id': route_id,
+    'user_name': get_person_name(user_id)
     }
     print("HERE--------------------->", route_id)
     return render(request, 'groups_list.html', context)
@@ -179,6 +195,17 @@ def save_group_data(request, route_id):
         group = Group(name=data['name'], leader_id=data['leader_id'], participants=data['participants'], route_id=route)
         group.save()
     return JsonResponse({"status": "success"}, status=200)
+@csrf_exempt
+def update_group_participants(request, group_id):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        try:
+            group = Group.objects.get(pk=group_id)
+            group.participants = data['participants']
+            group.save()
+            return JsonResponse({"status": "success"}, status=200)
+        except Group.DoesNotExist:
+            return JsonResponse({"status": "error", "message": "Группа не найдена"}, status=404)
 
 def get_person_name(id):
     try:
@@ -186,3 +213,4 @@ def get_person_name(id):
         return person.username
     except CustomUser.DoesNotExist:
         return "Человек с таким ID не найден"
+
