@@ -29,16 +29,20 @@ function loadAllRoutes(myMap) {
     var data = JSON.parse(this.responseText);
     var routesContainer = document.getElementById('routesContainer');
     var routes = JSON.parse(data);
-    console.log(routes);
+    // console.log(routes);
     for (var i = 0; i < routes.length; i++) {
-        var routeButton = document.createElement('button');
-        routeButton.textContent = routes[i].fields.name;
-        (function(route) {
-            routeButton.addEventListener('click', function () {
-                getRoute(myMap, route.fields.coordinates, route.fields.difficulty, route.fields.length, route.fields.name, route.fields.notes, route.fields.seasons, route.pk);
-            });
-        })(routes[i]);
-        routesContainer.appendChild(routeButton);
+        console.log("HERE --- is ");
+        console.log(routes[i].fields.coordinates == "[]");
+        if (routes[i].fields.coordinates != "[]") {
+            var routeButton = document.createElement('button');
+            routeButton.textContent = routes[i].fields.name;
+                (function(route) {
+                    routeButton.addEventListener('click', function () {
+                            getRoute(myMap, route.fields.coordinates, route.fields.difficulty, route.fields.length, route.fields.name, route.fields.notes, route.fields.seasons, route.pk);
+                        });
+                    })(routes[i]);
+                routesContainer.appendChild(routeButton);
+        }
     }
     };
     xhr.send();

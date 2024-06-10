@@ -76,6 +76,30 @@
         </form>
 
 
+        <div class="profile">Мои маршруты</div>
+        <!-- <h2>->{{ user_routes }}</h2> -->
+        <div class="row">
+            {% for route in user_routes %}
+            <!-- <h2>->{{ route.is_not_empty_coords }}</h2> -->
+            <!-- <h2>->{{ route.is_not_empty_coords }}</h2> -->
+            <!-- <h2>->{{ route.coordinates }}</h2> -->
+                {% if route.is_not_empty_coords %}
+                    <div class="col-md-4">
+                        <div class="card mb-4 shadow-sm">
+                            <img class="card-img-top" src="{{ route.map_url }}" alt="Изображение маршрута">
+                            <div class="card-body">
+                                <h5 class="card-title">
+                                    <a href="{% url 'route_page' route.id %}">{{ route.name }}</a>
+                                </h5>
+                                <p class="card-text">Длина: {{ route.length }} м</p>
+                                <p class="card-text">Сложность: {{ route.difficulty }}</p>
+                                <p class="card-text">Популярность: {{ route.popularity }}</p>
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+            {% endfor %}
+        </div>
         <div class="profile">Портфолио</div>
         <div class="slider">
             <ul>

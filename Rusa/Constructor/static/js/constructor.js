@@ -145,25 +145,27 @@ function putRusaIcon(myMap, myPlacemark) {
 
 function saveData(myMap, myPolyline, lineCoordinates, notes, length) {
     var lineName = document.getElementById('lineName').value;
-        var lineDifficulty = document.getElementById('lineDifficulty').value;
-        var seasons = Array.from(document.querySelectorAll('input[name="season"]:checked')).map(function(el) { return el.value; });
-        var lineData = {
-            name: lineName,
-            coordinates: lineCoordinates,
-            seasons: seasons,
-            difficulty: lineDifficulty,
-            length: length.toFixed(2),
-            notes: notes
-        };
-        var lineDataJSON = JSON.stringify(lineData, null, 2);
-        console.log(lineDataJSON);
-        var xhr = new XMLHttpRequest();
-        xhr.open("POST", "/save_coordinates/", true);
-        xhr.setRequestHeader('Content-Type', 'application/json; charset=UTF-8');
-        xhr.send(lineDataJSON);
-        lineCoordinates = [];
-        length = 0;  
-        myPolyline.geometry.setCoordinates(lineCoordinates);
-        document.getElementById('coordinates').innerText = "";
-        deleteAllPlacemarks(myMap, centerCoordinates);
+    var lineDifficulty = document.getElementById('lineDifficulty').value;
+    var seasons = Array.from(document.querySelectorAll('input[name="season"]:checked')).map(function(el) { return el.value; });
+    console.log(userId);
+    var lineData = {
+        userId: userId,
+        name: lineName,
+        coordinates: lineCoordinates,
+        seasons: seasons,
+        difficulty: lineDifficulty,
+        length: length.toFixed(2),
+        notes: notes
+    };
+    var lineDataJSON = JSON.stringify(lineData, null, 2);
+    console.log(lineDataJSON);
+    var xhr = new XMLHttpRequest();
+    xhr.open("POST", "/save_coordinates/", true);
+    xhr.setRequestHeader('Content-Type', 'application/json; charset=UTF-8');
+    xhr.send(lineDataJSON);
+    lineCoordinates = [];
+    length = 0;  
+    myPolyline.geometry.setCoordinates(lineCoordinates);
+    document.getElementById('coordinates').innerText = "";
+    deleteAllPlacemarks(myMap, centerCoordinates);
 }
