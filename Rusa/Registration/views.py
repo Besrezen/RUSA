@@ -16,10 +16,6 @@ def logout_view(request):
 def view_admin(request):
     return render(request, "html/home_admin.html")
 
-def view_login(request):
-    form = CustomAuthenticationForm()
-    return render(request, "html/login.html", {'form': form})
-
 def show_login(request):
     return redirect('view_login')
 
@@ -52,7 +48,7 @@ def admin_signup(request):
     return render(request, 'html/signup_admin.html', {'form': form})
 
 
-def my_login_view(request):
+def view_login(request):
     if request.method == "POST":
         form = CustomAuthenticationForm(request, data=request.POST)
         if form.is_valid():

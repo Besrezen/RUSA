@@ -1173,7 +1173,7 @@
                         data-field-container-value="grid" data-field-topunits-value="px" data-field-leftunits-value="px"
                         data-field-heightunits-value="px" data-field-widthunits-value="px">
                         <div class="login-form">
-                            <form method="post" action="{% url 'my_view_login' %}">
+                            <form method="post" action="{% url 'view_login' %}">
                                 {% csrf_token %}
                                 {{ form.as_p }}
                                 <button class="btn-link" type="submit">Войти</button>

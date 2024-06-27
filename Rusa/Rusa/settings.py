@@ -107,7 +107,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 AUTH_USER_MODEL = 'Registration.CustomUser'
 
-LOGIN_URL = 'my_view_login'
+LOGIN_URL = 'view_login'
 
 LOGIN_REDIRECT_URL = 'view_main'
 
