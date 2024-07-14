@@ -19,7 +19,7 @@ def map_view(request):
         'api_key': api_key,
         'user_id': user_id
         }
-    return render(request, 'map.html', context)
+    return render(request, 'home.html', context)
 
 @login_required
 def constructor_view(request):
