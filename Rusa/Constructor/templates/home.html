@@ -5,77 +5,85 @@
 {% block content %}
 
 {% load static %}
-<html>
+<!DOCTYPE html>
+<html lang="ru">
 <head>
-    <title>Yandex Maps</title>
     <link rel="stylesheet" type="text/css" href="../static/css/style.css"> 
-    <script src="https://api-maps.yandex.ru/2.1/?apikey=403f644f-4840-426e-b2df-bea42d662d87&lang=ru_RU" type="text/javascript"></script>
-    <script>var customIconImage = "{% static 'img/rusa.png' %}";</script>
-    <input type="hidden" id="user_id" value="{{ user_id }}">
-    <script>var userId = "{{ user_id }}";</script>
-</head>
-<body>
-    <br>
-    <script src="../static/js/map.js?v={{ now|date:'U' }}"></script>
-    <script src="../static/js/animated_line.js"></script>
-</body>
-
-<head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Путешествуйте в интересной компании</title>
+    <title>WEB Руза - Путешествуйте в интересной компании</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
+    <script src="https://api-maps.yandex.ru/2.1/?apikey=403f644f-4840-426e-b2df-bea42d662d87&lang=ru_RU" type="text/javascript"></script>
+    <script>var customIconImage = "{% static 'img/rusa.png' %}";</script>
+    <script>var userId = "{{ user_id }}";</script>
     <style>
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Roboto', sans-serif;
             margin: 0;
             padding: 0;
-            background-color: #f4f4f4;
+            color: #333;
+            line-height: 1.6;
         }
-        .intro {
-            position: relative;
-            background-image: url('{% static 'main/background-map.jpg' %}');
-            background-size: cover;
-            height: 70vh;
-            color: white;
-            text-align: center;
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        .hero {
+            background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('{% static 'main/background-map.jpg' %}') no-repeat center center/cover;
+            height: 100vh;
             display: flex;
-            flex-direction: column;
-            justify-content: center;
             align-items: center;
-            width: 100%;
-            margin-top: -25px;
-            padding: 0;
-        }
-        .intro h1 {
-            font-size: 2.5em;
-            margin: 0;
-        }
-        .intro p {
-            margin: 1em 0;
-        }
-        .intro .button {
-            background-color: #8bc34a;
-            color: white;
-            border: none;
-            padding: 1em 2em;
-            font-size: 1em;
-            cursor: pointer;
-            border-radius: 10px;
-            text-decoration: none;
-        }
-        .steps {
-            display: flex;
-            justify-content: space-around;
-            padding: 2em 0;
-            background-color: white;
-            width: 100%;
-        }
-        .steps div {
             text-align: center;
-            width: 30%;
+            color: #fff;
         }
-        .steps div p {
-            margin: 1em 0;
+        .hero-content h1 {
+            font-size: 3.5rem;
+            margin-bottom: 20px;
+        }
+        .hero-content p {
+            font-size: 1.2rem;
+            margin-bottom: 30px;
+        }
+        .btn {
+            display: inline-block;
+            background: #8bc34a;
+            color: #fff;
+            padding: 12px 30px;
+            border-radius: 5px;
+            text-decoration: none;
+            font-size: 1.1rem;
+            transition: background 0.3s;
+        }
+        .btn:hover {
+            background: #7cb342;
+        }
+        .features {
+            padding: 80px 0;
+            background: #f9f9f9;
+        }
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+        }
+        .feature-item {
+            text-align: center;
+            padding: 20px;
+        }
+        .feature-item i {
+            font-size: 3rem;
+            color: #8bc34a;
+            margin-bottom: 15px;
+        }
+        .map-section {
+            padding: 80px 0;
+        }
+        #map {
+            height: 500px;
+            width: 100%;
+            border-radius: 10px;
+            overflow: hidden;
         }
         .route-selector {
             text-align: center;
@@ -101,119 +109,114 @@
             text-decoration: none;
         }
         .testimonials {
-            width: 100%;
-            text-align: center;
-            padding: 2em 0;
-            background-color: white;
+            background: #fff;
+            padding: 80px 0;
         }
-        .testimonials blockquote {
-            margin: 1em auto;
-            max-width: 800px;
+        .testimonial-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
         }
-        .testimonials .stars {
-            color: #fbc02d;
+        .testimonial-item {
+            background: #f9f9f9;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
         }
-        .testimonials .users {
-            display: flex;
-            justify-content: center;
-            gap: 1em;
-            margin-top: 1em;
-        }
-        .testimonials .user {
-            text-align: center;
-        }
-        .testimonials .user img {
-            width: 100px;
-            height: 100px;
+        .testimonial-item img {
+            width: 80px;
+            height: 80px;
             border-radius: 50%;
+            margin-bottom: 15px;
         }
         .cta {
+            background: #2c3e50;
+            color: #fff;
             text-align: center;
-            padding: 2em 0;
-            background-color: #2c3e50;
-            color: white;
-            width: 100%;
+            padding: 80px 0;
         }
-        .cta .button {
-            background-color: #8bc34a;
-            color: white;
-            border: none;
-            padding: 1em 2em;
-            font-size: 1em;
-            cursor: pointer;
-            border-radius: 10px;
-            text-decoration: none;
+        .cta h2 {
+            font-size: 2.5rem;
+            margin-bottom: 30px;
         }
     </style>
+    <script src="https://kit.fontawesome.com/your-fontawesome-kit.js" crossorigin="anonymous"></script>
+    <script src="https://api-maps.yandex.ru/2.1/?apikey=403f644f-4840-426e-b2df-bea42d662d87&lang=ru_RU" type="text/javascript"></script>
 </head>
 <body>
-    <div class="intro">
-        <h1>Путешествуйте в интересной компании</h1>
-        <p>Мы помогаем людям найти попутчиков, а также составить маршруты путешествий.</p>
-        <a href="{% url 'route_list' %}" class="button">В путешествие</a>
-    </div>
-    <div class="steps">
-        <div>
-            <h3>Выберите маршрут</h3>
-            <p>Мы предлагаем удобный сервис для поиска попутчиков и планирования путешествий.</p>
+    <section class="hero">
+        <div class="container hero-content">
+            <h1>Путешествуйте в интересной компании</h1>
+            <p>Мы помогаем людям найти попутчиков и составить уникальные маршруты путешествий.</p>
+            <a href="{% url 'route_list' %}" class="btn">Начать путешествие</a>
         </div>
-        <div>
-            <h3>Выберите дату отправления</h3>
-            <p>Наш сервис помогает находить единомышленников и организовывать поездки.</p>
-        </div>
-        <div>
-            <h3>Выберите вид деятельности</h3>
-            <p>Мы облегчаем поиск попутчиков и создание уникальных маршрутов для вашего путешествия.</p>
-        </div>
-    </div>
-    <div class="route-selector">
-        <h2>Выберите маршрут или предложите свой</h2>
-        <div id="map" style="min-height: 600px">
-            <div id="routesContainer"></div>
-        </div>
-        <a href="{% url 'constructor' %}" class="button" style="margin-top: 10px">Создать маршрут</a>
-    </div>
-    <div class="testimonials">
-        <h2>Начни</h2>
-        <blockquote>
-            <p>"У меня были самые невероятные впечатления от похода по маршруту туристического сайта WEB Руза! С того момента, как я связалась с ним, он помог мне спланировать идеальный маршрут. Они позаботились о каждой детали, от маршрутного листа до организации местных экскурсий и мероприятий"</p>
-        </blockquote>
-        <div class="stars">★★★★★</div>
-        <div class="users">
-            <div class="user">
-                <img src="{% static 'main/avatar.jpg' %}" alt="Петр А.">
-                <p>Петр А.</p>
-            </div>
-            <div class="user">
-                <img src="{% static 'main/avatar.jpg' %}" alt="Виктор М.">
-                <p>Виктор М.</p>
-            </div>
-            <div class="user">
-                <img src="{% static 'main/avatar.jpg' %}" alt="Елена Ф.">
-                <p>Елена Ф.</p>
-            </div>
-            <div class="user">
-                <img src="{% static 'main/avatar.jpg' %}" alt="Иван И.">
-                <p>Иван И. <br>Организатор</p>
-            </div>
-            <div class="user">
-                <img src="{% static 'main/avatar.jpg' %}" alt="Клавдия А.">
-                <p>Клавдия А.</p>
-            </div>
-            <div class="user">
-                <img src="{% static 'main/avatar.jpg' %}" alt="Андрей В.">
-                <p>Андрей В.</p>
-            </div>
-            <div class="user">
-                <img src="{% static 'main/avatar.jpg' %}" alt="Евгения С.">
-                <p>Евгения С.</p>
+    </section>
+
+    <section class="features">
+        <div class="container">
+            <div class="feature-grid">
+                <div class="feature-item">
+                    <i class="fas fa-map-marked-alt"></i>
+                    <h3>Выберите маршрут</h3>
+                    <p>Широкий выбор готовых маршрутов или создайте свой собственный.</p>
+                </div>
+                <div class="feature-item">
+                    <i class="fas fa-calendar-alt"></i>
+                    <h3>Выберите дату</h3>
+                    <p>Гибкое планирование поездки в удобное для вас время.</p>
+                </div>
+                <div class="feature-item">
+                    <i class="fas fa-hiking"></i>
+                    <h3>Выберите активность</h3>
+                    <p>От спокойных прогулок до экстремальных приключений.</p>
+                </div>
             </div>
         </div>
-    </div>
-    <div class="cta">
-        <h2 style="margin-bottom: 20px">Готов попробовать?</h2>
-        <a href="{% url 'signup_user' %}" class="button">Зарегистрируйся</a>
-    </div>
+    </section>
+
+    <section class="map-section">
+        <div class="container">
+            <div class="route-selector">
+                <h2>Выберите маршрут или предложите свой</h2>
+                <div id="map" style="min-height: 600px">
+                    <div id="routesContainer"></div>
+                </div>
+                <a href="{% url 'constructor' %}" class="btn" style="margin-top: 20px">Создать свой маршрут</a>
+            </div>
+        </div>
+    </section>
+
+    <section class="testimonials">
+        <div class="container">
+            <h2>Отзывы путешественников</h2>
+            <div class="testimonial-grid">
+                <div class="testimonial-item">
+                    <img src="{% static 'main/avatar.jpg' %}" alt="Петр А.">
+                    <h3>Петр А.</h3>
+                    <p>"Невероятные впечатления! WEB Руза помог мне спланировать идеальное путешествие."</p>
+                </div>
+                <div class="testimonial-item">
+                    <img src="{% static 'main/avatar.jpg' %}" alt="Елена Ф.">
+                    <h3>Елена Ф.</h3>
+                    <p>"Нашла отличных попутчиков и открыла для себя новые места. Спасибо WEB Руза!"</p>
+                </div>
+                <div class="testimonial-item">
+                    <img src="{% static 'main/avatar.jpg' %}" alt="Иван И.">
+                    <h3>Иван И.</h3>
+                    <p>"Как организатор, я в восторге от возможностей, которые предоставляет платформа."</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="cta">
+        <div class="container">
+            <h2>Готовы к новым приключениям?</h2>
+            <a href="{% url 'signup_user' %}" class="btn">Присоединиться сейчас</a>
+        </div>
+    </section>
+    <script src="{% static 'js/map.js' %}?v={{ now|date:'U' }}"></script>
+    <script src="{% static 'js/animated_line.js' %}"></script>
 </body>
 </html>
 {% endblock %}
