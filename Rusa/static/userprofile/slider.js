@@ -29,6 +29,3 @@ nextButton.addEventListener('click', function() {
     }
     showSlide(currentSlide);
 });
-
-
-

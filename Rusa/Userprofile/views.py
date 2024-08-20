@@ -33,10 +33,10 @@ def update_profile(request):
         if birth_date:
             try:
                 birth_date = datetime.datetime.strptime(birth_date, '%Y-%m-%d').date()
+                profile.birth_date = birth_date
             except ValueError:
-                return JsonResponse({'status': 'fail', 'error': 'Invalid date format'})
+                profile.birth_date = None
 
-        profile.birth_date = birth_date
         profile.name = request.POST.get('name')
         profile.region = request.POST.get('region')
         profile.profession = request.POST.get('profession')

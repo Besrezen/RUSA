@@ -7,7 +7,7 @@ $(document).ready(function() {
         let birthDateSpan = $(".birth_date");
         let birthDateValue = birthDateSpan.text().trim();
 
-        if (birthDateValue && birthDateValue !== "None") {
+        if (birthDateValue && birthDateValue !== "None" && birthDateValue !== "дд.мм.гггг") {
             let birthDateParts = birthDateValue.split('.');
             let birthDateFormatted = `${birthDateParts[2]}-${birthDateParts[1]}-${birthDateParts[0]}`; // Преобразование даты
             birthDateSpan.replaceWith('<input type="date" class="birth_date_input" value="' + birthDateFormatted + '">');
@@ -37,7 +37,7 @@ $(document).ready(function() {
         $("#upload-photo-btn").show();
 
         $(".save_profile").click(function() {
-            let newBirthDate = $(".birth_date_input").val();
+            let newBirthDate = $(".birth_date_input").val() || null;
             let newEmail = $(".email_input").val();
             let newName = $(".name_input").val();
             let newRegion = $(".region_input").val();
@@ -46,8 +46,8 @@ $(document).ready(function() {
             let personalPhoto = $("#id_personal_photo")[0].files[0];
 
             // Преобразование даты в ISO формат (YYYY-MM-DD)
-            let birthDateFormatted = newBirthDate;
 
+            let birthDateFormatted = newBirthDate;
             let formData = new FormData();
             formData.append('birth_date', birthDateFormatted);
             formData.append('name', newName);
@@ -68,9 +68,15 @@ $(document).ready(function() {
                 contentType: false,
                 success: function(response) {
                     if (response.status === 'success') {
-                        // Преобразование даты обратно для отображения
+                        let displayDateFormatted = 'Не указано';
+
+                    // Преобразование даты обратно для отображения, если она существует
+                    if (birthDateFormatted) {
                         let displayDateParts = birthDateFormatted.split('-');
-                        let displayDateFormatted = `${displayDateParts[2]}.${displayDateParts[1]}.${displayDateParts[0]}`;
+                        if (displayDateParts.length === 3) { // Убедитесь, что дата правильно разбивается
+                            displayDateFormatted = `${displayDateParts[2]}.${displayDateParts[1]}.${displayDateParts[0]}`;
+                        }
+                    }
 
                         $(".birth_date_input").replaceWith('<span class="birth_date">' + displayDateFormatted + '</span>');
                         $(".email_input").replaceWith('<span class="email">' + newEmail + '</span>');

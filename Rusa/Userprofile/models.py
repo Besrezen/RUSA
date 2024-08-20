@@ -20,3 +20,7 @@ class UserProfile(models.Model):
             return today.year - self.birth_date.year - ((today.month, today.day) < (self.birth_date.month, self.birth_date.day))
         return None
 '''
+
+class PortfolioImage(models.Model):
+    image = models.ImageField(upload_to='portfolio_images')
+    user = models.ForeignKey(UserProfile, on_delete=models.CASCADE, related_name='portfolio_images')

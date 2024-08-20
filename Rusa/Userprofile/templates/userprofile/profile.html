@@ -61,7 +61,11 @@
                             <label class="label_tag"><strong>Дата рождения:</strong></label>
                         </div>
                         <div class="description_gray_fild">
-                            <span class="birth_date">{{ profile.birth_date|date:"d.m.Y"|default:"" }}</span>
+                            <span class="birth_date">{% if profile.birth_date %}
+                                {{ profile.birth_date|date:"d.m.Y" }}
+                            {% else %}
+                                Не указано
+                            {% endif %}</span>
                         </div>
 
                         <div class="title_gray_fild">
@@ -101,14 +105,21 @@
             {% endfor %}
         </div>
         <div class="profile">Портфолио</div>
+
         <div class="slider">
             <ul>
+                <!-- Существующие изображения -->
                 <li style="background-image: url('{% static 'userprofile/assets/png/image2.png' %}')"></li>
                 <li style="background-image: url('{% static 'userprofile/assets/png/image3.png' %}')"></li>
                 <li style="background-image: url('{% static 'userprofile/assets/png/image4.png' %}')"></li>
-                <li style="background-image: url('{% static 'userprofile/assets/png/image2.png' %}')"></li>
-                <li style="background-image: url('{% static 'userprofile/assets/png/image3.png' %}')"></li>
-                <li style="background-image: url('{% static 'userprofile/assets/png/image4.png' %}')"></li>
+                <!-- Кнопка добавления нового изображения -->
+                <li class="add-image">
+                    <button id="add-image-btn" class="add-image-button">
+                        <input type="file" id="upload-portfolio-image" style="display: none;" accept="image/*">
+                        +
+                    </button>
+                </li>
+
             </ul>
             <button class="prev"><</button>
             <button class="next">></button>

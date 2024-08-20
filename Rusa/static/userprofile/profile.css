@@ -375,7 +375,7 @@ h1 {
   width: 490px;
   height: 66px;
   flex-shrink: 0;
-
+  position: relative;
   color: #000;
   font-family: Inter;
   font-size: 42px;
@@ -887,4 +887,41 @@ a{
 
 .change-photo-btn:hover {
   background-color: #1bb298;
+}
+
+.add-image {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%; /* Карточка занимает всю ширину */
+    height: 100%; /* Карточка занимает всю высоту */
+    background-color: #f0f0f0; /* Белый цвет карточки */
+    border-radius: 20px;
+    cursor: pointer;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+    position: relative;
+}
+
+.add-image-button {
+  font-size: 80px !important;
+  background-color: #24E4C0 !important;
+  border: none !important;
+  color: white !important;
+  cursor: pointer !important;
+  width: 120px !important;
+  height: 120px !important;
+  border-radius: 50% !important;
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  transition: background-color 0.3s, transform 0.3s !important;
+  position: absolute !important;
+  top: 50% !important;
+  left: 45% !important;
+  transform: translate(-50%, -50%) !important; /* Центрируем кнопку */
+}
+
+.add-image-button:hover {
+  background-color: #1bb298 !important;
+  transform: translate(-50%, -50%) scale(1.1) !important; /* Масштабируем кнопку при наведении */
 }
