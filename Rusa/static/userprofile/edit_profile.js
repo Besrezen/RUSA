@@ -33,7 +33,7 @@ $(document).ready(function() {
         specializationSpan.replaceWith('<input type="text" class="specialization_input" value="' + specializationValue + '">');
         aboutMeSpan.replaceWith('<textarea class="about_me_input">' + aboutMeValue + '</textarea>');
 
-        $(".edit_profile").replaceWith("<button type='button' class='save_profile'>Сохранить</button>");
+        $(".edit_profile").replaceWith("<button type='button' class='btn btn-edit save_profile'>Сохранить</button>");
         $("#upload-photo-btn").show();
 
         $(".save_profile").click(function() {
@@ -94,7 +94,7 @@ $(document).ready(function() {
                             reader.readAsDataURL(personalPhoto);
                         }
 
-                        $(".save_profile").replaceWith("<button type='button' class='edit_profile'>Редактировать</button>");
+                        $(".save_profile").replaceWith("<button type='button' class='btn btn-edit edit_profile'>Редактировать</button>");
                         $("#upload-photo-btn").hide();
                         $(".edit_profile").click(function() {
                             editProfile();
