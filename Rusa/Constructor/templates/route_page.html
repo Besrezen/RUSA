@@ -1,63 +1,196 @@
 {% extends 'base_generic.html' %}
+{% load static %}
 
-{% block title %}Profile{% endblock %}
+{% block title %}О маршруте{% endblock %}
+
+{% block extra_head %}
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Poppins:wght@300;400;600&family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+<style>
+    body {
+        font-family: 'Roboto', sans-serif;
+        background-color: #f5f5f5;
+        color: #333;
+    }
+    .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 1rem;
+        display: flex;
+        flex-wrap: wrap;
+    }
+    .page-header {
+        width: 100%;
+        text-align: center;
+        margin-bottom: 1.5rem;
+    }
+    .page-header h1 {
+        font-size: 2.5rem;
+        color: #2c3e50;
+    }
+    .left-column, .right-column {
+        background-color: #fff;
+        border-radius: 10px;
+        box-shadow: 0 0 20px rgba(0,0,0,0.1);
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+        width: 100%;
+    }
+    .right-column {
+        display: flex;
+        flex-direction: column;
+    }
+    .route-header h2 {
+        font-size: 2rem;
+        color: #2c3e50;
+        margin-bottom: 1rem;
+    }
+    #map {
+        width: 100%;
+        height: 300px;
+        border-radius: 10px;
+        margin-bottom: 1rem;
+    }
+    .author {
+        font-size: 1.1rem;
+        color: #7f8c8d;
+    }
+    .right-el {
+        margin-bottom: 1.5rem;
+    }
+    .right-el h6 {
+        font-size: 1.1rem;
+        color: #3498db;
+        margin-bottom: 0.8rem;
+    }
+    .parameter {
+        margin-bottom: 0.8rem;
+    }
+    .parameter span {
+        font-weight: 600;
+        color: #7f8c8d;
+    }
+    .parameter b {
+        font-size: 1rem;
+        color: #2c3e50;
+    }
+    .parameter i {
+        margin-right: 10px;
+        width: 20px;
+        text-align: center;
+    }
+    .card-title {
+        margin-top: auto;
+    }
+    .card-title a {
+        display: inline-block;
+        padding: 0.7rem 1.5rem;
+        background-color: #3498db;
+        color: #fff;
+        text-decoration: none;
+        border-radius: 10px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        text-align: center;
+        width: 100%;
+        box-sizing: border-box;
+    }
+    .card-title a:hover {
+        background-color: #2980b9;
+    }
+
+    @media (min-width: 768px) {
+        .container {
+            padding: 2rem;
+        }
+        .page-header h1 {
+            font-size: 3rem;
+        }
+        .left-column {
+            flex: 1 1 60%;
+            margin-right: 2rem;
+        }
+        .right-column {
+            flex: 1 1 30%;
+        }
+        #map {
+            height: 500px;
+        }
+        .route-header h2 {
+            font-size: 2.5rem;
+        }
+        .right-el h6 {
+            font-size: 1.2rem;
+        }
+        .parameter b {
+            font-size: 1.1rem;
+        }
+    }
+
+    @media (min-width: 1024px) {
+        #map {
+            height: 600px;
+        }
+        .left-column {
+            flex: 1 1 65%;
+        }
+        .right-column {
+            flex: 1 1 30%;
+        }
+    }
+</style>
+<script src="https://api-maps.yandex.ru/2.1/?apikey=403f644f-4840-426e-b2df-bea42d662d87&lang=ru_RU" type="text/javascript"></script>
+<input type="hidden" id="route-id" value="{{ route.id }}">
+<script>
+var customIconImage = "{% static 'img/rusa.png' %}";
+var customFinishImage = "{% static 'img/finish_flag.png' %}";
+const routeId = document.getElementById('route-id').value;
+</script>
+{% endblock %}
 
 {% block content %}
-
-{% load static %}
-<html>
-<head>
-    <title>Yandex Maps</title>
-    <link rel="stylesheet" type="text/css" href="../../static/css/route_page.css"> 
-    <script src="https://api-maps.yandex.ru/2.1/?apikey=403f644f-4840-426e-b2df-bea42d662d87&lang=ru_RU" type="text/javascript"></script>
-    <input type="hidden" id="route-id" value="{{ route.id }}">
-    <script>
-    var customIconImage = "{% static 'img/rusa.png' %}";
-    var customFinishImage = "{% static 'img/finish_flag.png' %}";
-    const routeId = document.getElementById('route-id').value;
-    </script>
-</head>
-<body>
-    <div class="container">
-        <div class="left-column">
-            <div class="route-header">
-                <img src="{% static 'img/main_r_img.png' %}" alt="Route Image">
-                <h2>{{ route.name }}</h2>
-            </div>
-            <br>
-            <div id="map"></div>
-            <br>
-            <h3 style="color:black;">Author: {{ route_author }}</h3> <!-- Предположим, что у вас есть поле author_name в модели -->
-        </div>
-        <div class="right-column">
-            <div class="right-el">
-                <h6 style="color:cadetblue;">ОСНОВНАЯ ИНФОРМАЦИЯ</h6>
-                <div class="parameter">
-                    <p class="card-text"><span>Номер маршрута:</span><br><img src="{% static 'img/route_img.png' %}" alt="Route Image"><i class="icon-class"></i><i class="icon-class"></i><b>&nbsp;&nbsp;{{ route.id }}</b></p>
-                </div>
-                <div class="parameter">
-                    <p><span>Сложность:</span><br><img src="{% static 'img/difficulty_img.png' %}" alt="Route Image"><i class="icon-class"></i><b>&nbsp;&nbsp;{{ route_difficulty }}</b></p>
-                </div>
-                <div class="parameter">
-                    <p><span>Популярность:</span><br><img src="{% static 'img/popularity_img.png' %}" alt="Route Image"><i class="icon-class"></i><i class="icon-class"></i><b>&nbsp;&nbsp;{{ route_popularity }}</b></p>
-                </div>
-            </div>
-            <div class="right-el">
-                <h6 style="color:cadetblue;">РАССТОЯНИЕ И ВРЕМЯ</h6>
-                <div class="parameter">
-                    <p><span>Длина:</span><br><img src="{% static 'img/length_img.png' %}" alt="Route Image"><i class="icon-class"></i><i class="icon-class"></i><b>&nbsp;&nbsp;{{ route_length }} км</b></p>
-                </div>
-                <div class="parameter">
-                    <p><span>Время:</span><br><img src="{% static 'img/time_img.png' %}" alt="Route Image"><i class="icon-class"></i><i class="icon-class"></i><b>&nbsp;&nbsp;{{ route_time }}</b></p>
-                </div>    
-            </div>
-            <h5 class="card-title">
-                <a href="{% url 'groups_list_page' route.id %}">Перейти к списку групп по маршруту</a>
-            </h5>
-        </div>
+<div class="container">
+    <div class="page-header">
+        <h1>О маршруте</h1>
     </div>
-    <script src="../../static/js/current_route.js?v={{ now|date:'U' }}"></script>
-    <script src="../../static/js/animated_line.js"></script>
-</body>
-</html>
+    
+    <div class="left-column">
+        <div class="route-header">
+            <h2>{{ route.name }}</h2>
+        </div>
+        <div id="map"></div>
+        <p class="author">Автор: {{ route_author }}</p>
+    </div>
+    
+    <div class="right-column">
+        <div class="right-el">
+            <h6>ОСНОВНАЯ ИНФОРМАЦИЯ</h6>
+            <div class="parameter">
+                <p><span>Номер маршрута:</span><br><i class="fas fa-route"></i><b>{{ route.id }}</b></p>
+            </div>
+            <div class="parameter">
+                <p><span>Сложность:</span><br><i class="fas fa-tachometer-alt"></i><b>{{ route_difficulty }}</b></p>
+            </div>
+            <div class="parameter">
+                <p><span>Популярность:</span><br><i class="fas fa-star"></i><b>{{ route_popularity }}</b></p>
+            </div>
+        </div>
+        <div class="right-el">
+            <h6>РАССТОЯНИЕ И ВРЕМЯ</h6>
+            <div class="parameter">
+                <p><span>Длина:</span><br><i class="fas fa-ruler"></i><b>{{ route_length }} км</b></p>
+            </div>
+            <div class="parameter">
+                <p><span>Время:</span><br><i class="fas fa-clock"></i><b>{{ route_time }}</b></p>
+            </div>    
+        </div>
+        <h5 class="card-title">
+            <a href="{% url 'groups_list_page' route.id %}">Список групп</a>
+        </h5>
+    </div>
+</div>
+
+<script src="../../static/js/current_route.js?v={{ now|date:'U' }}"></script>
+<script src="../../static/js/animated_line.js"></script>
 {% endblock %}
