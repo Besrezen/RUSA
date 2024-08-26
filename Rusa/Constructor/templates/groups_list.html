@@ -144,7 +144,7 @@
 
     <div class="groups-container">
         {% for group in groups %}
-        <div class="group-card">
+        <div class="group-card" id="group_card_{{ group.id }}">
             <h5>Название группы:</h5>
             <p>{{ group.name }}</p>
             <h5>Лидер группы:</h5>
@@ -168,6 +168,7 @@
         </div>
         {% endfor %}
     </div>
+    
 </div>
 
 <script src="{% static 'js/groups.js' %}" type="text/javascript"></script>

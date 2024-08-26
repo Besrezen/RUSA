@@ -3,6 +3,7 @@ from django.conf import settings
 from django.contrib.auth.decorators import login_required
 import requests
 from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_POST
 from django.http import JsonResponse
 from .models import Line, Group
 import json
@@ -216,3 +217,17 @@ def get_person_name(id):
     except CustomUser.DoesNotExist:
         return "Человек с таким ID не найден"
 
+@csrf_exempt
+def delete_group(request, group_id):
+    if request.method == "POST":
+        try:
+            group = Group.objects.get(id=group_id)
+            # Проверка, что текущий пользователь - лидер группы
+            if request.user.id == group.leader_id:
+                group.delete()
+                return JsonResponse({"status": "success", "message": "Группа успешно удалена."})
+            else:
+                return JsonResponse({"status": "error", "message": "Вы не являетесь лидером этой группы."})
+        except Group.DoesNotExist:
+            return JsonResponse({"status": "error", "message": "Группа не найдена."})
+    return JsonResponse({"status": "error", "message": "Неверный метод запроса."})

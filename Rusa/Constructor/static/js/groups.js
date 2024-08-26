@@ -16,7 +16,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 document.getElementById('buttons_' + groupId).innerHTML = '<button style="margin-top: 60px;" class="btn btn-success" onclick="addUserInGroup(' + groupId + ')">Присоединиться к походу</button>';
             } else {
                 document.getElementById('buttons_' + groupId).innerHTML = '<br><h6 style="color:green; margin-top: 10px;">Вы - создатель этой группы</h6>' +
-                '<button class="btn btn-danger">Удалить группу</button>';
+'<button class="btn btn-danger" onclick="deleteGroup(' + groupId + ')">Удалить группу</button>';
+
             }
         }
     });
@@ -26,22 +27,28 @@ function createGroup() {
     var participants = [];
     participants.push(userId);
     var routeId = document.getElementById('route_id').value;
-    // console.log(userId);
-    // console.log(participants);
-    // console.log(document.getElementById('groupName').value);
     var name = document.getElementById('groupName').value;
+    
     var groupData = {
         name: name,
         leader_id: userId,
         participants: participants
-    }
+    };
+
     var groupDataJSON = JSON.stringify(groupData, null, 2);
-    // console.log(groupDataJSON);
     var xhr = new XMLHttpRequest();
     xhr.open("POST", "/save_group_data/" + routeId + "/", true);
     xhr.setRequestHeader('Content-Type', 'application/json; charset=UTF-8');
+    xhr.onreadystatechange = function () {
+        if (xhr.readyState == 4 && xhr.status == 200) {
+            // Перезагружаем страницу, чтобы отобразить новую группу
+            window.location.reload();
+        }
+    };
     xhr.send(groupDataJSON);
 }
+
+
 
 function addUserInGroup(groupId) {
     var participants = document.getElementById('participants_' + groupId).value;
@@ -101,3 +108,29 @@ function removeUserFromGroup(groupId) {
     };
     xhr.send(groupDataJSON);
 }
+
+
+function deleteGroup(groupId) {
+    if (confirm("Вы уверены, что хотите удалить эту группу?")) {
+        var xhr = new XMLHttpRequest();
+        xhr.open("POST", "/delete_group/" + groupId + "/", true);
+        xhr.setRequestHeader('Content-Type', 'application/json; charset=UTF-8');
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState == 4 && xhr.status == 200) {
+                var response = JSON.parse(xhr.responseText);
+                if (response.status === "success") {
+                    // Удаляем элемент группы из DOM
+                    var groupCard = document.querySelector('[id="group_card_' + groupId + '"]');
+                    if (groupCard) {
+                        groupCard.remove();
+                    }
+                } else {
+                    alert(response.message);
+                }
+            }
+        };
+        xhr.send();
+    }
+}
+
+
