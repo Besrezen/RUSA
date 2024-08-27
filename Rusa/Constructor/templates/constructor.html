@@ -1,67 +1,140 @@
 {% extends 'base_generic.html' %}
+{% load static %}
 
-{% block title %}Profile{% endblock %}
+{% block title %}Конструктор маршрутов{% endblock %}
+
+{% block extra_head %}
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Poppins:wght@300;400;600&family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+<script src="https://api-maps.yandex.ru/2.1/?apikey=403f644f-4840-426e-b2df-bea42d662d87&lang=ru_RU" type="text/javascript"></script>
+<style>
+    body {
+        font-family: 'Roboto', sans-serif;
+        background-color: #f5f5f5;
+        color: #333;
+    }
+    .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 2rem;
+    }
+    .page-header {
+        text-align: center;
+        margin-bottom: 2rem;
+    }
+    .page-header h1 {
+        font-size: 3rem;
+        color: #2c3e50;
+    }
+    .constructor-content {
+        background-color: #fff;
+        border-radius: 10px;
+        box-shadow: 0 0 20px rgba(0,0,0,0.1);
+        overflow: hidden;
+        padding: 2rem;
+    }
+    #constructor {
+        width: 100%;
+        height: 600px;
+        margin-bottom: 2rem;
+    }
+    .btn-container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1rem;
+        margin-bottom: 1rem;
+    }
+    .btn {
+        padding: 0.7rem 1rem;
+        border: none;
+        border-radius: 5px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+    .btn-primary {
+        background-color: #3498db;
+        color: #fff;
+    }
+    .btn-danger {
+        background-color: #e74c3c;
+        color: #fff;
+    }
+    .btn:hover {
+        opacity: 0.9;
+    }
+    input[type="text"], select {
+        padding: 0.5rem;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+    }
+    #seasonForm {
+        margin-top: 1rem;
+    }
+    #description {
+        background-color: #fff;
+        border-radius: 10px;
+        padding: 1.5rem;
+        margin-top: 2rem;
+        box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+</style>
+{% endblock %}
 
 {% block content %}
+<div class="container">
+    <div class="page-header">
+        <h1>Конструктор маршрута</h1>
+    </div>
 
-{% load static %}
-<html>
-<head>
-    <title>Yandex Maps</title>
-    <link rel="stylesheet" type="text/css" href="../static/css/style.css"> 
-    <script src="https://api-maps.yandex.ru/2.1/?apikey=403f644f-4840-426e-b2df-bea42d662d87&lang=ru_RU" type="text/javascript"></script>
-    <script>var customIconImage = "{% static 'img/rusa.png' %}";</script>
-    <input type="hidden" id="user_id" value="{{ user_id }}">
-    <script>var userId = "{{ user_id }}";</script>
-</head>
-<body>
-    <br>
-    <h1 class="mb-3" style="font-family: 'Inter', sans-serif; font-size: 48px;">Конструктор маршрута</h1>
-    <div id="buttonContainer">
+    <div class="constructor-content">
+        <div id="constructor"></div>
+
+        <div class="btn-container">
+            <button id="deleteButton" class="btn btn-danger">Удалить линию</button>
+            <button id="backButton" class="btn btn-primary">Шаг назад</button>
+            <input type="text" id="lineName" placeholder="Введите название маршрута">
+            <button id="addPlacemarkButton" class="btn btn-primary">Добавить метку с комментарием</button>
+            <button id="saveLineButton" class="btn btn-primary">Сохранить маршрут</button>
+        </div>
+
         <div id="coordinates"></div>
-        <button id="deleteButton">Удалить линию</button>
-        <button id="backButton">Шаг назад</button>
-        <input type="text" id="lineName" placeholder="Введите название маршрута">
-        <button id="saveLineButton">Сохранить маршрут</button>
-        <button id="addPlacemarkButton">Добавить метку с комментарием</button>
+
         <form id="seasonForm">
             <p>Сезон:</p>
             <input type="checkbox" id="any" name="season" value="any">
-            <label for="any">Любой</label><br>
+            <label for="any">Любой</label>
             <input type="checkbox" id="winter" name="season" value="winter">
-            <label for="winter">Зима</label><br>
+            <label for="winter">Зима</label>
             <input type="checkbox" id="spring" name="season" value="spring">
-            <label for="spring">Весна</label><br>
+            <label for="spring">Весна</label>
             <input type="checkbox" id="summer" name="season" value="summer">
-            <label for="summer">Лето</label><br>
+            <label for="summer">Лето</label>
             <input type="checkbox" id="autumn" name="season" value="autumn">
-            <label for="autumn">Осень</label><br>
+            <label for="autumn">Осень</label>
         </form>
 
-        <label for="lineDifficulty">Сложность:</label>
-        <select id="lineDifficulty" name="lineDifficulty">
-            <option value="1">1</option>
-            <option value="2">2</option>
-            <option value="3">3</option>
-            <option value="4">4</option>
-            <option value="5">5</option>
-            <option value="6">6</option>
-            <option value="7">7</option>
-            <option value="8">8</option>
-            <option value="9">9</option>
-            <option value="10">10</option>
-        </select>
-        <script src="../static/js/set_seasons.js"></script>
-        <!--<button id="removeAllLinesButton">Удалить все линии с карты</button>-->
+        <div>
+            <label for="lineDifficulty">Сложность:</label>
+            <select id="lineDifficulty" name="lineDifficulty">
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+                <option value="5">5</option>
+                <option value="6">6</option>
+                <option value="7">7</option>
+                <option value="8">8</option>
+                <option value="9">9</option>
+                <option value="10">10</option>
+            </select>
+        </div>
     </div>
-    <br>
-    <div id="constructor" style="min-height: 600px"></div>
-    <script src="../static/js/map.js?v={{ now|date:'U' }}"></script>
-    <script src="../static/js/constructor.js?v={{ now|date:'U' }}"></script>
-    <script src="../static/js/animated_line.js"></script>
-    <div class="container mt-4 mb-3" id="description">
-        <h2 style="text-align: center;">Описание конструктора маршрута</h2>
-        <p>Конструктор маршрута позволяет создавать и настраивать маршруты на карте. Вы можете добавлять линии, метки с комментариями и сохранять маршруты с заданными параметрами. Для каждого маршрута можно указать название, сезон и сложность. Используйте кнопки для удаления линий, шаг назад, добавления меток и сохранения маршрутов.</p>
+
+    <div id="description">
+        <h2>Описание конструктора маршрута</h2>
+        <p>Конструктор маршрута позволяет создавать и настраивать маршруты на карте. Вы можете добавлять линии, метки с комментариями и сохранять маршруты с заданными параметрами. Для каждого маршрута можно указать название, сезон и сложность.</p>
         <ul>
             <li><strong>Удалить линию:</strong> Удаляет последнюю нарисованную линию.</li>
             <li><strong>Шаг назад:</strong> Отменяет последнее действие.</li>
@@ -69,6 +142,15 @@
             <li><strong>Сохранить маршрут:</strong> Сохраняет созданный маршрут с заданными параметрами.</li>
         </ul>
     </div>
-</body>
-</html>
+</div>
+
+<input type="hidden" id="user_id" value="{{ user_id }}">
+<script>
+    var customIconImage = "{% static 'img/rusa.png' %}";
+    var userId = "{{ user_id }}";
+</script>
+<script src="{% static 'js/set_seasons.js' %}"></script>
+<script src="{% static 'js/map.js' %}"></script>
+<script src="{% static 'js/constructor.js' %}"></script>
+<script src="{% static 'js/animated_line.js' %}"></script>
 {% endblock %}
