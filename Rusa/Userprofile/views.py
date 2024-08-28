@@ -1,29 +1,40 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
-from django.http import JsonResponse
-from .models import UserProfile
+from django.http import JsonResponse, HttpResponseBadRequest
+from .models import UserProfile, PortfolioImage
 import datetime
 import os
 from Constructor.models import Line
+from django.views.decorators.csrf import csrf_exempt
 import json
 
 
 @login_required
+@csrf_exempt
 def view_profile(request):
     profile, created = UserProfile.objects.get_or_create(user=request.user)
     user_routes = Line.objects.filter(author_id=request.user.id)
+
+    # Подготовка данных маршрутов пользователя
     for route in user_routes:
         route.map_url = create_map_url(route)
         route.is_not_empty_coords = not (str(route.coordinates) == "[]")
         route.len_km = round(route.length / 1000, 1)
         route.diff_rounded = round(route.difficulty)
+
+    # Получение изображений из портфолио пользователя
+    portfolio_images = PortfolioImage.objects.filter(user=profile)
+
     context = {
         'profile': profile,
-        'user_routes': user_routes
-        }
+        'user_routes': user_routes,
+        'portfolio_images': portfolio_images,  # Добавляем изображения в контекст
+    }
     return render(request, 'Userprofile/profile.html', context)
 
+
 @login_required
+@csrf_exempt
 def update_profile(request):
     if request.method == 'POST':
         profile, created = UserProfile.objects.get_or_create(user=request.user)
@@ -97,3 +108,35 @@ def calculate_center(coordinates):
     avg_lat = sum(lat for lon, lat in coordinates) / len(coordinates)
     avg_lon = sum(lon for lon, lat in coordinates) / len(coordinates)
     return avg_lon, avg_lat
+
+
+@login_required
+@csrf_exempt
+def upload_portfolio_image(request):
+    if request.method == 'POST':
+        if 'image' in request.FILES:
+            user_profile = request.user.userprofile
+            image = request.FILES['image']
+            portfolio_image = PortfolioImage.objects.create(user=user_profile, image=image)
+            return JsonResponse({'status': 'success', 'image_url': portfolio_image.image.url})
+        else:
+            return JsonResponse({'status': 'error', 'error': 'Image file not found.'})
+    return JsonResponse({'status': 'error', 'error': 'Invalid request method.'})
+
+
+@login_required
+@csrf_exempt
+def delete_portfolio_image(request):
+    if request.method == 'POST':
+        image_id = request.POST.get('image_id')
+        try:
+            image = PortfolioImage.objects.get(id=image_id, user=request.user.userprofile)
+            image_path = image.image.path
+            image.delete()
+
+            if os.path.exists(image_path):
+                os.remove(image_path)
+            return JsonResponse({'status': 'success'})
+        except PortfolioImage.DoesNotExist:
+            return JsonResponse({'status': 'error', 'error': 'Image not found'})
+    return JsonResponse({'status': 'error', 'error': 'Invalid request'})

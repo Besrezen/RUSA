@@ -6,6 +6,7 @@
 {% block extra_head %}
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Poppins:wght@300;400;600&family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.3/css/lightbox.min.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
 <style>
     body {
@@ -139,6 +140,84 @@
     .btn:hover {
         opacity: 0.9;
     }
+    .portfolio-slider {
+        position: relative;
+        margin-top: 2rem;
+        overflow: hidden;
+    }
+    .portfolio-slider ul {
+        display: flex;
+        padding: 0;
+        margin: 0;
+        list-style: none;
+        transition: transform 0.3s ease;
+    }
+    .portfolio-slider li {
+        flex: 0 0 100%;
+        max-width: 100%;
+        padding: 0 10px;
+        box-sizing: border-box;
+    }
+    .slider-image {
+        width: 100%;
+        height: 300px;
+        object-fit: cover;
+        border-radius: 10px;
+    }
+    .slider-btn {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        background: rgba(0,0,0,0.5);
+        color: #fff;
+        border: none;
+        padding: 10px;
+        cursor: pointer;
+        z-index: 10;
+    }
+    .prev { left: 10px; }
+    .next { right: 10px; }
+    .add-image-button {
+        width: 100%;
+        height: 300px;
+        background-color: #f0f0f0;
+        border: 2px dashed #ccc;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 2rem;
+        cursor: pointer;
+    }
+    .delete-mode-btn, .cancel-delete-btn, .confirm-delete-btn {
+        margin-top: 1rem;
+        padding: 0.5rem 1rem;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+    .delete-mode-btn { background-color: #e74c3c; color: white; }
+    .cancel-delete-btn { background-color: #3498db; color: white; }
+    .confirm-delete-btn { background-color: #e74c3c; color: white; }
+    .image-checkbox {
+        position: absolute;
+        top: 10px;
+        left: 20px;
+        z-index: 10;
+    }
+
+    @media (min-width: 768px) {
+        .portfolio-slider li {
+            flex: 0 0 50%;
+            max-width: 50%;
+        }
+    }
+
+    @media (min-width: 1024px) {
+        .portfolio-slider li {
+            flex: 0 0 33.333%;
+            max-width: 33.333%;
+        }
+    }
 </style>
 {% endblock %}
 
@@ -230,8 +309,29 @@
     <div class="profile-section">
         <h2>Портфолио</h2>
         <div class="portfolio-slider">
-            <!-- Здесь можно добавить слайдер с изображениями -->
+            <button class="slider-btn prev"><</button>
+            <ul>
+                {% for image in portfolio_images %}
+                <li style="position: relative;">
+                    <a href="{{ image.image.url }}" data-lightbox="portfolio" data-title="Портфолио изображение {{ forloop.counter }}">
+                        <img src="{{ image.image.url }}" alt="Portfolio Image" class="slider-image">
+                    </a>
+                    <input type="checkbox" class="image-checkbox" data-image-id="{{ image.id }}" style="display: none;">
+                </li>
+                {% endfor %}
+                <li class="add-image">
+                    <button id="add-image-btn" class="add-image-button">
+                        <input type="file" id="upload-portfolio-image" style="display: none;" accept="image/*">
+                        +
+                    </button>
+                </li>
+            </ul>
+            <button class="slider-btn next">></button>
         </div>
+        <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
+        <button id="delete-mode-btn" class="delete-mode-btn">🗑️ Удалить фотографии</button>
+        <button id="cancel-delete-btn" class="cancel-delete-btn" style="display: none;">Отмена удаления</button>
+        <button id="confirm-delete-btn" class="confirm-delete-btn" style="display: none;">Подтвердить удаление</button>
     </div>
     
     <div class="btn-container">
@@ -249,6 +349,163 @@
         const [file] = this.files;
         if (file) {
             document.getElementById("profile-photo").src = URL.createObjectURL(file);
+        }
+    });
+</script>
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.3/js/lightbox.min.js"></script>
+<script>
+    var deleteUrl = "{% url 'delete_portfolio_image' %}";
+
+    // Функция для слайдера
+    (function() {
+        const slider = document.querySelector('.portfolio-slider ul');
+        const prevBtn = document.querySelector('.prev');
+        const nextBtn = document.querySelector('.next');
+        let slideIndex = 0;
+        let slidesPerView = 1;
+
+        function updateSlidesPerView() {
+            if (window.innerWidth >= 1024) {
+                slidesPerView = 3;
+            } else if (window.innerWidth >= 768) {
+                slidesPerView = 2;
+            } else {
+                slidesPerView = 1;
+            }
+        }
+
+        function showSlide(index) {
+            const totalSlides = slider.children.length; 
+            const maxIndex = Math.max(0, totalSlides - slidesPerView);
+            slideIndex = Math.min(Math.max(index, 0), maxIndex);
+            slider.style.transform = `translateX(-${slideIndex * (100 / slidesPerView)}%)`;
+        }
+
+        prevBtn.addEventListener('click', () => {
+            showSlide(slideIndex - 1);
+        });
+
+        nextBtn.addEventListener('click', () => {
+            showSlide(slideIndex + 1);
+        });
+
+        window.addEventListener('resize', () => {
+            updateSlidesPerView();
+            showSlide(slideIndex);
+        });
+
+        updateSlidesPerView();
+        showSlide(0);
+    })();
+
+    // Инициализация Lightbox
+    lightbox.option({
+        'resizeDuration': 200,
+        'wrapAround': true
+    });
+    // Загрузка изображения
+    document.getElementById('add-image-btn').addEventListener('click', function () {
+        document.getElementById('upload-portfolio-image').click();
+    });
+
+    document.getElementById('upload-portfolio-image').addEventListener('change', function () {
+        const file = this.files[0];
+        if (file) {
+            let formData = new FormData();
+            formData.append('image', file);
+            formData.append('csrfmiddlewaretoken', '{{ csrf_token }}');
+
+            $.ajax({
+                url: '{% url "upload_portfolio_image" %}',
+                type: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function (response) {
+                    if (response.status === 'success') {
+                        let newImage = document.createElement('li');
+                        newImage.innerHTML = `
+                            <a href="${response.image_url}" data-lightbox="portfolio">
+                                <img src="${response.image_url}" alt="Portfolio Image" class="slider-image">
+                            </a>
+                            <input type="checkbox" class="image-checkbox" data-image-id="${response.image_id}" style="display: none;">
+                        `;
+                        document.querySelector('.portfolio-slider ul').insertBefore(newImage, document.querySelector('.add-image'));
+                    } else {
+                        alert('Ошибка при загрузке изображения: ' + response.error);
+                    }
+                },
+                error: function () {
+                    alert('Ошибка при загрузке изображения.');
+                }
+            });
+        }
+    });
+
+    // Удаление изображений
+    document.getElementById('delete-mode-btn').addEventListener('click', function () {
+        const checkboxes = document.querySelectorAll('.image-checkbox');
+        checkboxes.forEach(checkbox => {
+            checkbox.style.display = 'block';
+        });
+        document.getElementById('confirm-delete-btn').style.display = 'inline-block';
+        document.getElementById('cancel-delete-btn').style.display = 'inline-block';
+    });
+
+    document.getElementById('cancel-delete-btn').addEventListener('click', function () {
+        const checkboxes = document.querySelectorAll('.image-checkbox');
+        checkboxes.forEach(checkbox => {
+            checkbox.style.display = 'none';
+            checkbox.checked = false;
+        });
+        document.getElementById('confirm-delete-btn').style.display = 'none';
+        document.getElementById('cancel-delete-btn').style.display = 'none';
+    });
+
+    document.getElementById('confirm-delete-btn').addEventListener('click', function () {
+        const checkboxes = document.querySelectorAll('.image-checkbox:checked');
+        if (checkboxes.length > 0) {
+            if (confirm(`Вы уверены, что хотите удалить ${checkboxes.length} фотографий?`)) {
+                checkboxes.forEach(checkbox => {
+                    const imageId = checkbox.getAttribute('data-image-id');
+                    const liElement = checkbox.closest('li');
+
+                    let formData = new FormData();
+                    formData.append('image_id', imageId);
+                    formData.append('csrfmiddlewaretoken', '{{ csrf_token }}');
+
+                    $.ajax({
+                        url: deleteUrl,
+                        type: 'POST',
+                        data: formData,
+                        processData: false,
+                        contentType: false,
+                        success: function(response) {
+                            if (response.status === 'success') {
+                                liElement.remove();
+                            } else {
+                                alert('Ошибка при удалении изображения: ' + response.error);
+                            }
+                        },
+                        error: function () {
+                            alert('Ошибка при удалении изображения.');
+                        }
+                    });
+                });
+
+                const allCheckboxes = document.querySelectorAll('.image-checkbox');
+                allCheckboxes.forEach(cb => {
+                    cb.style.display = 'none';
+                    cb.checked = false;
+                });
+                document.getElementById('confirm-delete-btn').style.display = 'none';
+                document.getElementById('cancel-delete-btn').style.display = 'none';
+            }
+        } else {
+            alert('Пожалуйста, выберите хотя бы одну фотографию для удаления.');
         }
     });
 </script>
