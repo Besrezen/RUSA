@@ -30,7 +30,7 @@ def view_profile(request):
         'user_routes': user_routes,
         'portfolio_images': portfolio_images,  # Добавляем изображения в контекст
     }
-    return render(request, 'Userprofile/profile.html', context)
+    return render(request, 'profile.html', context)
 
 
 @login_required
