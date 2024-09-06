@@ -146,7 +146,7 @@
         {% for group in groups %}
         <div class="group-card" id="group_card_{{ group.id }}">
             <h5>Название группы:</h5>
-            <p>{{ group.name }}</p>
+            <h3><a href="{% url 'group_page' route_id=route_id group_id=group.id %}">{{ group.name }}</a></h3>
             <h5>Лидер группы:</h5>
             <p>{{ group.leader_name }}</p>
             <h5>Кол-во участников:</h5>

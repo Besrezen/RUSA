@@ -231,3 +231,37 @@ def delete_group(request, group_id):
         except Group.DoesNotExist:
             return JsonResponse({"status": "error", "message": "Группа не найдена."})
     return JsonResponse({"status": "error", "message": "Неверный метод запроса."})
+
+def group_page(request, route_id, group_id):
+    route = get_object_or_404(Line, pk=route_id)
+    group = get_object_or_404(Group, pk=group_id)
+    
+    # Route information
+    route_length = route.length / 1000
+    route_time_sec = round(route_length / 5 * 3600)
+    route_time = datetime.timedelta(seconds=route_time_sec)
+    route_time_str = str(route_time)
+    
+    # Group information
+    ids = ast.literal_eval(group.participants)
+    group.leader_name = get_person_name(group.leader_id)
+    group.participant_quantity = len(ids)
+    group.participants_names = []
+    group.participants_ids = []
+    for id in ids:
+        group.participants_names.append(get_person_name(id))
+        group.participants_ids.append(id)
+    group.zipped_participants = zip(ids, group.participants_names)
+    
+    context = {
+        'route': route,
+        'group': group,
+        'route_time': route_time_str,
+        'route_length': round(route_length, 1),
+        'route_popularity': route.popularity, 
+        'route_difficulty': round(route.difficulty),
+        'route_author': get_person_name(route.author_id),
+        'user_id': request.user.id,
+        'user_name': get_person_name(request.user.id)
+    }
+    return render(request, 'group_page.html', context)

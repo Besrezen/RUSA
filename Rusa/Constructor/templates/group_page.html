@@ -1,0 +1,262 @@
+{% extends 'base_generic.html' %}
+{% load static %}
+
+{% block title %}Группа: {{ group.name }}{% endblock %}
+
+{% block extra_head %}
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Poppins:wght@300;400;600&family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+<script src="https://api-maps.yandex.ru/2.1/?apikey=403f644f-4840-426e-b2df-bea42d662d87&lang=ru_RU" type="text/javascript"></script>
+<script>var userId = "{{ user_id }}";</script>
+<script>var userName = "{{ user_name }}";</script>
+<input type="hidden" id="route-id" value="{{ route.id }}">
+<input type="hidden" id="group-id" value="{{ group.id }}">
+<input type="hidden" id="route-coordinates" value="{{ route.coordinates }}">
+<input type="hidden" id="participants_{{ group.id }}" value="{{ group.participants }}">
+<input type="hidden" id="group_leader_id_{{ group.id }}" value="{{ group.leader_id }}">
+<style>
+    body {
+        font-family: 'Roboto', sans-serif;
+        background-color: #f5f5f5;
+        color: #333;
+    }
+    .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 1rem;
+        display: flex;
+        flex-wrap: wrap;
+    }
+    .page-header {
+        width: 100%;
+        text-align: center;
+        margin-bottom: 1.5rem;
+    }
+    .page-header h1 {
+        font-size: 2.5rem;
+        color: #2c3e50;
+    }
+    .left-column, .right-column {
+        background-color: #fff;
+        border-radius: 10px;
+        box-shadow: 0 0 20px rgba(0,0,0,0.1);
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+        width: 100%;
+    }
+    .right-column {
+        display: flex;
+        flex-direction: column;
+    }
+    .route-header h2 {
+        font-size: 2rem;
+        color: #2c3e50;
+        margin-bottom: 1rem;
+    }
+    #map {
+        width: 100%;
+        height: 300px;
+        border-radius: 10px;
+        margin-bottom: 1rem;
+    }
+    .author {
+        font-size: 1.1rem;
+        color: #7f8c8d;
+    }
+    .right-el {
+        margin-bottom: 1.5rem;
+    }
+    .right-el h6 {
+        font-size: 1.1rem;
+        color: #3498db;
+        margin-bottom: 0.8rem;
+    }
+    .parameter {
+        margin-bottom: 0.8rem;
+    }
+    .parameter span {
+        font-weight: 600;
+        color: #7f8c8d;
+    }
+    .parameter b {
+        font-size: 1rem;
+        color: #2c3e50;
+    }
+    .parameter i {
+        margin-right: 10px;
+        width: 20px;
+        text-align: center;
+    }
+    .participants {
+        margin-bottom: 1rem;
+    }
+    .participant-badge {
+        display: inline-block;
+        background-color: #f0f0f0;
+        padding: 0.2em 0.6em;
+        margin: 0.2em;
+        border-radius: 0.2em;
+        font-size: 0.9rem;
+    }
+    .participant-badge.current-user {
+        color: #3498db;
+        font-weight: 600;
+    }
+    .btn {
+        display: inline-block;
+        padding: 0.7rem 1.5rem;
+        background-color: #3498db;
+        color: #fff;
+        text-decoration: none;
+        border-radius: 10px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        text-align: center;
+        border: none;
+        cursor: pointer;
+        margin-top: 1rem;
+    }
+    .btn:hover {
+        background-color: #2980b9;
+    }
+    .btn-danger {
+        background-color: #e74c3c;
+    }
+    .btn-danger:hover {
+        background-color: #c0392b;
+    }
+
+    @media (min-width: 768px) {
+        .container {
+            padding: 2rem;
+        }
+        .page-header h1 {
+            font-size: 3rem;
+        }
+        .left-column {
+            flex: 1 1 60%;
+            margin-right: 2rem;
+        }
+        .right-column {
+            flex: 1 1 30%;
+        }
+        #map {
+            height: 500px;
+        }
+        .route-header h2 {
+            font-size: 2.5rem;
+        }
+        .right-el h6 {
+            font-size: 1.2rem;
+        }
+        .parameter b {
+            font-size: 1.1rem;
+        }
+    }
+
+    @media (min-width: 1024px) {
+        #map {
+            height: 600px;
+        }
+        .left-column {
+            flex: 1 1 65%;
+        }
+        .right-column {
+            flex: 1 1 30%;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="page-header">
+        <h1>Группа: {{ group.name }}</h1>
+    </div>
+    
+    <div class="left-column">
+        <div class="route-header">
+            <h2>{{ route.name }}</h2>
+        </div>
+        <div id="map"></div>
+        <p class="author">Автор маршрута: {{ route_author }}</p>
+    </div>
+    
+    <div class="right-column">
+        <div class="right-el">
+            <h6>ОСНОВНАЯ ИНФОРМАЦИЯ О МАРШРУТЕ</h6>
+            <div class="parameter">
+                <p><span>Номер маршрута:</span><br><i class="fas fa-route"></i><b>{{ route.id }}</b></p>
+            </div>
+            <div class="parameter">
+                <p><span>Сложность:</span><br><i class="fas fa-tachometer-alt"></i><b>{{ route_difficulty }}</b></p>
+            </div>
+            <div class="parameter">
+                <p><span>Популярность:</span><br><i class="fas fa-star"></i><b>{{ route_popularity }}</b></p>
+            </div>
+        </div>
+        <div class="right-el">
+            <h6>РАССТОЯНИЕ И ВРЕМЯ</h6>
+            <div class="parameter">
+                <p><span>Длина:</span><br><i class="fas fa-ruler"></i><b>{{ route_length }} км</b></p>
+            </div>
+            <div class="parameter">
+                <p><span>Время:</span><br><i class="fas fa-clock"></i><b>{{ route_time }}</b></p>
+            </div>    
+        </div>
+        
+        <div class="right-el">
+            <h6>ИНФОРМАЦИЯ О ГРУППЕ</h6>
+            <div class="parameter">
+                <p><span>Название группы:</span><br><i class="fas fa-users"></i><b>{{ group.name }}</b></p>
+            </div>
+            <div class="parameter">
+                <p><span>Лидер группы:</span><br><i class="fas fa-user"></i><b>{{ group.leader_name }}</b></p>
+            </div>
+            <div class="parameter">
+                <p><span>Кол-во участников:</span><br><i class="fas fa-users"></i><b>{{ group.participant_quantity }}</b></p>
+            </div>
+        </div>
+        
+        <div class="right-el">
+            <h6>УЧАСТНИКИ</h6>
+            <div id="all_participants_{{ group.id }}" class="participants">
+                {% for id, name in group.zipped_participants %}
+                    {% if id != user_id %}
+                        <span id="{{ id }}" class="participant-badge">{{ name }}</span>
+                    {% else %}
+                        <span id="{{ id }}" class="participant-badge current-user">{{ name }}</span>
+                    {% endif %}
+                {% endfor %}
+            </div>
+        </div>
+        
+        <div id="buttons_{{ group.id }}"></div>
+    </div>
+</div>
+
+<script src="{% static 'js/groups.js' %}" type="text/javascript"></script>
+
+<script>
+    var map;
+    var routeCoordinates = JSON.parse(document.getElementById('route-coordinates').value);
+
+    ymaps.ready(function () {
+        map = new ymaps.Map('map', {
+            center: [55.76, 37.64],
+            zoom: 10
+        });
+
+        var polyline = new ymaps.Polyline(routeCoordinates, {}, {
+            strokeColor: "#FF0000",
+            strokeWidth: 4,
+            strokeOpacity: 0.7
+        });
+
+        map.geoObjects.add(polyline);
+        map.setBounds(polyline.geometry.getBounds());
+    });
+</script>
+
+{% endblock %}
