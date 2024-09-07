@@ -1,23 +1,18 @@
 document.addEventListener('DOMContentLoaded', function() {
-        
     document.querySelectorAll('[id^="participants_"]').forEach(function(element) {
         var groupId = element.id.split('_')[1];
-        // console.log(element.value);
-        var participants = element.value;
-        participants = participants.replace(/'/g, '"');
-        participants = JSON.parse(participants);
+        var participants = JSON.parse(element.value.replace(/'/g, '"'));
         var buttonsElement = document.getElementById('buttons_' + groupId);
         var leaderId = document.getElementById('group_leader_id_' + groupId).value;
-        // console.log(leaderId);
-        if (buttonsElement){
+        
+        if (buttonsElement) {
             if (participants.includes(userId) && (userId != leaderId)) {
-                document.getElementById('buttons_' + groupId).innerHTML = '<button style="margin-top: 60px;" class="btn btn-danger" onclick="removeUserFromGroup(' + groupId + ')">Выйти из группы</button>';
-            } else if (userId != leaderId){
-                document.getElementById('buttons_' + groupId).innerHTML = '<button style="margin-top: 60px;" class="btn btn-success" onclick="addUserInGroup(' + groupId + ')">Присоединиться к походу</button>';
+                buttonsElement.innerHTML = '<button class="btn btn-danger" onclick="removeUserFromGroup(' + groupId + ')">Выйти из группы</button>';
+            } else if (userId != leaderId) {
+                buttonsElement.innerHTML = '<button class="btn btn-success" onclick="addUserInGroup(' + groupId + ')">Присоединиться к походу</button>';
             } else {
-                document.getElementById('buttons_' + groupId).innerHTML = '<br><h6 style="color:green; margin-top: 10px;">Вы - создатель этой группы</h6>' +
-'<button class="btn btn-danger" onclick="deleteGroup(' + groupId + ')">Удалить группу</button>';
-
+                buttonsElement.innerHTML = '<h6 style="color:green; margin-bottom: 1rem;">Вы - создатель этой группы</h6>' +
+                                           '<button class="btn btn-danger" onclick="deleteGroup(' + groupId + ')">Удалить группу</button>';
             }
         }
     });
@@ -66,9 +61,7 @@ function addUserInGroup(groupId) {
     xhr.setRequestHeader('Content-Type', 'application/json; charset=UTF-8');
     xhr.onreadystatechange = function () {
     if (xhr.readyState == 4 && xhr.status == 200) {
-        // Обновите DOM здесь
-        document.getElementById('buttons_' + groupId).innerHTML = '<button style="margin-top: 60px;" class="btn btn-danger" onclick="removeUserFromGroup(' + groupId + ')">Выйти из группы</button>';
-        // Добавьте имя пользователя в div "participants"
+        document.getElementById('buttons_' + groupId).innerHTML = '<button class="btn btn-danger" onclick="removeUserFromGroup(' + groupId + ')">Выйти из группы</button>';
         var participantsDiv = document.getElementById('all_participants_' + groupId);
         var newParticipant = document.createElement('span');
         newParticipant.className = 'participant-badge';
@@ -95,12 +88,9 @@ function removeUserFromGroup(groupId) {
     xhr.setRequestHeader('Content-Type', 'application/json; charset=UTF-8');
     xhr.onreadystatechange = function () {
     if (xhr.readyState == 4 && xhr.status == 200) {
-        // Обновите DOM здесь
-        document.getElementById('buttons_' + groupId).innerHTML = '<button style="margin-top: 60px;"  class="btn btn-success" onclick="addUserInGroup(' + groupId + ')">Присоединиться к походу</button>';
-        // Добавьте имя пользователя в div "participants"
+        document.getElementById('buttons_' + groupId).innerHTML = '<button class="btn btn-success" onclick="addUserInGroup(' + groupId + ')">Присоединиться к походу</button>';
         var participantsDiv = document.getElementById('all_participants_' + groupId);
-        var participantToRemove = participantsDiv.querySelector('[id^="' + userId + '"]');
-        // console.log(participantToRemove);
+        var participantToRemove = participantsDiv.querySelector('[id="' + userId + '"]');
         if (participantToRemove) {
             participantsDiv.removeChild(participantToRemove);
         }

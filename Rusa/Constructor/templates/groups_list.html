@@ -57,6 +57,13 @@
         border-radius: 10px;
         box-shadow: 0 0 20px rgba(0,0,0,0.1);
         padding: 1.5rem;
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+    }
+    .group-card h3 {
+        text-align: center;
+        margin-bottom: 1rem;
     }
     .group-card h5 {
         font-size: 1.2rem;
@@ -66,6 +73,9 @@
     .group-card p {
         margin-bottom: 1rem;
         color: #7f8c8d;
+    }
+    .group-info {
+        flex-grow: 1;
     }
     .participants {
         margin-bottom: 1rem;
@@ -81,6 +91,13 @@
     .participant-badge.current-user {
         color: #3498db;
         font-weight: 600;
+    }
+    .group-actions {
+        margin-top: auto;
+    }
+    .group-actions button {
+        width: 100%;
+        margin-top: 1rem;
     }
     .modal-content {
         border-radius: 10px;
@@ -145,30 +162,30 @@
     <div class="groups-container">
         {% for group in groups %}
         <div class="group-card" id="group_card_{{ group.id }}">
-            <h5>Название группы:</h5>
-            <h3><a href="{% url 'group_page' route_id=route_id group_id=group.id %}">{{ group.name }}</a></h3>
-            <h5>Лидер группы:</h5>
-            <p>{{ group.leader_name }}</p>
-            <h5>Кол-во участников:</h5>
-            <p>{{ group.participant_quantity }}</p>
-            <h5>Участники:</h5>
-            <div id="all_participants_{{ group.id }}" class="participants">
-                {% for id, name in group.zipped_participants  %}
-                    {% if id != user_id %}
-                        <span id="{{ id }}" class="participant-badge">{{ name }}</span>
-                    {% else %}
-                        <span id="{{ id }}" class="participant-badge current-user">{{ name }}</span>
-                    {% endif %}
-                {% endfor %}
+            <div class="group-info">
+                <h3><a href="{% url 'group_page' route_id=route_id group_id=group.id %}">{{ group.name }}</a></h3>
+                <h5>Лидер группы:</h5>
+                <p>{{ group.leader_name }}</p>
+                <h5>Кол-во участников:</h5>
+                <p>{{ group.participant_quantity }}</p>
+                <h5>Участники:</h5>
+                <div id="all_participants_{{ group.id }}" class="participants">
+                    {% for id, name in group.zipped_participants  %}
+                        {% if id != user_id %}
+                            <span id="{{ id }}" class="participant-badge">{{ name }}</span>
+                        {% else %}
+                            <span id="{{ id }}" class="participant-badge current-user">{{ name }}</span>
+                        {% endif %}
+                    {% endfor %}
+                </div>
             </div>
             <input id="participants_{{ group.id }}" type="hidden" name="group_participants" value="{{ group.participants }}">
             <input id="group_id_{{ group.id }}" type="hidden" name="group_id" value="{{ group.id }}">
             <input id="group_leader_id_{{ group.id }}" type="hidden" name="group_leader_id" value="{{ group.leader_id }}">
-            <div id="buttons_{{ group.id }}"></div>
+            <div id="buttons_{{ group.id }}" class="group-actions"></div>
         </div>
         {% endfor %}
     </div>
-    
 </div>
 
 <script src="{% static 'js/groups.js' %}" type="text/javascript"></script>

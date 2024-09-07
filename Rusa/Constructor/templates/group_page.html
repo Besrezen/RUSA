@@ -15,6 +15,11 @@
 <input type="hidden" id="route-coordinates" value="{{ route.coordinates }}">
 <input type="hidden" id="participants_{{ group.id }}" value="{{ group.participants }}">
 <input type="hidden" id="group_leader_id_{{ group.id }}" value="{{ group.leader_id }}">
+<script>
+    var customIconImage = "{% static 'img/rusa.png' %}";
+    var customFinishImage = "{% static 'img/finish_flag.png' %}";
+    const routeId = document.getElementById('route-id').value;
+</script>
 <style>
     body {
         font-family: 'Roboto', sans-serif;
@@ -185,25 +190,19 @@
     
     <div class="right-column">
         <div class="right-el">
-            <h6>ОСНОВНАЯ ИНФОРМАЦИЯ О МАРШРУТЕ</h6>
-            <div class="parameter">
-                <p><span>Номер маршрута:</span><br><i class="fas fa-route"></i><b>{{ route.id }}</b></p>
-            </div>
+            <h6>ИНФОРМАЦИЯ О МАРШРУТЕ</h6>
             <div class="parameter">
                 <p><span>Сложность:</span><br><i class="fas fa-tachometer-alt"></i><b>{{ route_difficulty }}</b></p>
             </div>
             <div class="parameter">
                 <p><span>Популярность:</span><br><i class="fas fa-star"></i><b>{{ route_popularity }}</b></p>
             </div>
-        </div>
-        <div class="right-el">
-            <h6>РАССТОЯНИЕ И ВРЕМЯ</h6>
             <div class="parameter">
                 <p><span>Длина:</span><br><i class="fas fa-ruler"></i><b>{{ route_length }} км</b></p>
             </div>
             <div class="parameter">
                 <p><span>Время:</span><br><i class="fas fa-clock"></i><b>{{ route_time }}</b></p>
-            </div>    
+            </div>   
         </div>
         
         <div class="right-el">
@@ -237,26 +236,7 @@
 </div>
 
 <script src="{% static 'js/groups.js' %}" type="text/javascript"></script>
-
-<script>
-    var map;
-    var routeCoordinates = JSON.parse(document.getElementById('route-coordinates').value);
-
-    ymaps.ready(function () {
-        map = new ymaps.Map('map', {
-            center: [55.76, 37.64],
-            zoom: 10
-        });
-
-        var polyline = new ymaps.Polyline(routeCoordinates, {}, {
-            strokeColor: "#FF0000",
-            strokeWidth: 4,
-            strokeOpacity: 0.7
-        });
-
-        map.geoObjects.add(polyline);
-        map.setBounds(polyline.geometry.getBounds());
-    });
-</script>
+<script src="{% static 'js/current_route.js' %}" type="text/javascript"></script>
+<script src="{% static 'js/animated_line.js' %}"></script>
 
 {% endblock %}
