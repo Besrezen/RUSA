@@ -171,6 +171,65 @@
             flex: 1 1 30%;
         }
     }
+
+    /* Стили для чата */
+    #chat-section {
+        margin-top: 2rem;
+        padding: 1rem;
+        background-color: #ffffff;
+        border-radius: 10px;
+        box-shadow: 0 0 20px rgba(0,0,0,0.1);
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+    #chat-log {
+        border: 1px solid #ccc;
+        height: 400px;
+        width: 100%;
+        overflow-y: scroll;
+        padding: 10px;
+        margin-bottom: 10px;
+        background-color: #f9f9f9;
+        border-radius: 10px;
+    }
+    #chat-log div {
+        margin-bottom: 0.5rem;
+    }
+    #chat-log strong {
+        color: #3498db;
+    }
+    #chat-message-input {
+        width: 85%;
+        padding: 0.75rem;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        margin-right: 1rem;
+    }
+    #chat-message-submit {
+        width: 12%;
+        padding: 0.75rem;
+        background-color: #3498db;
+        color: #fff;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-weight: bold;
+    }
+    #chat-message-submit:hover {
+        background-color: #2980b9;
+    }
+
+    @media (min-width: 768px) {
+        #chat-message-input {
+            width: 88%;
+        }
+        #chat-message-submit {
+            width: 10%;
+        }
+    }
+
 </style>
 {% endblock %}
 
@@ -233,7 +292,119 @@
         
         <div id="buttons_{{ group.id }}"></div>
     </div>
+
+    <!-- Чат внутри основного контейнера -->
+    <div id="chat-section">
+        <h2>Чат группы: {{ group.name }}</h2>
+        <div id="chat-log">
+            {% for message in messages %}
+                <div><strong>{{ message.user.username }}:</strong> {{ message.content }}</div>
+            {% endfor %}
+        </div>
+        <div style="width: 100%; display: flex; justify-content: space-between;">
+            <input id="chat-message-input" type="text" placeholder="Введите сообщение..." autocomplete="off"/>
+            <button id="chat-message-submit">Отправить</button>
+        </div>
+    </div>
 </div>
+
+
+<script>
+    const roomName = "{{ room_name }}";
+    const wsScheme = window.location.protocol === "https:" ? "wss" : "ws";
+    const chatSocket = new WebSocket(
+        wsScheme + '://' + window.location.host + '/ws/chat/' + roomName + '/'
+    );
+
+    let page = 1;  // Начинаем с первой страницы
+    const chatLog = document.getElementById('chat-log');
+    let loading = false;  // Флаг загрузки для предотвращения дублирования запросов
+    let allMessagesLoaded = false;  // Флаг для того, чтобы знать, что все сообщения загружены
+
+    // Функция для загрузки предыдущих сообщений
+    function loadMoreMessages() {
+        if (loading || allMessagesLoaded) return;
+        loading = true;
+
+        // Сохраняем текущую высоту скролла и общую высоту контейнера перед загрузкой новых сообщений
+        const currentScrollHeight = chatLog.scrollHeight;
+        const currentScrollPosition = chatLog.scrollTop;
+
+        page += 1;
+        fetch(`/load-more-messages/${roomName}/${page}/`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.no_more_messages) {
+                    allMessagesLoaded = true;  // Все сообщения загружены, больше не делаем запросы
+                } else if (data.messages.length > 0) {
+                    data.messages.forEach(message => {
+                        const msgElement = document.createElement('div');
+                        msgElement.innerHTML = '<strong>' + message.username + ':</strong> ' + message.content;
+                        chatLog.insertBefore(msgElement, chatLog.firstChild);
+                    });
+
+                    // После загрузки новых сообщений возвращаем скролл в ту же позицию
+                    chatLog.scrollTop = chatLog.scrollHeight - currentScrollHeight + currentScrollPosition;
+                }
+                loading = false;
+            });
+    }
+
+    // Функция для прокрутки чата вниз
+    function scrollToBottom() {
+        chatLog.scrollTop = chatLog.scrollHeight;
+    }
+
+    // Обработчик получения нового сообщения
+    chatSocket.onmessage = function(e) {
+        const data = JSON.parse(e.data);
+        const message = data.message;
+        const username = data.username;
+        const msgElement = document.createElement('div');
+        msgElement.innerHTML = '<strong>' + username + ':</strong> ' + message;
+        chatLog.appendChild(msgElement);
+        scrollToBottom();
+    };
+
+    chatSocket.onclose = function(e) {
+        console.error('Chat socket closed unexpectedly');
+    };
+
+    function sendMessage() {
+        const messageInputDom = document.getElementById('chat-message-input');
+        const message = messageInputDom.value;
+        if (message.trim() === "") {
+            return;
+        }
+        chatSocket.send(JSON.stringify({
+            'message': message
+        }));
+        messageInputDom.value = '';
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        // Прокрутка чата вниз при загрузке страницы
+        scrollToBottom();
+
+        document.getElementById('chat-message-input').addEventListener('keyup', function(e) {
+            if (e.keyCode === 13) {  // Enter key
+                sendMessage();
+            }
+        });
+        document.getElementById('chat-message-submit').addEventListener('click', function(e) {
+            sendMessage();
+        });
+
+        // Загрузка сообщений при скролле вверх
+        chatLog.addEventListener('scroll', function() {
+            if (chatLog.scrollTop === 0 && !loading && !allMessagesLoaded) {  // Если дошли до верхней границы и не в процессе загрузки и все еще есть сообщения
+                loadMoreMessages();
+            }
+        });
+    });
+</script>
+
+
 
 <script src="{% static 'js/groups.js' %}" type="text/javascript"></script>
 <script src="{% static 'js/current_route.js' %}" type="text/javascript"></script>

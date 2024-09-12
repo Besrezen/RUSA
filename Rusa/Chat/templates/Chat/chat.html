@@ -1,0 +1,76 @@
+<!-- Chat/templates/Chat/chat.html -->
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Чат: {{ room_name }}</title>
+    <script>
+        const roomName = "{{ room_name }}";
+        const userName = "{{ request.user.username }}";
+        const wsScheme = window.location.protocol === "https:" ? "wss" : "ws";
+        const chatSocket = new WebSocket(
+            wsScheme + '://' + window.location.host + '/ws/chat/' + roomName + '/'
+        );
+
+        chatSocket.onmessage = function(e) {
+            const data = JSON.parse(e.data);
+            const message = data.message;
+            const username = data.username;
+            const chatLog = document.getElementById('chat-log');
+            const msgElement = document.createElement('div');
+            msgElement.innerHTML = '<strong>' + username + ':</strong> ' + message;
+            chatLog.appendChild(msgElement);
+            chatLog.scrollTop = chatLog.scrollHeight;
+        };
+
+        chatSocket.onclose = function(e) {
+            console.error('Chat socket closed unexpectedly');
+        };
+
+        function sendMessage() {
+            const messageInputDom = document.getElementById('chat-message-input');
+            const message = messageInputDom.value;
+            chatSocket.send(JSON.stringify({
+                'message': message
+            }));
+            messageInputDom.value = '';
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('chat-message-input').addEventListener('keyup', function(e) {
+                if (e.keyCode === 13) {  // Enter key
+                    sendMessage();
+                }
+            });
+            document.getElementById('chat-message-submit').addEventListener('click', function(e) {
+                sendMessage();
+            });
+        });
+    </script>
+    <style>
+        #chat-log {
+            border: 1px solid #ccc;
+            height: 400px;
+            overflow-y: scroll;
+            padding: 10px;
+            margin-bottom: 10px;
+        }
+        #chat-message-input {
+            width: 80%;
+        }
+        #chat-message-submit {
+            width: 18%;
+        }
+    </style>
+</head>
+<body>
+    <h2>Комната чата: {{ room_name }}</h2>
+    <div id="chat-log">
+        {% for message in messages %}
+            <div><strong>{{ message.user.username }}:</strong> {{ message.content }}</div>
+        {% endfor %}
+    </div>
+    <input id="chat-message-input" type="text" size="100" placeholder="Введите сообщение..." autocomplete="off"/>
+    <button id="chat-message-submit">Отправить</button>
+</body>
+</html>

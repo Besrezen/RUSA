@@ -31,6 +31,7 @@ ALLOWED_HOSTS = ['*']
 # Application definition
 
 INSTALLED_APPS = [
+    "daphne",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -41,6 +42,7 @@ INSTALLED_APPS = [
     "Constructor",
     "Userprofile",
     "django_bootstrap5",
+    'Chat',
 ]
 
 MIDDLEWARE = [
@@ -144,3 +146,13 @@ STATICFILES_DIRS = [
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 YANDEX_MAPS_API_KEY = '403f644f-4840-426e-b2df-bea42d662d87'
+
+
+ASGI_APPLICATION = 'Rusa.asgi.application'
+
+# Используем встроенный InMemoryChannelLayer для разработки
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels.layers.InMemoryChannelLayer',
+    },
+}

@@ -1,16 +1,18 @@
-"""
-ASGI config for Rusa project.
-
-It exposes the ASGI callable as a module-level variable named ``application``.
-
-For more information on this file, see
-https://docs.djangoproject.com/en/4.1/howto/deployment/asgi/
-"""
+# Rusa/asgi.py
 
 import os
-
+from channels.auth import AuthMiddlewareStack
+from channels.routing import ProtocolTypeRouter, URLRouter
 from django.core.asgi import get_asgi_application
+import Chat.routing  # Импортируем маршруты из приложения Chat
 
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "Rusa.settings")
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'Rusa.settings')
 
-application = get_asgi_application()
+application = ProtocolTypeRouter({
+    "http": get_asgi_application(),  # Обработка HTTP-запросов
+    "websocket": AuthMiddlewareStack(
+        URLRouter(
+            Chat.routing.websocket_urlpatterns  # Маршруты WebSocket из Chat.routing
+        )
+    ),
+})
