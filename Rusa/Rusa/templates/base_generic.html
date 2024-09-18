@@ -1,6 +1,6 @@
 {% load static %}
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" >
 
 <head>
     <meta charset="UTF-8">
@@ -29,7 +29,17 @@
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@100;300;400&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@100;300;400;500;700;900&display=swap" rel="stylesheet">
     <title>{% block title %}{% endblock %}</title>
+
     <style>
+        .logo{
+            font-size: 25px;
+        }
+        /*.navbar ul{*/
+        /*    width: 70%;*/
+        /*}*/
+        /** {*/
+        /* border: 1px solid red;*/
+        /*}*/
         .custom-font-size {
             font-size: 20px;
             font-weight: 500;
@@ -61,7 +71,7 @@
 
         .footer-bottom a {
             color: white;
-            margin-right: 20px;
+            margin-right: 10px;
         }
 
         .navbar-nav .nav-link {
@@ -76,9 +86,13 @@
             box-shadow: none;
         }
 
-        nav {
+        .nav {
             box-shadow: none;
             border: none;
+        }
+        .navbar-nav .nav-item{
+            flex: 0 0 auto;
+            margin-right: 10px;
         }
 
         .btn-custom {
@@ -95,7 +109,26 @@
             .navbar-nav .nav-item {
                 margin-right: 2px;
             }
+            .rusa-icon-text{
+                max-width: 100px;
+                font-size: 20px;
+            }
+
+            .icon-rusa{
+                max-width: 100px;
+            }
+            .logo{
+                width: 100px;
+            }
+
+            .navbar-nav li{
+                margin-right: 0px;
+            }
         }
+
+        .navbar-nav .nav-item {
+                margin-right: 0px;
+            }
 
         /* Optional: Add a bit more padding on very small screens */
         @media (max-width: 375px) {
@@ -104,9 +137,29 @@
                 font-size: 0.7rem;
             }
             .navbar-nav .nav-item {
-                margin-right: 1px;
+                margin-right: 0px;
             }
+
+            .rusa-icon-text{
+                max-width: 70px;
+                font-size: 13px;
+            }
+
+            .icon-rusa{
+                max-width: 70px;
+            }
+            .logo{
+                width: 70px;
+                height: 30px;
+            }
+            /*.navbar-nav{*/
+            /*    margin-right: -10px;*/
+            /*}*/
+            /*.nav-item li{*/
+            /*    margin-right: 10px;*/
+            /*}*/
         }
+
 
     </style>
     {% block extra_head %}
@@ -116,20 +169,20 @@
 <body class="d-flex flex-column min-vh-100">
     <header style="width: 100%;">
         <nav class="navbar navbar-expand-lg" style="background-color: #fff; padding: 10px; height: 70px;">
-            <div class="container-fluid d-flex justify-content-between align-items-center" style="max-width: 1500px; margin: 0 auto;">
+            <div class="container-fluid d-flex justify-content-between align-items-center" style="max-width: 1500px; margin: 0 auto; flex-wrap: nowrap; ">
                 <a href="{% url 'home' %}" class="logo d-flex flex-column align-items-center" style="text-decoration: none;">
-                    <div class="rusa-icon-text" style="width: 124px; height: 30px; color: #000; font-family: Inter, sans-serif; font-size: 25px; font-style: normal; font-weight: 800; line-height: normal;">WEB Руза</div>
+                    <div class="rusa-icon-text" style="width: 124px; height: 30px; color: #000; font-family: Inter, sans-serif; font-style: normal; font-weight: 800; line-height: normal;">WEB Руза</div>
                     <img class="icon-rusa" src="{% static 'userprofile/assets/vectors/vector1_x2.svg' %}" style="width: 130px; margin-top: 0;" alt="Icon">
                 </a>
                 <div id="navbarNav">
                     <ul class="navbar-nav d-flex flex-row">
-                        <li class="nav-item" style="flex: 0 0 auto; margin-right: 10px;">
+                        <li class="nav-item">
                             <a class="nav-link custom-font-size btn-custom" aria-current="page" href="{% url 'home' %}">Главная</a>
                         </li>
-                        <li class="nav-item" style="flex: 0 0 auto; margin-right: 10px;">
+                        <li class="nav-item">
                             <a class="nav-link custom-font-size btn-custom" href="{% url 'route_list' %}">Популярное</a>
                         </li>
-                        <li class="nav-item" style="flex: 0 0 auto; margin-right: 10px;">
+                        <li class="nav-item">
                             <a class="nav-link custom-font-size btn-custom" href="{% url 'view_profile' %}">Профиль <i class="bi bi-person"></i></a>
                         </li>
                     </ul>
@@ -137,27 +190,27 @@
             </div>
         </nav>
     </header>
-    
+
     {% block content %}
     {% endblock content %}
 
     <div class="mt-auto" style="width: 100%;">
         <footer class="footer-bottom">
             <nav class="navbar navbar-expand-lg" style="padding: 10px; height: 70px; box-shadow: none;">
-                <div class="container-fluid d-flex justify-content-between align-items-center" style="max-width: 1500px; margin: 0 auto;">
+                <div class="container-fluid d-flex justify-content-between align-items-center" style="max-width: 1500px; margin: 0 auto; flex-wrap: nowrap;">
                     <a href="{% url 'home' %}" class="logo d-flex flex-column align-items-center" style="text-decoration: none;">
-                        <div class="rusa-icon-text" style="width: 124px; height: 30px; color: #ffffff; font-family: Inter, sans-serif; font-size: 25px; font-style: normal; font-weight: 800; line-height: normal;">WEB Руза</div>
+                        <div class="rusa-icon-text" style="height: 30px; color: #ffffff; font-family: Inter, sans-serif; font-style: normal; font-weight: 800; line-height: normal;">WEB Руза</div>
                         <img class="icon-rusa" src="{% static 'userprofile/assets/vectors/vector1_x2.svg' %}" style="width: 130px; margin-top: 0; filter: invert(1);" alt="Icon">
                     </a>
                     <div id="navbarNav">
                         <ul class="navbar-nav d-flex flex-row">
-                            <li class="nav-item" style="flex: 0 0 auto; margin-right: 10px;">
+                            <li class="nav-item">
                                 <a class="nav-link custom-font-size btn-custom" style="color: #ffffff;" aria-current="page" href="{% url 'route_list' %}">Маршруты</a>
                             </li>
-                            <li class="nav-item" style="flex: 0 0 auto; margin-right: 10px;">
+                            <li class="nav-item">
                                 <a class="nav-link custom-font-size btn-custom" style="color: #ffffff;" href="{% url 'about' %}">О нас</a>
                             </li>
-                            <li class="nav-item" style="flex: 0 0 auto; margin-right: 10px;">
+                            <li class="nav-item">
                                 <a class="nav-link custom-font-size btn-custom" style="color: #ffffff;" href="https://vk.com">Контакты</a>
                             </li>
                         </ul>
@@ -175,7 +228,7 @@
             </div>
         </footer>
     </div>
-    
+
     <!-- MDB -->
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.2.0/mdb.min.js"></script>
 </body>
