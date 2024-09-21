@@ -1,11 +1,11 @@
 var centerCoordinates = [55.703697, 36.192678];
 ymaps.ready(['AnimatedLine']).then(init);
 function init(ymaps) {
-    var LITTLE_RESTRICT_AREA = [
-        [55.492003, 35.400976], 
-        [56.009654, 36.830914]
-    ];
-    var LITTLE_ZOOM_RANGE = [9.5, 20];
+    // var LITTLE_RESTRICT_AREA = [
+    //     [55.492003, 35.400976], 
+    //     [56.009654, 36.830914]
+    // ];
+    // var LITTLE_ZOOM_RANGE = [9.5, 20];
     var myMap = new ymaps.Map('map', {
         center: [55.703697, 36.192678], // координаты центра карты
         zoom: 9.5, // уровень масштабирования
@@ -25,6 +25,12 @@ function init(ymaps) {
 }
 
 function loadAllRoutes(myMap) {
+    var clusterer = new ymaps.Clusterer({
+        preset: 'islands#invertedVioletClusterIcons',
+        groupByCoordinates: false,
+        clusterDisableClickZoom: true,
+        clusterOpenBalloonOnClick: true,
+    });
     var xhr = new XMLHttpRequest();
     xhr.open("GET", "/get_routes/", true);
     xhr.onload = function () {
@@ -36,16 +42,27 @@ function loadAllRoutes(myMap) {
             console.log("HERE --- is ");
             console.log(routes[i].fields.coordinates == "[]");
             if (routes[i].fields.coordinates != "[]") {
-                var routeButton = document.createElement('button');
-                routeButton.textContent = routes[i].fields.name;
-                    (function(route) {
-                        routeButton.addEventListener('click', function () {
-                                getRoute(myMap, route.fields.coordinates, route.fields.difficulty, route.fields.length, route.fields.name, route.fields.notes, route.fields.seasons, route.pk);
-                            });
-                        })(routes[i]);
-                    routesContainer.appendChild(routeButton);
+                var startCoordinates = JSON.parse(routes[i].fields.coordinates)[0];
+                var placemark = new ymaps.Placemark(startCoordinates, {
+                    balloonContentBody: '<a href="/route/' + routes[i].pk + '">' + routes[i].fields.name + '</a>'
+                });
+                // (function(route) {
+                //     placemark.events.add('click', function () {
+                //         window.location.href = '/route/' + route.pk;
+                //     });
+                // })(routes[i]);
+                clusterer.add(placemark);
+                // var routeButton = document.createElement('button');
+                // routeButton.textContent = routes[i].fields.name;
+                //     (function(route) {
+                //         routeButton.addEventListener('click', function () {
+                //                 getRoute(myMap, route.fields.coordinates, route.fields.difficulty, route.fields.length, route.fields.name, route.fields.notes, route.fields.seasons, route.pk);
+                //             });
+                //         })(routes[i]);
+                //     routesContainer.appendChild(routeButton);
             }
         }
+        myMap.geoObjects.add(clusterer);
     };
     xhr.send();
 }
