@@ -142,10 +142,14 @@
 </style>
 <script src="https://api-maps.yandex.ru/2.1/?apikey=403f644f-4840-426e-b2df-bea42d662d87&lang=ru_RU" type="text/javascript"></script>
 <input type="hidden" id="route-id" value="{{ route.id }}">
+<input type="hidden" id="user-id" value="{{ user_id }}">
+<input type="hidden" id="author-id" value="{{ author_id }}">
 <script>
 var customIconImage = "{% static 'img/rusa.png' %}";
 var customFinishImage = "{% static 'img/finish_flag.png' %}";
-const routeId = document.getElementById('route-id').value;
+const routeId = Number(document.getElementById('route-id').value);
+const userId = Number(document.getElementById('user-id').value);
+const authorId = Number(document.getElementById('author-id').value);
 </script>
 {% endblock %}
 
@@ -160,7 +164,18 @@ const routeId = document.getElementById('route-id').value;
             <h2>{{ route.name }}</h2>
         </div>
         <div id="map"></div>
-        <p class="author">Автор: {{ route_author }}</p>
+        <div id="author">
+            <p class="author">Автор: {{ route_author }}</p>
+        </div>
+        <script>
+            // console.log(authorId);
+            // console.log(userId);
+            // console.log(authorId === userId);
+            if (authorId === userId) {
+                block = document.getElementById('author');
+                block.innerHTML = '<p class="author">Вы - создатель этого маршрута</p>';
+            }
+        </script>
     </div>
     
     <div class="right-column">

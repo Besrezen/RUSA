@@ -12,11 +12,13 @@ function init(ymaps) {
         controls: ['zoomControl'],
         behaviors: ['drag', 'scrollZoom'],
         // maxZoom: 15,
-    }, {
-        restrictMapArea: LITTLE_RESTRICT_AREA
-    });
-    myMap.options.set('minZoom', LITTLE_ZOOM_RANGE[0]);
-    myMap.options.set('maxZoom', LITTLE_ZOOM_RANGE[1]);
+    }
+    // , {
+    //     restrictMapArea: LITTLE_RESTRICT_AREA
+    // }
+    );
+    // myMap.options.set('minZoom', LITTLE_ZOOM_RANGE[0]);
+    // myMap.options.set('maxZoom', LITTLE_ZOOM_RANGE[1]);
 
     putRusaIcon(myMap);
     loadAllRoutes(myMap);
@@ -26,24 +28,24 @@ function loadAllRoutes(myMap) {
     var xhr = new XMLHttpRequest();
     xhr.open("GET", "/get_routes/", true);
     xhr.onload = function () {
-    var data = JSON.parse(this.responseText);
-    var routesContainer = document.getElementById('routesContainer');
-    var routes = JSON.parse(data);
-    // console.log(routes);
-    for (var i = 0; i < routes.length; i++) {
-        console.log("HERE --- is ");
-        console.log(routes[i].fields.coordinates == "[]");
-        if (routes[i].fields.coordinates != "[]") {
-            var routeButton = document.createElement('button');
-            routeButton.textContent = routes[i].fields.name;
-                (function(route) {
-                    routeButton.addEventListener('click', function () {
-                            getRoute(myMap, route.fields.coordinates, route.fields.difficulty, route.fields.length, route.fields.name, route.fields.notes, route.fields.seasons, route.pk);
-                        });
-                    })(routes[i]);
-                routesContainer.appendChild(routeButton);
+        var data = JSON.parse(this.responseText);
+        var routesContainer = document.getElementById('routesContainer');
+        var routes = JSON.parse(data);
+        // console.log(routes);
+        for (var i = 0; i < routes.length; i++) {
+            console.log("HERE --- is ");
+            console.log(routes[i].fields.coordinates == "[]");
+            if (routes[i].fields.coordinates != "[]") {
+                var routeButton = document.createElement('button');
+                routeButton.textContent = routes[i].fields.name;
+                    (function(route) {
+                        routeButton.addEventListener('click', function () {
+                                getRoute(myMap, route.fields.coordinates, route.fields.difficulty, route.fields.length, route.fields.name, route.fields.notes, route.fields.seasons, route.pk);
+                            });
+                        })(routes[i]);
+                    routesContainer.appendChild(routeButton);
+            }
         }
-    }
     };
     xhr.send();
 }
@@ -67,6 +69,9 @@ function putRusaIcon(myMap) {
 
 function getRoute(myMap, coordinates, difficulty, length, name, notes, seasons, id) {
     console.log(notes);
+    console.log(typeof(notes));
+    var notes_modified_list = JSON.parse(notes.replace(/'/g, '"'));
+    console.log(notes_modified_list);
     var existingRectangle = document.getElementById("rectangleDiv");
     if (existingRectangle) {
         existingRectangle.parentNode.removeChild(existingRectangle);
@@ -91,11 +96,18 @@ function getRoute(myMap, coordinates, difficulty, length, name, notes, seasons, 
         animationTime: 2000
     });
     myMap.geoObjects.add(myPolyline);
-    myMap.setCenter(lineCoordinates[0], 12);
-    putPlaceMark(myMap, lineCoordinates[0], "Начало маршрута");
+    // myMap.setCenter(lineCoordinates[0], 12);
+    myMap.setBounds(myPolyline.geometry.getBounds(), {
+        checkZoomRange: true
+    });
+    putPlaceMark(myMap, lineCoordinates[0], "Начало маршрута", "startEnd");
     myPolyline.animate()
         .then(function() {
-            return putPlaceMark(myMap, lineCoordinates[lineCoordinates.length - 1], "Конец маршрута");
+            for (var i = 0; i < notes_modified_list.length; i++) {
+                putPlaceMark(myMap, notes_modified_list[i][0], notes_modified_list[i][1], "simpleMark");
+                console.log(notes_modified_list[i]);
+            }
+            putPlaceMark(myMap, lineCoordinates[lineCoordinates.length - 1], "Конец маршрута", "startEnd");
         })
         .then(function() {
             var rectangle = document.createElement("div");
@@ -104,7 +116,7 @@ function getRoute(myMap, coordinates, difficulty, length, name, notes, seasons, 
             rectangle.style.top = "0";
             rectangle.style.left = "0";
             rectangle.style.width = "100vh";
-            rectangle.style.height = "50px"; // Высота прямоугольника - 100px
+            rectangle.style.height = "50px";
             rectangle.style.backgroundColor = "black";
             rectangle.style.zIndex = 1;
             rectangle.style.display = "flex";
@@ -125,7 +137,7 @@ function getRoute(myMap, coordinates, difficulty, length, name, notes, seasons, 
                 rectangle.appendChild(text);
                 index += 1;
             });
-            var container = document.getElementById("map"); // Замените "yourDivId" на id вашего div
+            var container = document.getElementById("map");
             container.insertBefore(rectangle, container.firstChild);
             console.log("ID road: -> " + id);
         })
@@ -139,11 +151,15 @@ function getRoute(myMap, coordinates, difficulty, length, name, notes, seasons, 
         });
 }
 
-function putPlaceMark(myMap, coords, text) {
+function putPlaceMark(myMap, coords, text, preset) {
+    var presets_dict = {
+        "startEnd": "islands#redCircleIcon",
+        "simpleMark": "islands#icon"
+    }
     var placemark = new ymaps.Placemark(coords, {
         balloonContentHeader: text,
     }, {
-        preset: 'islands#redCircleIcon'
+        preset: presets_dict[preset]
     });
     myMap.geoObjects.add(placemark);
 }
