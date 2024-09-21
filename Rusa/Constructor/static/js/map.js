@@ -31,6 +31,7 @@ function loadAllRoutes(myMap) {
         clusterDisableClickZoom: true,
         clusterOpenBalloonOnClick: true,
     });
+    var bounds = [];
     var xhr = new XMLHttpRequest();
     xhr.open("GET", "/get_routes/", true);
     xhr.onload = function () {
@@ -52,6 +53,7 @@ function loadAllRoutes(myMap) {
                 //     });
                 // })(routes[i]);
                 clusterer.add(placemark);
+                bounds.push(startCoordinates);
                 // var routeButton = document.createElement('button');
                 // routeButton.textContent = routes[i].fields.name;
                 //     (function(route) {
@@ -63,6 +65,7 @@ function loadAllRoutes(myMap) {
             }
         }
         myMap.geoObjects.add(clusterer);
+        myMap.setBounds(myMap.geoObjects.getBounds(), { checkZoomRange: true, zoomMargin: 20 });
     };
     xhr.send();
 }
