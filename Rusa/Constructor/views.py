@@ -85,6 +85,7 @@ def route_page(request, route_id):
     route_time_sec = round(route_length / 5 * 3600)
     route_time = datetime.timedelta(seconds=route_time_sec)
     route_time_str = str(route_time)
+    user_id = request.user.id
     # if route_time < 1:
     #     route_time_minutes = round(route_time * 60)
     #     if 5 <= route_time_minutes <= 20 or route_time_minutes % 10 == 0 or 5 <= route_time_minutes % 10 <= 9:
@@ -106,7 +107,9 @@ def route_page(request, route_id):
         'route_length': round(route_length, 1),
         'route_popularity': route.popularity, 
         'route_difficulty': round(route.difficulty),
-        'route_author': get_person_name(route.author_id)
+        'route_author': get_person_name(route.author_id),
+        'user_id': user_id,
+        'author_id': route.author_id
     }
     return render(request, 'route_page.html', context)
 

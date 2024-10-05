@@ -1,10 +1,10 @@
 ymaps.ready(init);
 
 function init() {
-    var LITTLE_RESTRICT_AREA = [
-        [55.492003, 35.400976], 
-        [56.009654, 36.830914]
-    ];
+    // var LITTLE_RESTRICT_AREA = [
+    //     [55.492003, 35.400976], 
+    //     [56.009654, 36.830914]
+    // ];
     var LITTLE_ZOOM_RANGE = [9.5, 20];
     var centerCoordinates = [55.703697, 36.192678];
     var addingPlacemark = false;
@@ -17,12 +17,13 @@ function init() {
         type: 'yandex#map',
     }, {
         yandexMapDisablePoiInteractivity: true,
-    }, {
-        restrictMapArea: LITTLE_RESTRICT_AREA,
-    });
-    myMap.options.set('minZoom', LITTLE_ZOOM_RANGE[0]);
-    myMap.options.set('maxZoom', LITTLE_ZOOM_RANGE[1]);
-    
+    }
+    // , {
+    //     restrictMapArea: LITTLE_RESTRICT_AREA,
+    // }
+    );
+    // myMap.options.set('minZoom', LITTLE_ZOOM_RANGE[0]);
+    // myMap.options.set('maxZoom', LITTLE_ZOOM_RANGE[1]);
     
     var myPlacemark;  
     var lineCoordinates = [];
@@ -148,6 +149,10 @@ function saveData(myMap, myPolyline, lineCoordinates, notes, length) {
     var lineDifficulty = document.getElementById('lineDifficulty').value;
     var seasons = Array.from(document.querySelectorAll('input[name="season"]:checked')).map(function(el) { return el.value; });
     console.log(userId);
+    if (!lineName || !lineDifficulty || seasons.length === 0) {
+        alert("Пожалуйста, заполните все обязательные поля.");
+        return; // Прекращаем выполнение функции, если поля не заполнены
+    }
     var lineData = {
         userId: userId,
         name: lineName,

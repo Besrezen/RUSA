@@ -1,28 +1,29 @@
 var centerCoordinates = [55.703697, 36.192678];
 ymaps.ready(['AnimatedLine']).then(init);
+console.log('УСПЕХ1!');
 function init(ymaps) {
-    var LITTLE_RESTRICT_AREA = [
-        [55.492003, 35.400976], 
-        [56.009654, 36.830914]
-    ];
-    var LITTLE_ZOOM_RANGE = [9.5, 20];
-    var myMap = new ymaps.Map('map', {
-        center: [55.703697, 36.192678], // координаты центра карты
-        zoom: 9.5, // уровень масштабирования
-        controls: ['zoomControl'],
-        behaviors: ['drag', 'scrollZoom'],
-        // maxZoom: 15,
+    console.log('УСПЕХ2!');
+    console.log(routeIdList);
+    for (var i = 0; i < routeIdList.length; i++) {
+        var myMap = new ymaps.Map('map-preview-' + routeIdList[i], {
+            center: [55.703697, 36.192678],
+            zoom: 9.5,
+            controls: [],
+            behaviors: [],
+            type: 'yandex#satellite'
+        });
+        console.log('map-preview-' + routeIdList[i]);
+        getRoute(myMap, routeIdList[i]);
+        myMap.events.add('click', function (e) {
+            e.preventDefault();
+        });
+        myMap.events.add('dblclick', function (e) {
+            e.preventDefault();
+        });
+        myMap.events.add('contextmenu', function (e) {
+            e.preventDefault();
+        });
     }
-    // , {
-    //     restrictMapArea: LITTLE_RESTRICT_AREA
-    // }
-    );
-    // myMap.options.set('minZoom', LITTLE_ZOOM_RANGE[0]);
-    // myMap.options.set('maxZoom', LITTLE_ZOOM_RANGE[1]);
-
-    putRusaIcon(myMap);
-    getRoute(myMap);
-    // loadAllRoutes(myMap);
 }
 
 function putRusaIcon(myMap) {
@@ -42,7 +43,7 @@ function putRusaIcon(myMap) {
 }
 
 
-function getRoute(myMap) {
+function getRoute(myMap, id) {
     var xhr = new XMLHttpRequest();
     xhr.open("GET", "/get_routes/", true);
     xhr.onload = function () {
@@ -50,7 +51,7 @@ function getRoute(myMap) {
         var routes = JSON.parse(data);
         console.log(routes);
         for (var i = 0; i < routes.length; i++) {
-            if (routes[i].pk == routeId) {
+            if (routes[i].pk == id) {
                 putRoute(myMap, routes[i].fields.coordinates, routes[i].fields.notes);
             }
         };
@@ -66,7 +67,9 @@ function putPlaceMark(myMap, coords, text, iconPath, preset) {
     var placemark = new ymaps.Placemark(coords, {
         balloonContentHeader: text,
     }, {
-        preset: presets_dict[preset]
+        preset: presets_dict[preset],
+        hasBalloon: false,
+        hasHint: false
     });
     if (iconPath) {
         placemark.options.set('iconLayout', 'default#image');
@@ -102,24 +105,30 @@ function putRoute(myMap, coordinates, notes) {
         var lineCoordinates = JSON.parse(coordinates);
 
         var myPolyline = new ymaps.AnimatedLine(lineCoordinates, {}, {
-            strokeColor: "#0000FF", // цвет линии
+            strokeColor: "#FF0000", // цвет линии
             strokeWidth: 4, // ширина линии
             strokeOpacity: 0.5, // прозрачность линии
             animationTime: 2000
         });
         myMap.geoObjects.add(myPolyline);
-        // myMap.setCenter(lineCoordinates[0], 12);
         myMap.setBounds(myPolyline.geometry.getBounds(), {
             checkZoomRange: true
         });
         myMap.container.fitToViewport();
+        // myMap.setCenter(lineCoordinates[0], 12);
         putPlaceMark(myMap, lineCoordinates[0], "Начало маршрута", "", "startEnd");
-        myPolyline.animate()
-            .then(function() {
-                for (var i = 0; i < notes_modified_list.length; i++) {
-                    putPlaceMark(myMap, notes_modified_list[i][0], notes_modified_list[i][1], "", "simpleMark");
-                    console.log(notes_modified_list[i]);
-                }
-                putPlaceMark(myMap, lineCoordinates[lineCoordinates.length - 1], "Конец маршрута", customFinishImage, "simpleMark");
-            });
+        for (var i = 0; i < notes_modified_list.length; i++) {
+            putPlaceMark(myMap, notes_modified_list[i][0], notes_modified_list[i][1], "", "simpleMark");
+            console.log(notes_modified_list[i]);
+        }
+        putPlaceMark(myMap, lineCoordinates[lineCoordinates.length - 1], "Конец маршрута", customFinishImage, "simpleMark");
+        myMap.geoObjects.add(polyline);
+        // myPolyline.animate()
+        //     .then(function() {
+                // for (var i = 0; i < notes_modified_list.length; i++) {
+                //     putPlaceMark(myMap, notes_modified_list[i][0], notes_modified_list[i][1], "", "simpleMark");
+                //     console.log(notes_modified_list[i]);
+                // }
+                // putPlaceMark(myMap, lineCoordinates[lineCoordinates.length - 1], "Конец маршрута", customFinishImage, "simpleMark");
+        //     });
 }
