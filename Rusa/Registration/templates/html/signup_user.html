@@ -85,6 +85,61 @@
         text-decoration: underline;
     }
 
+    .error-message {
+        color: red;
+        font-size: 14px;
+        margin-bottom: 15px;
+        display: none; /* Изначально скрыто */
+    }
+
+    /* Стили для полноэкранного оверлея ошибки */
+    .overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.7);
+        display: none; /* Изначально скрыто */
+        justify-content: center;
+        align-items: center;
+        z-index: 1000;
+    }
+
+    .overlay-content {
+        background-color: #fff;
+        padding: 30px;
+        border-radius: 8px;
+        text-align: center;
+        max-width: 400px;
+        width: 80%;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    }
+
+    .overlay-content h3 {
+        margin-bottom: 20px;
+        color: #333;
+    }
+
+    .overlay-content p {
+        margin-bottom: 20px;
+        color: #555;
+    }
+
+    .overlay-content button {
+        padding: 10px 20px;
+        background-color: #007bff;
+        color: #fff;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+    }
+
+    .overlay-content button:hover {
+        background-color: #0056b3;
+    }
+
     .right-section {
         display: flex;
         justify-content: center;
@@ -108,12 +163,14 @@
 <div class="registration-container">
     <div class="left-section">
         <h2>Регистрация</h2>
-        <form method="post" action="{% url 'signup_user' %}">
+        <form method="post" action="{% url 'signup_user' %}" onsubmit="return validateForm()">
             {% csrf_token %}
             <input type="text" name="username" placeholder="Имя пользователя" required>
             <input type="email" name="email" placeholder="Email" required>
-            <input type="password" name="password1" placeholder="Пароль" required>
-            <input type="password" name="password2" placeholder="Подтверждение пароля" required>
+            <input type="password" id="password1" name="password1" placeholder="Пароль" required>
+            <input type="password" id="password2" name="password2" placeholder="Подтверждение пароля" required>
+            <p class="error-message" id="password-error-message">Пароль должен быть не менее 4 символов!</p>
+            <p class="error-message" id="mismatch-error-message">Пароли не совпадают!</p>
             <button type="submit">Зарегистрироваться</button>
         </form>
         <p>Уже есть аккаунт? <a href="{% url 'view_login' %}">Войдите</a>.</p>
@@ -122,4 +179,68 @@
         <img src="{% static 'generic/img/illustration.png' %}" alt="Иллюстрация">
     </div>
 </div>
+
+<!-- Оверлей для сообщений об ошибках -->
+<div class="overlay" id="error-overlay">
+    <div class="overlay-content">
+        <h3>Ошибка регистрации</h3>
+        <p id="overlay-error-message">Пользователь с таким именем уже существует!</p>
+        <button onclick="closeOverlay()">Закрыть</button>
+    </div>
+</div>
+
+<script>
+    // Функция для валидации формы на фронтенде
+    function validateForm() {
+        const password1 = document.getElementById('password1').value;
+        const password2 = document.getElementById('password2').value;
+        const passwordErrorMessage = document.getElementById('password-error-message');
+        const mismatchErrorMessage = document.getElementById('mismatch-error-message');
+
+        let valid = true;
+
+        // Сброс предыдущих сообщений об ошибках
+        passwordErrorMessage.style.display = 'none';
+        mismatchErrorMessage.style.display = 'none';
+
+        // Проверка длины пароля
+        if (password1.length < 4) {
+            passwordErrorMessage.style.display = 'block';
+            valid = false;
+        }
+
+        // Проверка совпадения паролей
+        if (password1 !== password2) {
+            mismatchErrorMessage.style.display = 'block';
+            valid = false;
+        }
+
+        return valid; // Если valid = false, форма не отправится
+    }
+
+    // Функция для отображения оверлея ошибки
+    function showOverlay(message) {
+        const overlay = document.getElementById('error-overlay');
+        const overlayMessage = document.getElementById('overlay-error-message');
+        overlayMessage.textContent = message;
+        overlay.style.display = 'flex';
+    }
+
+    // Функция для закрытия оверлея
+    function closeOverlay() {
+        const overlay = document.getElementById('error-overlay');
+        overlay.style.display = 'none';
+    }
+
+    // Проверка наличия ошибки на стороне сервера при загрузке страницы
+    window.onload = function() {
+        {% if form.errors %}
+            {% if form.errors.username %}
+                showOverlay("Пользователь с таким именем уже существует!");
+            {% endif %}
+            {# Можно добавить другие проверки ошибок при необходимости #}
+        {% endif %}
+    }
+</script>
+
 {% endblock %}
