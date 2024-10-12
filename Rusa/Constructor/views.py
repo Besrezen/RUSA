@@ -177,17 +177,12 @@ def groups_list_page(request, route_id):
                 group.participants_names.append(get_person_name(id))
                 group.participants_ids.append(id)
                 group.zipped_participants = zip(ids, group.participants_names)
-        for id, name in zip(ids, group.participants_names):
-            print("----------------------------------------------------------------------")
-            print(id, name)
-            print("----------------------------------------------------------------------")
     context = {
     'groups': groups,
     'user_id': user_id,
     'route_id': route_id,
     'user_name': get_person_name(user_id)
     }
-    print("HERE--------------------->", route_id)
     return render(request, 'groups_list.html', context)
 
 @csrf_exempt
@@ -261,8 +256,8 @@ def group_page(request, route_id, group_id):
 
     room_name = f"r_{route.id}_g_{group.id}"
 
-    # Загружаем только последние 20 сообщений
-    messages = Message.objects.filter(room=room_name).order_by('-timestamp')[:20]
+    # Загружаем только последние 40 сообщений
+    messages = Message.objects.filter(room=room_name).order_by('-timestamp')[:40]
     # Переворачиваем массив, чтобы самые новые сообщения были снизу
     messages = reversed(messages)
 
@@ -281,22 +276,32 @@ def group_page(request, route_id, group_id):
     }
     return render(request, 'group_page.html', context)
 
-# Новый эндпоинт для подгрузки сообщений
+from django.utils.dateparse import parse_datetime
+from django.utils import timezone
+
 @login_required
-def load_more_messages(request, room_name, page):
-    messages = Message.objects.filter(room=room_name).order_by('-timestamp')
-    paginator = Paginator(messages, 20)  # Пагинация по 20 сообщений
-
-    try:
-        messages_page = paginator.page(page)
-    except:
-        # Если больше страниц нет, возвращаем пустой список и флаг
+def load_more_messages(request, room_name):
+    # Get 'last_timestamp' from GET parameters
+    last_timestamp_str = request.GET.get('last_timestamp', None)
+    
+    if last_timestamp_str:
+        last_timestamp = parse_datetime(last_timestamp_str)
+        if last_timestamp is None:
+            return JsonResponse({'messages': [], 'no_more_messages': True})
+    else:
+        # If no timestamp provided, return the latest messages
+        last_timestamp = timezone.now()
+    
+    # Fetch messages older than 'last_timestamp'
+    messages = Message.objects.filter(room=room_name, timestamp__lt=last_timestamp).order_by('-timestamp')[:40]
+    
+    if not messages:
         return JsonResponse({'messages': [], 'no_more_messages': True})
-
+    
     messages_data = [{
         'username': message.user.username,
         'content': message.content,
-        'timestamp': message.timestamp.strftime("%Y-%m-%d %H:%M:%S")
-    } for message in messages_page]
-
+        'timestamp': message.timestamp.isoformat()
+    } for message in messages]
+    
     return JsonResponse({'messages': messages_data, 'no_more_messages': False})

@@ -15,5 +15,5 @@ urlpatterns = [
     path('update_group_participants/<int:group_id>/', views.update_group_participants, name='update_group_participants'),
     path('delete_group/<int:group_id>/', views.delete_group, name='delete_group'),
     path('route/<int:route_id>/group/<int:group_id>/', views.group_page, name='group_page'),
-    path('load-more-messages/<str:room_name>/<int:page>/', views.load_more_messages, name='load_more_messages'),
+    path('load-more-messages/<str:room_name>/', views.load_more_messages, name='load_more_messages'),
 ]

@@ -194,7 +194,10 @@
         background-color: #f9f9f9;
         border-radius: 10px;
         word-wrap: break-word; /* Перенос длинных слов на новые строки */
+        overflow-y: scroll;
+        overscroll-behavior: contain; /* Добавлено для предотвращения прокрутки страницы */
     }
+    
     #chat-log div {
         margin-bottom: 0.5rem;
     }
@@ -294,14 +297,17 @@
         <div id="buttons_{{ group.id }}"></div>
     </div>
 
-    <!-- Чат внутри основного контейнера -->
+    <!-- Чат  -->
     <div id="chat-section">
-        <h2>Чат группы: {{ group.name }}</h2>
+        <h2>Чат группы</h2>
         <div id="chat-log">
             {% for message in messages %}
-                <div><strong>{{ message.user.username }}:</strong> {{ message.content }}</div>
+                <div data-timestamp="{{ message.timestamp.isoformat }}">
+                    <strong>{{ message.user.username }}:</strong> {{ message.content }}
+                </div>
             {% endfor %}
         </div>
+        
         <div style="width: 100%; display: flex; justify-content: space-between;">
             <input id="chat-message-input" type="text" placeholder="Введите сообщение..." autocomplete="off"/>
             <button id="chat-message-submit">Отправить</button>
@@ -317,52 +323,73 @@
         wsScheme + '://' + window.location.host + '/ws/chat/' + roomName + '/'
     );
 
-    let page = 1;  // Начинаем с первой страницы
-    const chatLog = document.getElementById('chat-log');
-    let loading = false;  // Флаг загрузки для предотвращения дублирования запросов
-    let allMessagesLoaded = false;  // Флаг для того, чтобы знать, что все сообщения загружены
+    let oldestTimestamp = null;
+    let loading = false;
+    let allMessagesLoaded = false;
 
-    // Функция для загрузки предыдущих сообщений
+    const chatLog = document.getElementById('chat-log');
+
+    // Debounce function to limit the rate at which a function can fire.
+    function debounce(func, wait = 100) {
+        let timeout;
+        return function(...args) {
+            clearTimeout(timeout);
+            timeout = setTimeout(() => func.apply(this, args), wait);
+        };
+    }
+
+    // Function to load more messages
     function loadMoreMessages() {
         if (loading || allMessagesLoaded) return;
         loading = true;
 
-        // Сохраняем текущую высоту скролла и общую высоту контейнера перед загрузкой новых сообщений
-        const currentScrollHeight = chatLog.scrollHeight;
-        const currentScrollPosition = chatLog.scrollTop;
+        let url = `/load-more-messages/${roomName}/?`;
+        if (oldestTimestamp) {
+            url += `last_timestamp=${encodeURIComponent(oldestTimestamp)}`;
+        }
 
-        page += 1;
-        fetch(`/load-more-messages/${roomName}/${page}/`)
+        fetch(url)
             .then(response => response.json())
             .then(data => {
                 if (data.no_more_messages) {
-                    allMessagesLoaded = true;  // Все сообщения загружены, больше не делаем запросы
+                    allMessagesLoaded = true;
                 } else if (data.messages.length > 0) {
+                    const currentScrollHeight = chatLog.scrollHeight;
                     data.messages.forEach(message => {
                         const msgElement = document.createElement('div');
-                        msgElement.innerHTML = '<strong>' + message.username + ':</strong> ' + message.content;
+                        msgElement.innerHTML = `<strong>${message.username}:</strong> ${message.content}`;
+                        msgElement.setAttribute('data-timestamp', message.timestamp);
                         chatLog.insertBefore(msgElement, chatLog.firstChild);
+                        // Update 'oldestTimestamp'
+                        if (!oldestTimestamp || new Date(message.timestamp) < new Date(oldestTimestamp)) {
+                            oldestTimestamp = new Date(message.timestamp).toISOString();
+                        }
                     });
 
-                    // После загрузки новых сообщений возвращаем скролл в ту же позицию
-                    chatLog.scrollTop = chatLog.scrollHeight - currentScrollHeight + currentScrollPosition;
+                    // Adjust scroll position to maintain view
+                    const newScrollHeight = chatLog.scrollHeight;
+                    chatLog.scrollTop = newScrollHeight - currentScrollHeight;
                 }
+                loading = false;
+            })
+            .catch(error => {
+                console.error('Error loading more messages:', error);
                 loading = false;
             });
     }
 
-    // Функция для прокрутки чата вниз
+    // Function to scroll chat to bottom
     function scrollToBottom() {
         chatLog.scrollTop = chatLog.scrollHeight;
     }
 
-    // Обработчик получения нового сообщения
+    // Handle incoming messages
     chatSocket.onmessage = function(e) {
         const data = JSON.parse(e.data);
         const message = data.message;
         const username = data.username;
         const msgElement = document.createElement('div');
-        msgElement.innerHTML = '<strong>' + username + ':</strong> ' + message;
+        msgElement.innerHTML = `<strong>${username}:</strong> ${message}`;
         chatLog.appendChild(msgElement);
         scrollToBottom();
     };
@@ -371,6 +398,7 @@
         console.error('Chat socket closed unexpectedly');
     };
 
+    // Function to send a message
     function sendMessage() {
         const messageInputDom = document.getElementById('chat-message-input');
         const message = messageInputDom.value;
@@ -384,11 +412,18 @@
     }
 
     document.addEventListener('DOMContentLoaded', function() {
-        // Прокрутка чата вниз при загрузке страницы
+        // Initialize 'oldestTimestamp'
+        const firstMessage = chatLog.firstElementChild;
+        if (firstMessage) {
+            oldestTimestamp = firstMessage.getAttribute('data-timestamp');
+        }
+
+        // Scroll to bottom on load
         scrollToBottom();
 
+        // Event listeners for sending messages
         document.getElementById('chat-message-input').addEventListener('keyup', function(e) {
-            if (e.keyCode === 13) {  // Enter key
+            if (e.key === 'Enter') {  // Modern approach
                 sendMessage();
             }
         });
@@ -396,15 +431,16 @@
             sendMessage();
         });
 
-        // Загрузка сообщений при скролле вверх
-        chatLog.addEventListener('scroll', function() {
-            if (chatLog.scrollTop === 0 && !loading && !allMessagesLoaded) {  // Если дошли до верхней границы и не в процессе загрузки и все еще есть сообщения
+        // Event listener for scrolling to load more messages
+        chatLog.addEventListener('scroll', debounce(function() {
+            // Preload when user is within 100px of the top
+            if (chatLog.scrollTop < 250 && !loading && !allMessagesLoaded) {
                 loadMoreMessages();
             }
-        });
+        }, 200)); // Adjust debounce wait time as needed
+        
     });
 </script>
-
 
 
 <script src="{% static 'js/groups.js' %}" type="text/javascript"></script>
