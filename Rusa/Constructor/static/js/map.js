@@ -1,24 +1,13 @@
 var centerCoordinates = [55.703697, 36.192678];
 ymaps.ready(['AnimatedLine']).then(init);
 function init(ymaps) {
-    // var LITTLE_RESTRICT_AREA = [
-    //     [55.492003, 35.400976], 
-    //     [56.009654, 36.830914]
-    // ];
-    // var LITTLE_ZOOM_RANGE = [9.5, 20];
     var myMap = new ymaps.Map('map', {
-        center: [55.703697, 36.192678], // координаты центра карты
-        zoom: 9.5, // уровень масштабирования
+        center: [55.703697, 36.192678],
+        zoom: 9.5,
         controls: ['zoomControl'],
         behaviors: ['drag', 'scrollZoom'],
-        // maxZoom: 15,
     }
-    // , {
-    //     restrictMapArea: LITTLE_RESTRICT_AREA
-    // }
     );
-    // myMap.options.set('minZoom', LITTLE_ZOOM_RANGE[0]);
-    // myMap.options.set('maxZoom', LITTLE_ZOOM_RANGE[1]);
 
     putRusaIcon(myMap);
     loadAllRoutes(myMap);
@@ -31,41 +20,35 @@ function loadAllRoutes(myMap) {
         clusterDisableClickZoom: true,
         clusterOpenBalloonOnClick: true,
     });
-    var bounds = [];
     var xhr = new XMLHttpRequest();
     xhr.open("GET", "/get_routes/", true);
     xhr.onload = function () {
         var data = JSON.parse(this.responseText);
-        var routesContainer = document.getElementById('routesContainer');
         var routes = JSON.parse(data);
-        // console.log(routes);
         for (var i = 0; i < routes.length; i++) {
-            console.log("HERE --- is ");
-            console.log(routes[i].fields.coordinates == "[]");
             if (routes[i].fields.coordinates != "[]") {
                 var startCoordinates = JSON.parse(routes[i].fields.coordinates)[0];
                 var placemark = new ymaps.Placemark(startCoordinates, {
-                    balloonContentBody: '<a href="/route/' + routes[i].pk + '">' + routes[i].fields.name + '</a>'
+                    balloonContentHeader: '<a href="/route/' + routes[i].pk + '">' + routes[i].fields.name + '</a>'
                 });
-                // (function(route) {
-                //     placemark.events.add('click', function () {
-                //         window.location.href = '/route/' + route.pk;
-                //     });
-                // })(routes[i]);
                 clusterer.add(placemark);
-                bounds.push(startCoordinates);
-                // var routeButton = document.createElement('button');
-                // routeButton.textContent = routes[i].fields.name;
-                //     (function(route) {
-                //         routeButton.addEventListener('click', function () {
-                //                 getRoute(myMap, route.fields.coordinates, route.fields.difficulty, route.fields.length, route.fields.name, route.fields.notes, route.fields.seasons, route.pk);
-                //             });
-                //         })(routes[i]);
-                //     routesContainer.appendChild(routeButton);
             }
         }
+        clusterer.events.add('balloonopen', function (e) {
+            var cluster = e.get('target');
+            var geoObjects = cluster.getGeoObjects();
+            var balloonContent = '<ul>';
+            for (var i = 0; i < geoObjects.length; i++) {
+                var placemark = geoObjects[i];
+                balloonContent += '<li><a href="' + placemark.properties.get('balloonContentBody') + '">' + placemark.properties.get('balloonContentBody') + '</a></li>';
+            }
+            balloonContent += '</ul>';
+            cluster.properties.set('balloonContent', balloonContent);
+        });
         myMap.geoObjects.add(clusterer);
         myMap.setBounds(myMap.geoObjects.getBounds(), { checkZoomRange: true, zoomMargin: 20 });
+
+        
     };
     xhr.send();
 }
