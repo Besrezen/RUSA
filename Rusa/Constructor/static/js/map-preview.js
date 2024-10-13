@@ -50,6 +50,7 @@ function getRoute(myMap, id) {
         for (var i = 0; i < routes.length; i++) {
             if (routes[i].pk == id) {
                 putRoute(myMap, routes[i].fields.coordinates, routes[i].fields.notes);
+                if(routes[i].pk == 12) console.log("here", routes[i].fields.coordinates)
             }
         };
     };
@@ -102,9 +103,9 @@ function putRoute(myMap, coordinates, notes) {
         var lineCoordinates = JSON.parse(coordinates);
 
         var myPolyline = new ymaps.AnimatedLine(lineCoordinates, {}, {
-            strokeColor: "#FF0000", // цвет линии
-            strokeWidth: 4, // ширина линии
-            strokeOpacity: 0.5, // прозрачность линии
+            strokeColor: "#FF0000",
+            strokeWidth: 4,
+            strokeOpacity: 0.5,
             animationTime: 2000
         });
         myMap.geoObjects.add(myPolyline);
@@ -112,20 +113,11 @@ function putRoute(myMap, coordinates, notes) {
             checkZoomRange: true
         });
         myMap.container.fitToViewport();
-        // myMap.setCenter(lineCoordinates[0], 12);
         putPlaceMark(myMap, lineCoordinates[0], "Начало маршрута", "", "startEnd");
         for (var i = 0; i < notes_modified_list.length; i++) {
             putPlaceMark(myMap, notes_modified_list[i][0], notes_modified_list[i][1], "", "simpleMark");
-            // console.log(notes_modified_list[i]);
         }
         putPlaceMark(myMap, lineCoordinates[lineCoordinates.length - 1], "Конец маршрута", customFinishImage, "simpleMark");
         myMap.geoObjects.add(polyline);
-        // myPolyline.animate()
-        //     .then(function() {
-                // for (var i = 0; i < notes_modified_list.length; i++) {
-                //     putPlaceMark(myMap, notes_modified_list[i][0], notes_modified_list[i][1], "", "simpleMark");
-                //     console.log(notes_modified_list[i]);
-                // }
-                // putPlaceMark(myMap, lineCoordinates[lineCoordinates.length - 1], "Конец маршрута", customFinishImage, "simpleMark");
-        //     });
+
 }

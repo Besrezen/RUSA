@@ -1,5 +1,7 @@
 from django.urls import path
 from . import views
+from django.conf import settings
+from django.conf.urls.static import static
 
 urlpatterns = [
     path('', views.map_view, name='home'),
@@ -16,4 +18,4 @@ urlpatterns = [
     path('delete_group/<int:group_id>/', views.delete_group, name='delete_group'),
     path('route/<int:route_id>/group/<int:group_id>/', views.group_page, name='group_page'),
     path('load-more-messages/<str:room_name>/<int:page>/', views.load_more_messages, name='load_more_messages'),
-]
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
