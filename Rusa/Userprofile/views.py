@@ -1,3 +1,5 @@
+# userprofile/views.py
+
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse, HttpResponseBadRequest
@@ -55,10 +57,12 @@ def update_profile(request):
 
         # Обработка загрузки фото профиля
         if 'personal_photo' in request.FILES:
-            if profile.personal_photo and profile.personal_photo.url != 'img/anonim.png':
+            new_photo = request.FILES['personal_photo']
+            # Проверяем, что текущая фотография не является anon.png
+            if profile.personal_photo and profile.personal_photo.name != 'profile_photos/anon.png':
                 if os.path.isfile(profile.personal_photo.path):
                     os.remove(profile.personal_photo.path)
-            profile.personal_photo = request.FILES['personal_photo']
+            profile.personal_photo = new_photo  # Название файла будет уникальным благодаря функции upload_to
 
         profile.save()
 
