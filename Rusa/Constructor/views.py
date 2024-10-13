@@ -79,40 +79,6 @@ def route_list(request):
 
     return render(request, 'route_list.html', context)
 
-def route_page(request, route_id):
-    route = get_object_or_404(Line, pk=route_id)
-    route_length = route.length / 1000
-    route_time_sec = round(route_length / 5 * 3600)
-    route_time = datetime.timedelta(seconds=route_time_sec)
-    route_time_str = str(route_time)
-    user_id = request.user.id
-    # if route_time < 1:
-    #     route_time_minutes = round(route_time * 60)
-    #     if 5 <= route_time_minutes <= 20 or route_time_minutes % 10 == 0 or 5 <= route_time_minutes % 10 <= 9:
-    #         route_time_str = f"{route_time_minutes:.0f} минут"
-    #     elif route_time_minutes % 10 == 1:
-    #         route_time_str = f"{route_time_minutes:.0f} минута"
-    #     else:
-    #         route_time_str = f"{route_time_minutes:.0f} минуты"
-    # else:
-    #     if 2 <= route_time < 5:
-    #         route_time_str = f"{route_time:.2f} часа"
-    #     elif route_time >= 5:
-    #         route_time_str = f"{route_time:.2f} часов"
-    #     else:
-    #         route_time_str = f"{route_time:.2f} час"
-    context = {
-        'route': route,
-        'route_time': route_time_str,
-        'route_length': round(route_length, 1),
-        'route_popularity': route.popularity, 
-        'route_difficulty': round(route.difficulty),
-        'route_author': get_person_name(route.author_id),
-        'user_id': user_id,
-        'author_id': route.author_id
-    }
-    return render(request, 'route_page.html', context)
-
 def create_map_url(route):
     # Первая и последняя координаты для меток
     coordinates = json.loads(route.coordinates)
@@ -279,7 +245,6 @@ def group_page(request, route_id, group_id):
 from django.utils.dateparse import parse_datetime
 from django.utils import timezone
 
-@login_required
 def load_more_messages(request, room_name):
     # Get 'last_timestamp' from GET parameters
     last_timestamp_str = request.GET.get('last_timestamp', None)
@@ -305,3 +270,35 @@ def load_more_messages(request, room_name):
     } for message in messages]
     
     return JsonResponse({'messages': messages_data, 'no_more_messages': False})
+
+
+def route_page(request, route_id):
+    route = get_object_or_404(Line, pk=route_id)
+    route.popularity += 1
+    route.save()
+    route_length = route.length / 1000
+    route_time_sec = round(route_length / 5 * 3600)
+    route_time = datetime.timedelta(seconds=route_time_sec)
+    route_time_str = str(route_time)
+    user_id = request.user.id
+
+    # Контекст для чата
+    room_name = f"route_{route.id}_chat"
+
+    # Загрузка последних 40 сообщений
+    messages = Message.objects.filter(room=room_name).order_by('-timestamp')[:40]
+    messages = reversed(messages)  # Для отображения старых сообщений первыми
+
+    context = {
+        'route': route,
+        'route_time': route_time_str,
+        'route_length': round(route_length, 1),
+        'route_popularity': route.popularity, 
+        'route_difficulty': round(route.difficulty),
+        'route_author': get_person_name(route.author_id),
+        'user_id': user_id,
+        'author_id': route.author_id,
+        'room_name': room_name, 
+        'messages': messages, 
+    }
+    return render(request, 'route_page.html', context)

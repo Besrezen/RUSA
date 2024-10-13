@@ -100,6 +100,85 @@
         background-color: #2980b9;
     }
 
+    /* Стили для секции комментариев */
+    #comments-section {
+        margin-top: 2rem;
+        padding: 1rem;
+        background-color: #ffffff;
+        border-radius: 10px;
+        box-shadow: 0 0 20px rgba(0,0,0,0.1);
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+    #comments-log {
+        border: 1px solid #ccc;
+        max-height: 400px;
+        width: 100%;
+        overflow-y: scroll;
+        padding: 10px;
+        margin-bottom: 10px;
+        background-color: #f9f9f9;
+        border-radius: 10px;
+        word-wrap: break-word;
+        overscroll-behavior: contain;
+    }
+    #comments-log .comment {
+        padding: 0.5rem;
+        border-bottom: 1px solid #e0e0e0;
+    }
+    #comments-log .comment:last-child {
+        border-bottom: none;
+    }
+    #comments-log .comment-header {
+        display: flex;
+        justify-content: space-between;
+        font-size: 0.85rem;
+        color: #7f8c8d;
+        margin-bottom: 0.2rem;
+    }
+    #comments-log .comment-content {
+        font-size: 1rem;
+        color: #333;
+    }
+    #comments-log .comment strong {
+        color: #3498db;
+    }
+    .comments-input-container {
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+    }
+    #comment-input {
+        flex: 1;
+        padding: 0.75rem;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        margin-right: 0.5rem;
+        font-size: 1rem;
+    }
+    #comment-submit {
+        flex: 0 0 auto;
+        padding: 0.75rem 1rem;
+        background-color: #3498db;
+        color: #fff;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-weight: bold;
+        min-width: 80px;
+        font-size: 1rem;
+    }
+    #comment-submit:hover {
+        background-color: #2980b9;
+    }
+    #login-prompt {
+        font-size: 1rem;
+        color: #000000;
+    }
+
+    /* Адаптивные стили */
     @media (min-width: 768px) {
         .container {
             padding: 2rem;
@@ -144,12 +223,14 @@
 <input type="hidden" id="route-id" value="{{ route.id }}">
 <input type="hidden" id="user-id" value="{{ user_id }}">
 <input type="hidden" id="author-id" value="{{ author_id }}">
+<input type="hidden" id="room-name" value="{{ room_name }}">
 <script>
-var customIconImage = "{% static 'img/rusa.png' %}";
-var customFinishImage = "{% static 'img/finish_flag.png' %}";
-const routeId = Number(document.getElementById('route-id').value);
-const userId = Number(document.getElementById('user-id').value);
-const authorId = Number(document.getElementById('author-id').value);
+    var customIconImage = "{% static 'img/rusa.png' %}";
+    var customFinishImage = "{% static 'img/finish_flag.png' %}";
+    const routeId = Number(document.getElementById('route-id').value);
+    const userId = Number(document.getElementById('user-id').value);
+    const authorId = Number(document.getElementById('author-id').value);
+    const roomName = document.getElementById('room-name').value;
 </script>
 {% endblock %}
 
@@ -168,11 +249,8 @@ const authorId = Number(document.getElementById('author-id').value);
             <p class="author">Автор: {{ route_author }}</p>
         </div>
         <script>
-            // console.log(authorId);
-            // console.log(userId);
-            // console.log(authorId === userId);
             if (authorId === userId) {
-                block = document.getElementById('author');
+                const block = document.getElementById('author');
                 block.innerHTML = '<p class="author">Вы - создатель этого маршрута</p>';
             }
         </script>
@@ -182,13 +260,10 @@ const authorId = Number(document.getElementById('author-id').value);
         <div class="right-el">
             <h6>ОСНОВНАЯ ИНФОРМАЦИЯ</h6>
             <div class="parameter">
-                <p><span>Номер маршрута:</span><br><i class="fas fa-route"></i><b>{{ route.id }}</b></p>
-            </div>
-            <div class="parameter">
                 <p><span>Сложность:</span><br><i class="fas fa-tachometer-alt"></i><b>{{ route_difficulty }}</b></p>
             </div>
             <div class="parameter">
-                <p><span>Популярность:</span><br><i class="fas fa-star"></i><b>{{ route_popularity }}</b></p>
+                <p><span>Кол-во просмотров:</span><br><i class="fas fa-star"></i><b>{{ route_popularity }}</b></p>
             </div>
         </div>
         <div class="right-el">
@@ -204,8 +279,219 @@ const authorId = Number(document.getElementById('author-id').value);
             <a href="{% url 'groups_list_page' route.id %}">Список групп</a>
         </h5>
     </div>
+
+    <!-- Раздел Комментариев -->
+    <div id="comments-section">
+        <h2>Комментарии</h2>
+        <div id="comments-log">
+            {% for comment in messages %}
+                <div class="comment" data-timestamp="{{ comment.timestamp.isoformat }}">
+                    <div class="comment-header">
+                        <strong>{{ comment.user.username }}</strong>
+                        <span class="comment-timestamp">{{ comment.timestamp|date:"d.m.Y, H:i" }}</span>
+                    </div>
+                    <div class="comment-content">
+                        {{ comment.content }}
+                    </div>
+                </div>
+            {% empty %}
+                <p id="no-comments-message">Нет комментариев. Будьте первым!</p>
+            {% endfor %}
+        </div>
+        
+        {% if user.is_authenticated %}
+            <div class="comments-input-container">
+                <input id="comment-input" type="text" placeholder="Добавьте комментарий..." autocomplete="off"/>
+                <button id="comment-submit">Отправить</button>
+            </div>
+        {% else %}
+            <p id="login-prompt">Пожалуйста, войдите, чтобы оставлять комментарии.</p>
+        {% endif %}
+    </div>
 </div>
 
-<script src="../../static/js/current_route.js?v={{ now|date:'U' }}"></script>
-<script src="../../static/js/animated_line.js"></script>
+<script>
+    // Инициализация WebSocket
+    const wsScheme = window.location.protocol === "https:" ? "wss" : "ws";
+    const commentsSocket = new WebSocket(
+        wsScheme + '://' + window.location.host + '/ws/chat/' + encodeURIComponent(roomName) + '/'
+    );
+
+    let oldestTimestamp = null;
+    let loading = false;
+    let allCommentsLoaded = false;
+
+    const commentsLog = document.getElementById('comments-log');
+    const noCommentsMessage = document.getElementById('no-comments-message');
+
+    // Функция для форматирования метки времени
+    function formatTimestamp(timestamp) {
+        const date = new Date(timestamp);
+        if (isNaN(date.getTime())) {
+            return new Date().toLocaleDateString('ru-RU', {
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit',
+            });
+        }
+        const options = {
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit',
+        };
+        return date.toLocaleDateString('ru-RU', options);
+    }
+
+    // Функция debounce
+    function debounce(func, wait = 100) {
+        let timeout;
+        return function(...args) {
+            clearTimeout(timeout);
+            timeout = setTimeout(() => func.apply(this, args), wait);
+        };
+    }
+
+    // Функция для загрузки дополнительных комментариев
+    function loadMoreComments() {
+        if (loading || allCommentsLoaded) return;
+        loading = true;
+
+        let url = `/load-more-messages/${encodeURIComponent(roomName)}/?`;
+        if (oldestTimestamp) {
+            url += `last_timestamp=${encodeURIComponent(oldestTimestamp)}`;
+        }
+
+        fetch(url)
+            .then(response => response.json())
+            .then(data => {
+                if (data.no_more_messages) {
+                    allCommentsLoaded = true;
+                } else if (data.messages.length > 0) {
+                    const currentScrollHeight = commentsLog.scrollHeight;
+                    data.messages.forEach(comment => {
+                        const commentElement = document.createElement('div');
+                        commentElement.classList.add('comment');
+                        commentElement.setAttribute('data-timestamp', comment.timestamp);
+                        commentElement.innerHTML = `
+                            <div class="comment-header">
+                                <strong>${comment.username}</strong>
+                                <span class="comment-timestamp">${formatTimestamp(comment.timestamp)}</span>
+                            </div>
+                            <div class="comment-content">
+                                ${comment.content}
+                            </div>
+                        `;
+                        commentsLog.insertBefore(commentElement, commentsLog.firstChild);
+                        if (!oldestTimestamp || new Date(comment.timestamp) < new Date(oldestTimestamp)) {
+                            oldestTimestamp = new Date(comment.timestamp).toISOString();
+                        }
+                    });
+
+                    const newScrollHeight = commentsLog.scrollHeight;
+                    commentsLog.scrollTop = newScrollHeight - currentScrollHeight;
+                }
+                loading = false;
+            })
+            .catch(error => {
+                console.error('Ошибка при загрузке комментариев:', error);
+                loading = false;
+            });
+    }
+
+    // Функция для прокрутки комментариев вниз
+    function scrollToBottom() {
+        commentsLog.scrollTop = commentsLog.scrollHeight;
+    }
+
+    // Обработка входящих комментариев
+    commentsSocket.onmessage = function(e) {
+        try {
+            const data = JSON.parse(e.data);
+            const comment = data.message;
+            const username = data.username;
+            let timestamp = data.timestamp;
+
+            if (!timestamp || isNaN(new Date(timestamp).getTime())) {
+                console.warn('Неверная или отсутствующая метка времени. Используется текущее время.');
+                timestamp = new Date().toISOString();
+            }
+
+            const commentElement = document.createElement('div');
+            commentElement.classList.add('comment');
+            commentElement.setAttribute('data-timestamp', timestamp);
+            commentElement.innerHTML = `
+                <div class="comment-header">
+                    <strong>${username}</strong>
+                    <span class="comment-timestamp">${formatTimestamp(timestamp)}</span>
+                </div>
+                <div class="comment-content">
+                    ${comment}
+                </div>
+            `;
+            commentsLog.appendChild(commentElement);
+
+            // Удаляем сообщение "Нет комментариев", если оно существует
+            if (noCommentsMessage) {
+                noCommentsMessage.remove();
+            }
+
+            scrollToBottom();
+        } catch (error) {
+            console.error('Ошибка при разборе сообщения WebSocket:', error);
+        }
+    };
+
+    commentsSocket.onclose = function(e) {
+        console.error('WebSocket комментарии закрыт неожиданно');
+    };
+
+    // Функция для отправки комментария
+    function sendComment() {
+        const commentInput = document.getElementById('comment-input');
+        const comment = commentInput.value;
+        if (comment.trim() === "") {
+            return;
+        }
+        commentsSocket.send(JSON.stringify({
+            'message': comment
+        }));
+        commentInput.value = '';
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const firstComment = commentsLog.firstElementChild;
+        if (firstComment && firstComment.id === 'no-comments-message') {
+            allCommentsLoaded = true;
+        } else if (firstComment) {
+            oldestTimestamp = firstComment.getAttribute('data-timestamp');
+        }
+
+        scrollToBottom();
+
+        {% if user.is_authenticated %}
+            document.getElementById('comment-input').addEventListener('keyup', function(e) {
+                if (e.key === 'Enter') {
+                    sendComment();
+                }
+            });
+            document.getElementById('comment-submit').addEventListener('click', function(e) {
+                sendComment();
+            });
+        {% endif %}
+
+        commentsLog.addEventListener('scroll', debounce(function() {
+            if (commentsLog.scrollTop < 250 && !loading && !allCommentsLoaded) {
+                loadMoreComments();
+            }
+        }, 200));
+    });
+</script>
+
+<script src="{% static 'js/current_route.js' %}" type="text/javascript"></script>
+<script src="{% static 'js/animated_line.js' %}"></script>
+
 {% endblock %}

@@ -184,7 +184,7 @@
                             <a class="nav-link custom-font-size btn-custom" aria-current="page" href="{% url 'home' %}">Главная</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link custom-font-size btn-custom" href="{% url 'route_list' %}">Популярное</a>
+                            <a class="nav-link custom-font-size btn-custom" href="{% url 'route_list' %}?sort_by=popularity&order=desc">Популярное</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link custom-font-size btn-custom" href="{% url 'view_profile' %}">Профиль <i class="bi bi-person"></i></a>

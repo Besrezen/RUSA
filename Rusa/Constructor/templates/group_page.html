@@ -19,6 +19,7 @@
     var customIconImage = "{% static 'img/rusa.png' %}";
     var customFinishImage = "{% static 'img/finish_flag.png' %}";
     const routeId = document.getElementById('route-id').value;
+    var isAuthenticated = {% if user.is_authenticated %}true{% else %}false{% endif %};
 </script>
 <style>
     body {
@@ -194,43 +195,85 @@
         background-color: #f9f9f9;
         border-radius: 10px;
         word-wrap: break-word; /* Перенос длинных слов на новые строки */
-        overflow-y: scroll;
         overscroll-behavior: contain; /* Добавлено для предотвращения прокрутки страницы */
     }
-    
+
+    /* Новые стили для отображения даты и времени */
+    .message-header {
+        display: flex;
+        justify-content: space-between;
+        font-size: 0.85rem;
+        color: #7f8c8d;
+        margin-bottom: 0.2rem;
+    }
+    .message-timestamp {
+        font-size: 0.75rem;
+        color: #95a5a6;
+    }
+    .message-content {
+        font-size: 1rem;
+        color: #333;
+        margin-bottom: 0.5rem;
+    }
+
     #chat-log div {
         margin-bottom: 0.5rem;
     }
     #chat-log strong {
         color: #3498db;
     }
+    /* Updated styles for chat input and button */
+    .chat-input-container {
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+    }
     #chat-message-input {
-        width: 85%;
+        flex: 1;
         padding: 0.75rem;
         border: 1px solid #ccc;
         border-radius: 5px;
-        margin-right: 1rem;
+        margin-right: 0.5rem;
+        font-size: 1rem;
     }
     #chat-message-submit {
-        width: 12%;
-        padding: 0.75rem;
+        flex: 0 0 auto;
+        padding: 0.75rem 1rem;
         background-color: #3498db;
         color: #fff;
         border: none;
         border-radius: 5px;
         cursor: pointer;
         font-weight: bold;
+        min-width: 80px;
+        font-size: 1rem;
     }
     #chat-message-submit:hover {
         background-color: #2980b9;
     }
 
-    @media (min-width: 768px) {
+    @media (max-width: 480px) {
+        /* Adjust font size and padding for very small screens */
         #chat-message-input {
-            width: 88%;
+            padding: 0.5rem;
+            font-size: 0.9rem;
+            margin-right: 0.3rem;
         }
         #chat-message-submit {
-            width: 10%;
+            padding: 0.5rem 0.8rem;
+            font-size: 0.9rem;
+            min-width: 70px;
+        }
+    }
+
+    @media (min-width: 768px) {
+        /* Adjustments for medium screens if necessary */
+        #chat-message-input {
+            font-size: 1rem;
+        }
+        #chat-message-submit {
+            font-size: 1rem;
+            min-width: 80px;
         }
     }
 
@@ -258,7 +301,7 @@
                 <p><span>Сложность:</span><br><i class="fas fa-tachometer-alt"></i><b>{{ route_difficulty }}</b></p>
             </div>
             <div class="parameter">
-                <p><span>Популярность:</span><br><i class="fas fa-star"></i><b>{{ route_popularity }}</b></p>
+                <p><span>Кол-во просмотров:</span><br><i class="fas fa-star"></i><b>{{ route_popularity }}</b></p>
             </div>
             <div class="parameter">
                 <p><span>Длина:</span><br><i class="fas fa-ruler"></i><b>{{ route_length }} км</b></p>
@@ -302,16 +345,28 @@
         <h2>Чат группы</h2>
         <div id="chat-log">
             {% for message in messages %}
-                <div data-timestamp="{{ message.timestamp.isoformat }}">
-                    <strong>{{ message.user.username }}:</strong> {{ message.content }}
+                <div class="message" data-timestamp="{{ message.timestamp.isoformat }}">
+                    <div class="message-header">
+                        <strong>{{ message.user.username }}</strong>
+                        <span class="message-timestamp">{{ message.timestamp|date:"d.m.Y, H:i" }}</span>
+                    </div>
+                    <div class="message-content">
+                        {{ message.content }}
+                    </div>
                 </div>
+            {% empty %}
+                <p id="no-messages-message">Нет сообщений. Будьте первым!</p>
             {% endfor %}
         </div>
         
-        <div style="width: 100%; display: flex; justify-content: space-between;">
-            <input id="chat-message-input" type="text" placeholder="Введите сообщение..." autocomplete="off"/>
-            <button id="chat-message-submit">Отправить</button>
-        </div>
+        {% if user.is_authenticated %}
+            <div class="chat-input-container">
+                <input id="chat-message-input" type="text" placeholder="Введите сообщение..." autocomplete="off"/>
+                <button id="chat-message-submit">Отправить</button>
+            </div>
+        {% else %}
+            <p id="login-prompt">Пожалуйста, <a href="{% url 'login' %}">войдите</a>, чтобы отправлять сообщения.</p>
+        {% endif %}
     </div>
 </div>
 
@@ -328,6 +383,30 @@
     let allMessagesLoaded = false;
 
     const chatLog = document.getElementById('chat-log');
+    const noMessagesMessage = document.getElementById('no-messages-message');
+
+    // Функция для форматирования метки времени
+    function formatTimestamp(timestamp) {
+        const date = new Date(timestamp);
+        if (isNaN(date.getTime())) {
+            // Если timestamp некорректен, используем текущее время
+            return new Date().toLocaleDateString('ru-RU', {
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit',
+            });
+        }
+        const options = {
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit',
+        };
+        return date.toLocaleDateString('ru-RU', options);
+    }
 
     // Debounce function to limit the rate at which a function can fire.
     function debounce(func, wait = 100) {
@@ -338,7 +417,7 @@
         };
     }
 
-    // Function to load more messages
+    // Функция для загрузки дополнительных сообщений
     function loadMoreMessages() {
         if (loading || allMessagesLoaded) return;
         loading = true;
@@ -357,16 +436,25 @@
                     const currentScrollHeight = chatLog.scrollHeight;
                     data.messages.forEach(message => {
                         const msgElement = document.createElement('div');
-                        msgElement.innerHTML = `<strong>${message.username}:</strong> ${message.content}`;
+                        msgElement.classList.add('message');
                         msgElement.setAttribute('data-timestamp', message.timestamp);
+                        msgElement.innerHTML = `
+                            <div class="message-header">
+                                <strong>${message.username}</strong>
+                                <span class="message-timestamp">${formatTimestamp(message.timestamp)}</span>
+                            </div>
+                            <div class="message-content">
+                                ${message.content}
+                            </div>
+                        `;
                         chatLog.insertBefore(msgElement, chatLog.firstChild);
-                        // Update 'oldestTimestamp'
+                        // Обновляем 'oldestTimestamp'
                         if (!oldestTimestamp || new Date(message.timestamp) < new Date(oldestTimestamp)) {
                             oldestTimestamp = new Date(message.timestamp).toISOString();
                         }
                     });
 
-                    // Adjust scroll position to maintain view
+                    // Регулируем позицию прокрутки для сохранения текущего вида
                     const newScrollHeight = chatLog.scrollHeight;
                     chatLog.scrollTop = newScrollHeight - currentScrollHeight;
                 }
@@ -378,33 +466,71 @@
             });
     }
 
-    // Function to scroll chat to bottom
+    // Функция для прокрутки чата вниз
     function scrollToBottom() {
         chatLog.scrollTop = chatLog.scrollHeight;
     }
 
-    // Handle incoming messages
+    // Обработка входящих сообщений
     chatSocket.onmessage = function(e) {
-        const data = JSON.parse(e.data);
-        const message = data.message;
-        const username = data.username;
-        const msgElement = document.createElement('div');
-        msgElement.innerHTML = `<strong>${username}:</strong> ${message}`;
-        chatLog.appendChild(msgElement);
-        scrollToBottom();
+        try {
+            const data = JSON.parse(e.data);
+            console.log('Received data:', data); // Для отладки
+
+            const message = data.message;
+            const username = data.username;
+            let timestamp = data.timestamp; // Предполагается, что сервер отправляет метку времени
+
+            // Проверяем, есть ли timestamp и корректен ли он
+            if (!timestamp || isNaN(new Date(timestamp).getTime())) {
+                console.warn('Invalid or missing timestamp. Using current time.');
+                timestamp = new Date().toISOString();
+            }
+
+            const msgElement = document.createElement('div');
+            msgElement.classList.add('message');
+            msgElement.setAttribute('data-timestamp', timestamp);
+            msgElement.innerHTML = `
+                <div class="message-header">
+                    <strong>${username}</strong>
+                    <span class="message-timestamp">${formatTimestamp(timestamp)}</span>
+                </div>
+                <div class="message-content">
+                    ${message}
+                </div>
+            `;
+            chatLog.appendChild(msgElement);
+
+            // Удаляем сообщение "Нет сообщений", если оно существует
+            if (noMessagesMessage) {
+                noMessagesMessage.remove();
+            }
+
+            scrollToBottom();
+        } catch (error) {
+            console.error('Error parsing WebSocket message:', error);
+        }
     };
 
     chatSocket.onclose = function(e) {
         console.error('Chat socket closed unexpectedly');
     };
 
-    // Function to send a message
+    // Функция для отправки сообщения
     function sendMessage() {
         const messageInputDom = document.getElementById('chat-message-input');
-        const message = messageInputDom.value;
-        if (message.trim() === "") {
+        const message = messageInputDom.value.trim();
+        const maxLength = 500; // Максимальная длина сообщения
+
+        if (message === "") {
             return;
         }
+
+        if (message.length > maxLength) {
+            alert(`Сообщение не может превышать ${maxLength} символов.`);
+            return;
+        }
+
         chatSocket.send(JSON.stringify({
             'message': message
         }));
@@ -412,33 +538,36 @@
     }
 
     document.addEventListener('DOMContentLoaded', function() {
-        // Initialize 'oldestTimestamp'
+        // Инициализируем 'oldestTimestamp'
         const firstMessage = chatLog.firstElementChild;
-        if (firstMessage) {
+        if (firstMessage && firstMessage.id === 'no-messages-message') {
+            allMessagesLoaded = true;
+        } else if (firstMessage) {
             oldestTimestamp = firstMessage.getAttribute('data-timestamp');
         }
 
-        // Scroll to bottom on load
+        // Прокручиваем чат вниз при загрузке
         scrollToBottom();
 
-        // Event listeners for sending messages
-        document.getElementById('chat-message-input').addEventListener('keyup', function(e) {
-            if (e.key === 'Enter') {  // Modern approach
+        // Обработчики событий для отправки сообщений
+        {% if user.is_authenticated %}
+            document.getElementById('chat-message-input').addEventListener('keyup', function(e) {
+                if (e.key === 'Enter') {  // Современный подход
+                    sendMessage();
+                }
+            });
+            document.getElementById('chat-message-submit').addEventListener('click', function(e) {
                 sendMessage();
-            }
-        });
-        document.getElementById('chat-message-submit').addEventListener('click', function(e) {
-            sendMessage();
-        });
+            });
+        {% endif %}
 
-        // Event listener for scrolling to load more messages
+        // Обработчик события прокрутки для загрузки дополнительных сообщений
         chatLog.addEventListener('scroll', debounce(function() {
-            // Preload when user is within 100px of the top
+            // Загружаем при прокрутке вверх, если пользователь близко к верху
             if (chatLog.scrollTop < 250 && !loading && !allMessagesLoaded) {
                 loadMoreMessages();
             }
-        }, 200)); // Adjust debounce wait time as needed
-        
+        }, 200)); // Настройте задержку debounce по необходимости
     });
 </script>
 
