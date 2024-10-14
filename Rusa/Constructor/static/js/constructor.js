@@ -31,6 +31,7 @@ function init() {
     myMap.geoObjects.add(myPolyline);
 
     myMap.events.add('click', function (e) {
+        console.log(lineCoordinates);
         if (addingPlacemark) return;
         var coords = e.get('coords');
         length = 0;
@@ -61,13 +62,13 @@ function init() {
             length += ymaps.coordSystem.geo.getDistance(lineCoordinates[i], lineCoordinates[i + 1]);
         }
         length != 0 ? (document.getElementById('coordinates').innerText = "Длина маршрута: " + length.toFixed(2) + " м") : (document.getElementById('coordinates').innerText = "");
-        console.log(length != 0);
+        // console.log(length != 0);
         // document.getElementById('coordinates').innerText = "Длина маршрута: " + length.toFixed(2) + " м";
         myPolyline.geometry.setCoordinates(lineCoordinates);
     });
     
     document.getElementById('saveLineButton').addEventListener('click', function () {
-        console.log(notes);
+        // console.log(notes);
         saveData(myMap, myPolyline, lineCoordinates, notes, length);
     });
     document.getElementById('addPlacemarkButton').addEventListener('click', function () {
@@ -193,7 +194,7 @@ function saveData(myMap, myPolyline, lineCoordinates, notes, length) {
     var lineDifficulty = document.getElementById('lineDifficulty').value;
     var seasons = Array.from(document.querySelectorAll('input[name="season"]:checked')).map(function(el) { return el.value; });
     var previewPhoto = document.getElementById('previewPhoto').files[0];
-    console.log(previewPhoto);
+    // console.log(previewPhoto);
     if (!lineName || !lineDifficulty || seasons.length === 0) {
         alert("Пожалуйста, заполните все обязательные поля.");
         return;
@@ -220,13 +221,14 @@ function saveData(myMap, myPolyline, lineCoordinates, notes, length) {
     formData.append('difficulty', lineDifficulty);
     formData.append('length', length.toFixed(2));
     formData.append('notes', JSON.stringify(notes));
-    console.log(notes)
-    console.log(JSON.stringify(notes))
+    // console.log(notes)
+    // console.log(JSON.stringify(notes))
     formData.append('previewPhoto', previewPhoto);
     var xhr = new XMLHttpRequest();
     xhr.open("POST", "/save_coordinates/", true);
     xhr.send(formData);
-    lineCoordinates = [];
+    // lineCoordinates = [];
+    lineCoordinates.splice(0, lineCoordinates.length);
     length = 0;
     myPolyline.geometry.setCoordinates(lineCoordinates);
     document.getElementById('coordinates').innerText = "";
