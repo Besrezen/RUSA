@@ -101,9 +101,10 @@ def route_list(request):
         if route.pk == 12: print("NAME ---------------->", route.name, route.coordinates)
         route.len_km = round(route.length / 1000, 1)
         route.diff_rounded = round(route.difficulty)
+        if route.previewPhoto: route.has_preview = 1
     context = {
         'routes': routes
-        }
+    }
 
     return render(request, 'route_list.html', context)
 
@@ -129,6 +130,10 @@ def route_page(request, route_id):
     #         route_time_str = f"{route_time:.2f} часов"
     #     else:
     #         route_time_str = f"{route_time:.2f} час"
+    # if request.method == 'POST' and request.FILES.get('preview'):
+    #     route.preview = request.FILES['preview']
+    #     route.save()
+    #     return JsonResponse({'status': 'success'})
     context = {
         'route': route,
         'route_time': route_time_str,

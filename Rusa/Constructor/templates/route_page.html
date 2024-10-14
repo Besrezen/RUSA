@@ -167,6 +167,14 @@ const authorId = Number(document.getElementById('author-id').value);
         <div id="author">
             <p class="author">Автор: {{ route_author }}</p>
         </div>
+        <!-- <div id="preview">
+            {% if route.previewPhoto %}
+                <p>Имя файла: {{ route.preview.name }}</p>
+            {% else %}
+            <input type="file" id="preview-upload" name="preview-upload" accept="image/*">
+            <button onclick="uploadPreview()">Загрузить превью</button>
+            {% endif %}
+        </div> -->
         <script>
             // console.log(authorId);
             // console.log(userId);
