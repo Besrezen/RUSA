@@ -3,7 +3,7 @@
 from django.db import models
 from Registration.models import CustomUser
 from datetime import date
-from .utils import user_profile_photo_path  # Импорт функции
+from .utils import user_profile_photo_path, portfolio_image_path  # Импорт функции
 
 class UserProfile(models.Model):
     user = models.OneToOneField(CustomUser, on_delete=models.CASCADE)
@@ -23,5 +23,5 @@ class UserProfile(models.Model):
         return self.user.username
 
 class PortfolioImage(models.Model):
-    image = models.ImageField(upload_to='portfolio_images')
+    image = models.ImageField(upload_to=portfolio_image_path)
     user = models.ForeignKey(UserProfile, on_delete=models.CASCADE, related_name='portfolio_images')
