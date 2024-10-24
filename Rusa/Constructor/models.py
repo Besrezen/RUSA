@@ -9,6 +9,8 @@ class Line(models.Model):
     seasons = models.TextField(null=True)
     popularity = models.DecimalField(max_digits=7, null=False, default=0, decimal_places=0)
     notes = models.TextField(null=True)
+    previewPhoto = models.ImageField(upload_to='preview_photos/', null=True, blank=True)
+
 
 class Group(models.Model):
     leader_id = models.DecimalField(max_digits=5, decimal_places=0, null=True)

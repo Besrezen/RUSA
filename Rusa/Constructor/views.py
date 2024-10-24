@@ -36,10 +36,37 @@ def constructor_view(request):
 @csrf_exempt
 def save_coordinates(request):
     if request.method == 'POST':
-        data = json.loads(request.body)
-        line = Line(author_id=data['userId'], name=data['name'], coordinates=data['coordinates'], seasons=data['seasons'], difficulty=data['difficulty'], length=data['length'], notes=data['notes'])
+        previewFile = request.FILES.get('previewPhoto')
+        print("______________________", previewFile, '___________________')
+        userId = request.POST.get('userId')
+        name = request.POST.get('name')
+        coordinates = request.POST.get('coordinates')
+        seasons = request.POST.get('seasons')
+        difficulty = request.POST.get('difficulty')
+        length = request.POST.get('length')
+        notes = request.POST.get('notes')
+        previewFile = request.FILES.get('previewPhoto')
+        notesJson = json.loads(notes)
+        seasonsJson = json.loads(seasons)
+
+        print("orig ----------------->",notes)
+        # print("LIST IS HERE ----------------->",notesJson)
+
+        line = Line(
+            author_id=userId,
+            name=name,
+            coordinates=coordinates,
+            seasons=seasonsJson,
+            difficulty=difficulty,
+            length=length,
+            notes=notesJson,
+            # notes=notes,
+            previewPhoto=previewFile
+        )
         line.save()
-        return JsonResponse({"status": "success"}, status=200)
+    
+        
+    return JsonResponse({"status": "success"}, status=200)
     
 def get_lines(request):
     lines = Line.objects.all()
@@ -70,12 +97,14 @@ def route_list(request):
     routes = Line.objects.all().order_by(sort_by)
     for route in routes:
         route.map_url = create_map_url(route)
-        route.is_not_empty_coords = not (str(route.coordinates) == "[]")
+        route.is_not_empty_coords = bool(str(route.coordinates) != "[]")
+        if route.pk == 12: print("NAME ---------------->", route.name, route.coordinates)
         route.len_km = round(route.length / 1000, 1)
         route.diff_rounded = round(route.difficulty)
+        if route.previewPhoto: route.has_preview = 1
     context = {
         'routes': routes
-        }
+    }
 
     return render(request, 'route_list.html', context)
 

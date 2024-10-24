@@ -1,14 +1,10 @@
 ymaps.ready(init);
 
 function init() {
-    // var LITTLE_RESTRICT_AREA = [
-    //     [55.492003, 35.400976], 
-    //     [56.009654, 36.830914]
-    // ];
-    var LITTLE_ZOOM_RANGE = [9.5, 20];
     var centerCoordinates = [55.703697, 36.192678];
     var addingPlacemark = false;
     var notes = [];
+    var cursorPlacemark;
     var myMap = new ymaps.Map('constructor', {
         center: centerCoordinates, // координаты центра карты
         zoom: 9.5, // уровень масштабирования
@@ -18,12 +14,7 @@ function init() {
     }, {
         yandexMapDisablePoiInteractivity: true,
     }
-    // , {
-    //     restrictMapArea: LITTLE_RESTRICT_AREA,
-    // }
     );
-    // myMap.options.set('minZoom', LITTLE_ZOOM_RANGE[0]);
-    // myMap.options.set('maxZoom', LITTLE_ZOOM_RANGE[1]);
     
     var myPlacemark;  
     var lineCoordinates = [];
@@ -40,6 +31,7 @@ function init() {
     myMap.geoObjects.add(myPolyline);
 
     myMap.events.add('click', function (e) {
+        console.log(lineCoordinates);
         if (addingPlacemark) return;
         var coords = e.get('coords');
         length = 0;
@@ -70,36 +62,89 @@ function init() {
             length += ymaps.coordSystem.geo.getDistance(lineCoordinates[i], lineCoordinates[i + 1]);
         }
         length != 0 ? (document.getElementById('coordinates').innerText = "Длина маршрута: " + length.toFixed(2) + " м") : (document.getElementById('coordinates').innerText = "");
-        console.log(length != 0);
+        // console.log(length != 0);
         // document.getElementById('coordinates').innerText = "Длина маршрута: " + length.toFixed(2) + " м";
         myPolyline.geometry.setCoordinates(lineCoordinates);
     });
     
     document.getElementById('saveLineButton').addEventListener('click', function () {
-        console.log(notes);
+        // console.log(notes);
         saveData(myMap, myPolyline, lineCoordinates, notes, length);
     });
     document.getElementById('addPlacemarkButton').addEventListener('click', function () {
         addingPlacemark = true;
         myMap.events.add('click', onMapClick);
-        alert('Кликните на карте, чтобы добавить метку');
+        myMap.events.add('mousemove', onMapMouseMove);
     });
+
+    // function onMapClick(e) {
+    //     removeCursorPlacemark();
+    //     var coords = e.get('coords');
+    //     var comment = prompt('Введите комментарий для метки:');
+    //     var myNote = [coords, comment];
+    //     if (comment !== null && comment.trim() !== "") {
+    //         var placemark = new ymaps.Placemark(coords, {
+    //             balloonContent: '<input type="text" id="balloonInput" placeholder="Введите комментарий">'
+    //         }, {
+    //             preset: 'islands#icon',
+    //             iconColor: '#0095b6'
+    //         });
+    //         notes.push(myNote);
+    //         myMap.geoObjects.add(placemark);
+    //         myMap.events.remove('click', onMapClick);
+    //         myMap.events.remove('mousemove', onMapMouseMove);
+    //         addingPlacemark = false;
+    //     }
+    // }
 
     function onMapClick(e) {
         var coords = e.get('coords');
-        var comment = prompt('Введите комментарий для метки:');
-        var myNote = [coords, comment];
-        if (comment !== null && comment.trim() !== "") {
-            var placemark = new ymaps.Placemark(coords, {
-                balloonContent: comment
-            }, {
-                preset: 'islands#icon',
-                iconColor: '#0095b6'
-            });
-            notes.push(myNote);
-            myMap.geoObjects.add(placemark);
-            myMap.events.remove('click', onMapClick);
+        var placemark = new ymaps.Placemark(coords, {
+            balloonContent: '<input type="text" id="balloonInput" placeholder="Введите комментарий">'
+        }, {
+            preset: 'islands#icon',
+            iconColor: '#0095b6'
+        });
+    
+        placemark.events.add('balloonopen', function () {
+            removeCursorPlacemark();
             addingPlacemark = false;
+            var balloonContent = document.getElementById('balloonInput');
+            balloonContent.focus();
+            balloonContent.addEventListener('change', function () {
+                var comment = balloonContent.value;
+                if (comment.trim() !== "") {
+                    placemark.properties.set('balloonContent', comment);
+                    notes.push([coords, comment]);
+                    myMap.geoObjects.add(placemark);
+                    myMap.events.remove('click', onMapClick);
+                    myMap.events.remove('mousemove', onMapMouseMove);
+                }
+            });
+        });
+        myMap.geoObjects.add(placemark);
+        placemark.balloon.open();
+    }
+    function onMapMouseMove(e) {
+        if (!addingPlacemark) return;
+        var coords = e.get('coords');
+        if (!cursorPlacemark) {
+            cursorPlacemark = new ymaps.Placemark(coords, {}, {
+                preset: 'islands#icon',
+                iconColor: '#ff0000',
+                iconOffset: [-10, -10]
+            });
+            myMap.geoObjects.add(cursorPlacemark);
+        } else {
+            cursorPlacemark.geometry.setCoordinates(coords);
+        }
+    }
+    
+
+    function removeCursorPlacemark() {
+        if (cursorPlacemark) {
+            myMap.geoObjects.remove(cursorPlacemark);
+            cursorPlacemark = null;
         }
     }
 }
@@ -148,28 +193,43 @@ function saveData(myMap, myPolyline, lineCoordinates, notes, length) {
     var lineName = document.getElementById('lineName').value;
     var lineDifficulty = document.getElementById('lineDifficulty').value;
     var seasons = Array.from(document.querySelectorAll('input[name="season"]:checked')).map(function(el) { return el.value; });
-    console.log(userId);
+    var previewPhoto = document.getElementById('previewPhoto').files[0];
+    // console.log(previewPhoto);
     if (!lineName || !lineDifficulty || seasons.length === 0) {
         alert("Пожалуйста, заполните все обязательные поля.");
-        return; // Прекращаем выполнение функции, если поля не заполнены
+        return;
     }
-    var lineData = {
-        userId: userId,
-        name: lineName,
-        coordinates: lineCoordinates,
-        seasons: seasons,
-        difficulty: lineDifficulty,
-        length: length.toFixed(2),
-        notes: notes
-    };
-    var lineDataJSON = JSON.stringify(lineData, null, 2);
-    console.log(lineDataJSON);
+
+    // var lineData = {
+    //     userId: userId,
+    //     name: lineName,
+    //     coordinates: lineCoordinates,
+    //     seasons: seasons,
+    //     difficulty: lineDifficulty,
+    //     length: length.toFixed(2),
+    //     notes: notes,
+    //     previewPhoto: previewPhoto
+    // };
+    // var lineDataJSON = JSON.stringify(lineData, null, 2);
+    // console.log(lineDataJSON);
+    
+    var formData = new FormData();
+    formData.append('userId', userId);
+    formData.append('name', lineName);
+    formData.append('coordinates', JSON.stringify(lineCoordinates));
+    formData.append('seasons', JSON.stringify(seasons));
+    formData.append('difficulty', lineDifficulty);
+    formData.append('length', length.toFixed(2));
+    formData.append('notes', JSON.stringify(notes));
+    // console.log(notes)
+    // console.log(JSON.stringify(notes))
+    formData.append('previewPhoto', previewPhoto);
     var xhr = new XMLHttpRequest();
     xhr.open("POST", "/save_coordinates/", true);
-    xhr.setRequestHeader('Content-Type', 'application/json; charset=UTF-8');
-    xhr.send(lineDataJSON);
-    lineCoordinates = [];
-    length = 0;  
+    xhr.send(formData);
+    // lineCoordinates = [];
+    lineCoordinates.splice(0, lineCoordinates.length);
+    length = 0;
     myPolyline.geometry.setCoordinates(lineCoordinates);
     document.getElementById('coordinates').innerText = "";
     deleteAllPlacemarks(myMap, centerCoordinates);

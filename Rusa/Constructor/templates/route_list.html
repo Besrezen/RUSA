@@ -37,7 +37,7 @@
             }
             .route-card img {
                 width: 100%;
-                height: 200px;
+                height: 400px;
                 object-fit: cover;
             }
             .route-card-body {
@@ -75,6 +75,7 @@
             height: 400px; /* Установите высоту, которая вам нужна */
             background-color: #f0f0f0;
             border: 1px solid #ccc;
+            pointer-events: none;
         }
 
     </style>
@@ -146,10 +147,16 @@
                             <!-- <img class="card-img-top" src="https://via.placeholder.com/500x300" alt="Изображение маршрута"> -->
                             <!-- <img src="{{ route.map_url }}" alt="Изображение маршрута"> -->
                             <input type="hidden" id="route-{{ route.id }}" value="{{ route.id }}">
-                            <div class="map-preview" id="map-preview-{{ route.id }}"></div>
-                            <script>
-                                routeIdList.push(document.getElementById('route-{{ route.id }}').value);
-                            </script>
+                            {% if route.previewPhoto %}
+                                <img src="{{ route.previewPhoto.url }}" alt="Preview Photo">
+                            {% else %}
+                                <div class="map-preview" id="map-preview-{{ route.id }}">
+
+                                </div>
+                                <script>
+                                    routeIdList.push(document.getElementById('route-{{ route.id }}').value);
+                                </script>
+                            {% endif %}
                             <div class="route-card-body">
                                 <h5 class="route-card-title">
                                     <a href="{% url 'route_page' route.id %}">{{ route.name }}</a>

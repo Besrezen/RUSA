@@ -1,18 +1,15 @@
 var centerCoordinates = [55.703697, 36.192678];
 ymaps.ready(['AnimatedLine']).then(init);
-console.log('УСПЕХ1!');
 function init(ymaps) {
-    console.log('УСПЕХ2!');
-    console.log(routeIdList);
     for (var i = 0; i < routeIdList.length; i++) {
         var myMap = new ymaps.Map('map-preview-' + routeIdList[i], {
             center: [55.703697, 36.192678],
             zoom: 9.5,
             controls: [],
-            behaviors: [],
-            type: 'yandex#satellite'
+            behaviors: []
+            // type: 'yandex#satellite'
         });
-        console.log('map-preview-' + routeIdList[i]);
+        // console.log('map-preview-' + routeIdList[i]);
         getRoute(myMap, routeIdList[i]);
         myMap.events.add('click', function (e) {
             e.preventDefault();
@@ -49,10 +46,11 @@ function getRoute(myMap, id) {
     xhr.onload = function () {
         var data = JSON.parse(this.responseText);
         var routes = JSON.parse(data);
-        console.log(routes);
+        // console.log(routes);
         for (var i = 0; i < routes.length; i++) {
             if (routes[i].pk == id) {
                 putRoute(myMap, routes[i].fields.coordinates, routes[i].fields.notes);
+                if(routes[i].pk == 12) console.log("here", routes[i].fields.coordinates)
             }
         };
     };
@@ -105,9 +103,9 @@ function putRoute(myMap, coordinates, notes) {
         var lineCoordinates = JSON.parse(coordinates);
 
         var myPolyline = new ymaps.AnimatedLine(lineCoordinates, {}, {
-            strokeColor: "#FF0000", // цвет линии
-            strokeWidth: 4, // ширина линии
-            strokeOpacity: 0.5, // прозрачность линии
+            strokeColor: "#FF0000",
+            strokeWidth: 4,
+            strokeOpacity: 0.5,
             animationTime: 2000
         });
         myMap.geoObjects.add(myPolyline);
@@ -115,20 +113,11 @@ function putRoute(myMap, coordinates, notes) {
             checkZoomRange: true
         });
         myMap.container.fitToViewport();
-        // myMap.setCenter(lineCoordinates[0], 12);
         putPlaceMark(myMap, lineCoordinates[0], "Начало маршрута", "", "startEnd");
         for (var i = 0; i < notes_modified_list.length; i++) {
             putPlaceMark(myMap, notes_modified_list[i][0], notes_modified_list[i][1], "", "simpleMark");
-            console.log(notes_modified_list[i]);
         }
         putPlaceMark(myMap, lineCoordinates[lineCoordinates.length - 1], "Конец маршрута", customFinishImage, "simpleMark");
         myMap.geoObjects.add(polyline);
-        // myPolyline.animate()
-        //     .then(function() {
-                // for (var i = 0; i < notes_modified_list.length; i++) {
-                //     putPlaceMark(myMap, notes_modified_list[i][0], notes_modified_list[i][1], "", "simpleMark");
-                //     console.log(notes_modified_list[i]);
-                // }
-                // putPlaceMark(myMap, lineCoordinates[lineCoordinates.length - 1], "Конец маршрута", customFinishImage, "simpleMark");
-        //     });
+
 }
