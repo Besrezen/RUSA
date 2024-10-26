@@ -1,5 +1,5 @@
 # userprofile/views.py
-
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse, HttpResponseBadRequest
@@ -15,22 +15,46 @@ import json
 @csrf_exempt
 def view_profile(request):
     profile, created = UserProfile.objects.get_or_create(user=request.user)
-    user_routes = Line.objects.filter(author_id=request.user.id)
+    sort_by = request.GET.get('sort_by', 'name')  # Default sort by name
+    order = request.GET.get('order', 'asc')       # Default order ascending
 
-    # Подготовка данных маршрутов пользователя
+    # Adjust sort_by for descending order
+    if order == 'desc':
+        sort_by_param = '-' + sort_by
+    else:
+        sort_by_param = sort_by
+
+    user_routes = Line.objects.filter(author_id=request.user.id).order_by(sort_by_param)
+
+    # Prepare user routes data
     for route in user_routes:
         route.map_url = create_map_url(route)
-        route.is_not_empty_coords = not (str(route.coordinates) == "[]")
+        route.is_not_empty_coords = bool(route.coordinates)
         route.len_km = round(route.length / 1000, 1)
         route.diff_rounded = round(route.difficulty)
+        route.has_preview = bool(route.previewPhoto)
 
-    # Получение изображений из портфолио пользователя
-    portfolio_images = PortfolioImage.objects.filter(user=profile)
+    # Pagination setup
+    paginator = Paginator(user_routes, 3)
+    page = request.GET.get('page')
 
+    try:
+        user_routes_page = paginator.page(page)
+    except PageNotAnInteger:
+        user_routes_page = paginator.page(1)
+    except EmptyPage:
+        user_routes_page = paginator.page(paginator.num_pages)
+
+    # Get sorting parameters for context
     context = {
         'profile': profile,
-        'user_routes': user_routes,
-        'portfolio_images': portfolio_images,  # Добавляем изображения в контекст
+        'user_routes': user_routes_page,  # Paginated routes
+        'page_obj': user_routes_page,     # For template compatibility
+        'paginator': paginator,
+        'is_paginated': user_routes_page.has_other_pages(),
+        'sort_by': sort_by,
+        'order': order,
+        'portfolio_images': PortfolioImage.objects.filter(user=profile),  # Images in context
     }
     return render(request, 'profile.html', context)
 
@@ -122,7 +146,11 @@ def upload_portfolio_image(request):
             user_profile = request.user.userprofile
             image = request.FILES['image']
             portfolio_image = PortfolioImage.objects.create(user=user_profile, image=image)
-            return JsonResponse({'status': 'success', 'image_url': portfolio_image.image.url})
+            return JsonResponse({
+                'status': 'success',
+                'image_url': portfolio_image.image.url,
+                'image_id': portfolio_image.id  # Added image_id
+            })
         else:
             return JsonResponse({'status': 'error', 'error': 'Image file not found.'})
     return JsonResponse({'status': 'error', 'error': 'Invalid request method.'})

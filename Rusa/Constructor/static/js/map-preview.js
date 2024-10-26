@@ -103,7 +103,7 @@ function putRoute(myMap, coordinates, notes) {
         var lineCoordinates = JSON.parse(coordinates);
 
         var myPolyline = new ymaps.AnimatedLine(lineCoordinates, {}, {
-            strokeColor: "#FF0000",
+            strokeColor: "#0000FF",
             strokeWidth: 4,
             strokeOpacity: 0.5,
             animationTime: 2000

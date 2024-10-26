@@ -12,7 +12,7 @@ import datetime
 from Registration.models import CustomUser
 import ast
 from Chat.models import Message
-from django.core.paginator import Paginator
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 
 def map_view(request):
@@ -95,15 +95,33 @@ def route_list(request):
         sort_by = '-' + sort_by
 
     routes = Line.objects.all().order_by(sort_by)
+
+    # Process each route
     for route in routes:
-        route.map_url = create_map_url(route)
-        route.is_not_empty_coords = bool(str(route.coordinates) != "[]")
-        if route.pk == 12: print("NAME ---------------->", route.name, route.coordinates)
+        route.map_url = create_map_url(route)  # Ensure create_map_url is defined
+        route.is_not_empty_coords = bool(route.coordinates)  # Simplified check
         route.len_km = round(route.length / 1000, 1)
         route.diff_rounded = round(route.difficulty)
-        if route.previewPhoto: route.has_preview = 1
+        route.has_preview = bool(route.previewPhoto)
+
+    # Pagination setup
+    paginator = Paginator(routes, 9)
+    page = request.GET.get('page')
+
+    try:
+        routes_page = paginator.page(page)
+    except PageNotAnInteger:
+        routes_page = paginator.page(1)
+    except EmptyPage:
+        routes_page = paginator.page(paginator.num_pages)
+
     context = {
-        'routes': routes
+        'routes': routes_page,  # This will now be the paginated routes
+        'page_obj': routes_page,  # For template compatibility
+        'paginator': paginator,
+        'is_paginated': routes_page.has_other_pages(),
+        'sort_by': request.GET.get('sort_by', 'name'),
+        'order': request.GET.get('order', 'asc'),
     }
 
     return render(request, 'route_list.html', context)
@@ -275,29 +293,21 @@ from django.utils.dateparse import parse_datetime
 from django.utils import timezone
 
 def load_more_messages(request, room_name):
-    # Get 'last_timestamp' from GET parameters
     last_timestamp_str = request.GET.get('last_timestamp', None)
-    
     if last_timestamp_str:
         last_timestamp = parse_datetime(last_timestamp_str)
         if last_timestamp is None:
             return JsonResponse({'messages': [], 'no_more_messages': True})
     else:
-        # If no timestamp provided, return the latest messages
         last_timestamp = timezone.now()
-    
-    # Fetch messages older than 'last_timestamp'
     messages = Message.objects.filter(room=room_name, timestamp__lt=last_timestamp).order_by('-timestamp')[:40]
-    
     if not messages:
         return JsonResponse({'messages': [], 'no_more_messages': True})
-    
     messages_data = [{
         'username': message.user.username,
         'content': message.content,
         'timestamp': message.timestamp.isoformat()
     } for message in messages]
-    
     return JsonResponse({'messages': messages_data, 'no_more_messages': False})
 
 
@@ -329,5 +339,24 @@ def route_page(request, route_id):
         'author_id': route.author_id,
         'room_name': room_name, 
         'messages': messages, 
+        'route_created_at': route.created_at,
     }
     return render(request, 'route_page.html', context)
+
+
+@login_required
+def delete_route(request, route_id):
+    if request.method == 'POST':
+        try:
+            route = Line.objects.get(pk=route_id)
+            if route.author_id != request.user.id:
+                return JsonResponse({"status": "error", "message": "У вас нет прав для удаления этого маршрута."}, status=403)
+            # Если вы не изменили on_delete на CASCADE, удалите связанные группы вручную
+            Group.objects.filter(route_id=route).delete()
+            # Удалите сам маршрут
+            route.delete()
+            return JsonResponse({"status": "success", "message": "Маршрут успешно удален."}, status=200)
+        except Line.DoesNotExist:
+            return JsonResponse({"status": "error", "message": "Маршрут не найден."}, status=404)
+    else:
+        return JsonResponse({"status": "error", "message": "Неверный метод запроса."}, status=400)

@@ -178,6 +178,22 @@
         color: #000000;
     }
 
+    .author-container {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    #delete-route-button {
+        padding: 5px 10px;
+        background-color: #e74c3c;
+        color: #fff;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        margin-left: auto;
+    }
+
     /* Адаптивные стили */
     @media (min-width: 768px) {
         .container {
@@ -246,22 +262,15 @@
         </div>
         <div id="map"></div>
         <div id="author">
-            <p class="author">Автор: {{ route_author }}</p>
-        </div>
-        <!-- <div id="preview">
-            {% if route.previewPhoto %}
-                <p>Имя файла: {{ route.preview.name }}</p>
+            {% if user.id == route.author_id %}
+                <div class="author-container">
+                    <p class="author">Вы - создатель этого маршрута</p>
+                    <button id="delete-route-button">Удалить маршрут</button>
+                </div>
             {% else %}
-            <input type="file" id="preview-upload" name="preview-upload" accept="image/*">
-            <button onclick="uploadPreview()">Загрузить превью</button>
+                <p class="author">Автор: {{ route_author }}</p>
             {% endif %}
-        </div> -->
-        <script>
-            if (authorId === userId) {
-                const block = document.getElementById('author');
-                block.innerHTML = '<p class="author">Вы - создатель этого маршрута</p>';
-            }
-        </script>
+        </div>
     </div>
     
     <div class="right-column">
@@ -270,18 +279,22 @@
             <div class="parameter">
                 <p><span>Сложность:</span><br><i class="fas fa-tachometer-alt"></i><b>{{ route_difficulty }}</b></p>
             </div>
-            <div class="parameter">
-                <p><span>Кол-во просмотров:</span><br><i class="fas fa-star"></i><b>{{ route_popularity }}</b></p>
-            </div>
-        </div>
-        <div class="right-el">
-            <h6>РАССТОЯНИЕ И ВРЕМЯ</h6>
+            
             <div class="parameter">
                 <p><span>Длина:</span><br><i class="fas fa-ruler"></i><b>{{ route_length }} км</b></p>
             </div>
             <div class="parameter">
                 <p><span>Время:</span><br><i class="fas fa-clock"></i><b>{{ route_time }}</b></p>
-            </div>    
+            </div>
+        </div>
+        <div class="right-el">
+            <h6>СТАТИСТИКА</h6>
+            <div class="parameter">
+                <p><span>Кол-во просмотров:</span><br><i class="fas fa-star"></i><b>{{ route_popularity }}</b></p>
+            </div>
+            <div class="parameter">
+                <p><span>Дата создания:</span><br><i class="fas fa-calendar-alt"></i><b>{{ route_created_at|date:"d.m.Y" }}</b></p>
+            </div>
         </div>
         <h5 class="card-title">
             <a href="{% url 'groups_list_page' route.id %}">Список групп</a>
@@ -317,6 +330,44 @@
         {% endif %}
     </div>
 </div>
+
+
+<!-- Добавьте внутри блока <script> -->
+    <script>
+        const csrfToken = '{{ csrf_token }}';
+    
+        document.addEventListener('DOMContentLoaded', function() {
+            const deleteButton = document.getElementById('delete-route-button');
+            if (deleteButton) {
+                deleteButton.addEventListener('click', function() {
+                    if (confirm('Вы уверены, что хотите удалить этот маршрут? Это действие необратимо.')) {
+                        fetch("{% url 'delete_route' route.id %}", {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRFToken': csrfToken,
+                            },
+                            body: JSON.stringify({})
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.status === 'success') {
+                                alert(data.message);
+                                window.location.href = "{% url 'home' %}";
+                            } else {
+                                alert(data.message);
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                            alert('Произошла ошибка при удалении маршрута.');
+                        });
+                    }
+                });
+            }
+        });
+    </script>
+    
 
 <script>
     // Инициализация WebSocket
