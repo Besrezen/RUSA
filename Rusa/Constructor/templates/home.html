@@ -16,12 +16,17 @@
     <script src="https://api-maps.yandex.ru/2.1/?apikey=403f644f-4840-426e-b2df-bea42d662d87&lang=ru_RU" type="text/javascript"></script>
     <script>var customIconImage = "{% static 'img/rusa.png' %}";</script>
     <script>var userId = "{{ user_id }}";</script>
+    <script>
+        var routeIdList = [];
+        var customFinishImage = "{% static 'img/finish_flag.png' %}";
+    </script>
     <style>
         body {
             font-family: 'Roboto', sans-serif;
             margin: 0;
             padding: 0;
             color: #333;
+            background-color: #f5f5f5;
             line-height: 1.6;
         }
         .container {
@@ -60,7 +65,7 @@
         }
         .features {
             padding: 80px 0;
-            background: #f9f9f9;
+            background: #ffffff;
         }
         .feature-grid {
             display: grid;
@@ -109,7 +114,6 @@
             text-decoration: none;
         }
         .testimonials {
-            background: #fff;
             padding: 80px 0;
         }
         .testimonial-grid {
@@ -139,9 +143,71 @@
             font-size: 2.5rem;
             margin-bottom: 30px;
         }
+        .route-card {
+        background-color: #fff;
+        border-radius: 10px;
+        box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        overflow: hidden;
+        margin-bottom: 1.5rem;
+        height: 97%;
+        }
+        .route-card img {
+            width: 100%;
+            height: 400px;
+            object-fit: cover;
+        }
+        .route-card-body {
+            padding: 1.5rem;
+        }
+        .route-card-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+        .route-card-text {
+            color: #7f8c8d;
+            margin-bottom: 0.5rem;
+        }
+        .image-container {
+            position: relative;
+            width: 100%;
+            height: 400px;
+            overflow: hidden;
+        }
+        .image-container img,
+        .image-container .map-preview {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            transition: opacity 0.4s ease;
+        }
+        .image-container .route-photo {
+            opacity: 1;
+            z-index: 2;
+        }
+        .image-container .map-preview {
+            opacity: 0;
+            z-index: 1;
+        }
+        .image-container:hover .route-photo {
+            opacity: 0;
+        }
+        .image-container:hover .map-preview {
+            opacity: 1;
+        }
+        .image-container.no-photo .map-preview {
+            opacity: 1;
+        }
+        .map-preview {
+            width: 100%;
+            height: 400px;
+            background-color: #f0f0f0;
+            border: 1px solid #ccc;
+            pointer-events: none;
+        }
     </style>
-    <script src="https://kit.fontawesome.com/your-fontawesome-kit.js" crossorigin="anonymous"></script>
-    <script src="https://api-maps.yandex.ru/2.1/?apikey=403f644f-4840-426e-b2df-bea42d662d87&lang=ru_RU" type="text/javascript"></script>
 </head>
 <body>
     <section class="hero">
@@ -186,6 +252,41 @@
         </div>
     </section>
 
+    <section class="top-routes">
+        <div class="container">
+            <h2>Популярные маршруты</h2>
+            <div class="row">
+                {% for route in top_routes %}
+                    {% if route.is_not_empty_coords %}
+                        <div class="col-md-4">
+                            <a href="{% url 'route_page' route.id %}" class="route-card-link" style="user-select: none; -webkit-user-drag: none; user-drag: none;">
+                                <div class="route-card">
+                                    <div class="image-container {% if not route.previewPhoto %}no-photo{% endif %}">
+                                        {% if route.previewPhoto %}
+                                            <img src="{{ route.previewPhoto.url }}" alt="Preview Photo" class="route-photo" style="user-select: none; -webkit-user-drag: none; user-drag: none;" onerror="this.style.display='none'; this.nextElementSibling.style.opacity='1';">
+                                        {% endif %}
+                                        <div class="map-preview" id="map-preview-{{ route.id }}">
+                                        </div>
+                                    </div>
+                                    <div class="route-card-body">
+                                        <h5 class="route-card-title">{{ route.name }}</h5>
+                                        <p class="route-card-text"><i class="fas fa-route"></i> Длина: {{ route.len_km }} км</p>
+                                        <p class="route-card-text"><i class="fas fa-mountain"></i> Сложность: {{ route.diff_rounded }}</p>
+                                        <p class="route-card-text"><i class="fas fa-star"></i> Кол-во просмотров: {{ route.popularity }}</p>
+                                    </div>
+                                </div>
+                            </a>
+                            <script>
+                                routeIdList.push({{ route.id }});
+                            </script>
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+    
+
     <section class="testimonials">
         <div class="container">
             <h2>Отзывы путешественников</h2>
@@ -216,7 +317,9 @@
         </div>
     </section>
     <script src="{% static 'js/map.js' %}?v={{ now|date:'U' }}"></script>
-    <script src="{% static 'js/animated_line.js' %}"></script>
+    <script src="../static/js/map-preview.js"></script>
+    <script src="../static/js/animated_line.js"></script>
+
 </body>
 </html>
 {% endblock %}

@@ -79,6 +79,183 @@
         margin-top: 2rem;
         box-shadow: 0 0 10px rgba(0,0,0,0.1);
     }
+    .season-buttons {
+        display: flex;
+        gap: 10px;
+        margin: 1rem 0;
+        flex-wrap: wrap;
+    }
+
+    .season-button {
+        padding: 10px 20px;
+        border: 2px solid transparent;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 16px;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    }
+
+    .season-button.any {
+        background-color: #f0f0f0;
+        color: #333;
+    }
+
+    .season-button.winter {
+        background-color: #e3f2fd;
+        color: #1976d2;
+    }
+
+    .season-button.spring {
+        background-color: #f1f8e9;
+        color: #7cb342;
+    }
+
+    .season-button.summer {
+        background-color: #fff3e0;
+        color: #f57c00;
+    }
+
+    .season-button.autumn {
+        background-color: #ffd2c5;
+        color: #e64a19;
+    }
+
+    .season-button.active {
+        border-color: currentColor;
+        font-weight: bold;
+    }
+
+    .season-button.active.any {
+        background-color: #e0e0e0;
+    }
+
+    .season-button.active.winter {
+        background-color: #bbdefb;
+    }
+
+    .season-button.active.spring {
+        background-color: #dcedc8;
+    }
+
+    .season-button.active.summer {
+        background-color: #ffe0b2;
+    }
+
+    .season-button.active.autumn {
+        background-color: #ffab91;
+    }
+
+    #seasonForm input[type="checkbox"] {
+        display: none;
+    }
+    .difficulty-container {
+    margin: 2rem 0;
+    padding: 1.5rem;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.difficulty-header {
+    margin-bottom: 1.5rem;
+}
+
+.difficulty-label {
+    font-weight: 500;
+    color: #2c3e50;
+    font-size: 1.1rem;
+}
+
+#difficultyValue {
+    display: inline-block;
+    background-color: #3498db;
+    color: white;
+    padding: 0.25rem 0.75rem;
+    border-radius: 15px;
+    font-weight: 500;
+    margin-left: 0.5rem;
+}
+
+.slider-container {
+    position: relative;
+    padding: 0;
+    margin: 0 10px;
+}
+
+input[type="range"] {
+    -webkit-appearance: none;
+    width: calc(100% - 20px);
+    height: 8px;
+    border-radius: 5px;
+    background: linear-gradient(to right, #2ecc71 0%, #f1c40f 50%, #e74c3c 100%);
+    outline: none;
+    margin: 1rem 10px;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: #3498db;
+    cursor: pointer;
+    border: 2px solid #fff;
+    box-shadow: 0 0 5px rgba(0,0,0,0.2);
+}
+
+.slider-labels {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 0.5rem;
+    padding: 0;
+}
+
+.difficulty-min, .difficulty-max {
+    font-size: 0.9rem;
+    color: #666;
+    position: relative;
+    top: 20px;
+}
+
+.difficulty-min {
+    margin-left: 10px;
+}
+
+.difficulty-max {
+    margin-right: 10px;
+}
+
+.slider-ticks {
+    display: flex;
+    justify-content: space-between;
+    padding: 0 10px;
+    position: relative;
+    margin-top: -12px;
+}
+
+.slider-ticks span {
+    font-size: 0.8rem;
+    color: #666;
+    position: relative;
+    width: 20px;
+    text-align: center;
+    padding-top: 15px;
+}
+
+.slider-ticks span::before {
+    content: '';
+    position: absolute;
+    top: 5px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 1px;
+    height: 5px;
+    background-color: #999;
+}
 </style>
 {% endblock %}
 
@@ -99,36 +276,48 @@
         </div>
 
         <div id="coordinates"></div>
-
+        <p>Сезон:</p>
         <form id="seasonForm">
-            <p>Сезон:</p>
+            <div class="season-buttons">
+                <button type="button" class="season-button any" data-season="any">Любой</button>
+                <button type="button" class="season-button winter" data-season="winter">❄️ Зима</button>
+                <button type="button" class="season-button spring" data-season="spring">🌷 Весна</button>
+                <button type="button" class="season-button summer" data-season="summer">☀️ Лето</button>
+                <button type="button" class="season-button autumn" data-season="autumn">🍂 Осень</button>
+            </div>
             <input type="checkbox" id="any" name="season" value="any">
-            <label for="any">Любой</label>
             <input type="checkbox" id="winter" name="season" value="winter">
-            <label for="winter">Зима</label>
             <input type="checkbox" id="spring" name="season" value="spring">
-            <label for="spring">Весна</label>
             <input type="checkbox" id="summer" name="season" value="summer">
-            <label for="summer">Лето</label>
             <input type="checkbox" id="autumn" name="season" value="autumn">
-            <label for="autumn">Осень</label>
         </form>
 
-        <div>
-            <label for="lineDifficulty">Сложность:</label>
-            <select id="lineDifficulty" name="lineDifficulty">
-                <option value="1">1</option>
-                <option value="2">2</option>
-                <option value="3">3</option>
-                <option value="4">4</option>
-                <option value="5">5</option>
-                <option value="6">6</option>
-                <option value="7">7</option>
-                <option value="8">8</option>
-                <option value="9">9</option>
-                <option value="10">10</option>
-            </select>
+        <!-- Замените блок difficulty-container на следующий код -->
+        <div class="difficulty-container">
+            <div class="difficulty-header">
+                <span class="difficulty-label">Сложность: <span id="difficultyValue">5</span></span>
+            </div>
+            <div class="slider-container">
+                <input type="range" id="lineDifficulty" name="lineDifficulty" min="1" max="10" value="5" step="1">
+                <div class="slider-ticks">
+                    <span>1</span>
+                    <span>2</span>
+                    <span>3</span>
+                    <span>4</span>
+                    <span>5</span>
+                    <span>6</span>
+                    <span>7</span>
+                    <span>8</span>
+                    <span>9</span>
+                    <span>10</span>
+                </div>
+                <div class="slider-labels">
+                    <span class="difficulty-min">Легкий</span>
+                    <span class="difficulty-max">Сложный</span>
+                </div>
+            </div>
         </div>
+
         <label for="fileUpload">Загрузить превью маршрута:</label>
         <input type="file" id="previewPhoto" name="previewPhoto" accept="image/*">
     </div>
@@ -144,6 +333,56 @@
         </ul>
     </div>
 </div>
+
+<script>
+    var lineDifficulty = document.getElementById('lineDifficulty');
+    var difficultyValue = document.getElementById('difficultyValue');
+
+    lineDifficulty.addEventListener('input', function() {
+        difficultyValue.textContent = lineDifficulty.value;
+    });
+
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const seasonButtons = document.querySelectorAll('.season-button');
+        const checkboxes = document.querySelectorAll('#seasonForm input[type="checkbox"]');
+        const anyButton = document.querySelector('.season-button[data-season="any"]');
+        const seasonCheckbox = document.getElementById('any');
+
+        function updateAnyButton() {
+            const activeSeasons = document.querySelectorAll('.season-button.active:not([data-season="any"])').length;
+            const totalSeasons = seasonButtons.length - 1; // Исключаем кнопку "Любой"
+            
+            if (activeSeasons === totalSeasons) {
+                anyButton.classList.add('active');
+                seasonCheckbox.checked = true;
+            } else {
+                anyButton.classList.remove('active');
+                seasonCheckbox.checked = false;
+            }
+        }
+
+        seasonButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const season = this.dataset.season;
+                const checkbox = document.getElementById(season);
+
+                if (season === 'any') {
+                    const isActive = !this.classList.contains('active');
+                    seasonButtons.forEach(btn => {
+                        btn.classList.toggle('active', isActive);
+                        const relatedCheckbox = document.getElementById(btn.dataset.season);
+                        if (relatedCheckbox) relatedCheckbox.checked = isActive;
+                    });
+                } else {
+                    this.classList.toggle('active');
+                    checkbox.checked = !checkbox.checked;
+                    updateAnyButton();
+                }
+            });
+        });
+    });
+</script>
 
 <input type="hidden" id="user_id" value="{{ user_id }}">
 <script>

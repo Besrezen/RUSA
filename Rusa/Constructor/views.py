@@ -1,28 +1,42 @@
 from django.shortcuts import render, get_object_or_404
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
-import requests
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from django.core import serializers
+from django.utils.dateparse import parse_datetime
+from django.utils import timezone
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 from django.http import JsonResponse
 from .models import Line, Group
 import json
-from django.core import serializers
+import requests
 import datetime
-from Registration.models import CustomUser
 import ast
+from Registration.models import CustomUser
 from Chat.models import Message
-from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
-
 
 def map_view(request):
     api_key = settings.YANDEX_MAPS_API_KEY
     user_id = request.user.id
+
+    # Получаем три самых популярных маршрута по количеству просмотров
+    top_routes = Line.objects.order_by('-popularity')[:3]
+
+    # Добавляем дополнительные атрибуты, как в функции route_list
+    for route in top_routes:
+        route.is_not_empty_coords = bool(route.coordinates)
+        route.len_km = round(route.length / 1000, 1)
+        route.diff_rounded = round(route.difficulty)
+        route.has_preview = bool(route.previewPhoto)
+
     context = {
         'api_key': api_key,
-        'user_id': user_id
-        }
+        'user_id': user_id,
+        'top_routes': top_routes,
+    }
     return render(request, 'home.html', context)
+
 
 @login_required
 def constructor_view(request):
@@ -37,7 +51,6 @@ def constructor_view(request):
 def save_coordinates(request):
     if request.method == 'POST':
         previewFile = request.FILES.get('previewPhoto')
-        print("______________________", previewFile, '___________________')
         userId = request.POST.get('userId')
         name = request.POST.get('name')
         coordinates = request.POST.get('coordinates')
@@ -49,9 +62,6 @@ def save_coordinates(request):
         notesJson = json.loads(notes)
         seasonsJson = json.loads(seasons)
 
-        print("orig ----------------->",notes)
-        # print("LIST IS HERE ----------------->",notesJson)
-
         line = Line(
             author_id=userId,
             name=name,
@@ -60,12 +70,10 @@ def save_coordinates(request):
             difficulty=difficulty,
             length=length,
             notes=notesJson,
-            # notes=notes,
             previewPhoto=previewFile
         )
         line.save()
-    
-        
+            
     return JsonResponse({"status": "success"}, status=200)
     
 def get_lines(request):
@@ -88,23 +96,21 @@ def update_route_lengths(request):
     return JsonResponse({"status": "success"}, status=200)
 
 def route_list(request):
-    sort_by = request.GET.get('sort_by', 'name')  # Default sort by name
-    order = request.GET.get('order', 'asc')  # Default order ascending
+    sort_by = request.GET.get('sort_by', 'name')
+    order = request.GET.get('order', 'asc')
 
     if order == 'desc':
         sort_by = '-' + sort_by
 
     routes = Line.objects.all().order_by(sort_by)
 
-    # Process each route
     for route in routes:
-        route.map_url = create_map_url(route)  # Ensure create_map_url is defined
-        route.is_not_empty_coords = bool(route.coordinates)  # Simplified check
+        route.map_url = create_map_url(route)
+        route.is_not_empty_coords = bool(route.coordinates)
         route.len_km = round(route.length / 1000, 1)
         route.diff_rounded = round(route.difficulty)
         route.has_preview = bool(route.previewPhoto)
 
-    # Pagination setup
     paginator = Paginator(routes, 9)
     page = request.GET.get('page')
 
@@ -116,14 +122,13 @@ def route_list(request):
         routes_page = paginator.page(paginator.num_pages)
 
     context = {
-        'routes': routes_page,  # This will now be the paginated routes
-        'page_obj': routes_page,  # For template compatibility
+        'routes': routes_page,
+        'page_obj': routes_page,
         'paginator': paginator,
         'is_paginated': routes_page.has_other_pages(),
         'sort_by': request.GET.get('sort_by', 'name'),
         'order': request.GET.get('order', 'asc'),
     }
-
     return render(request, 'route_list.html', context)
 
 def create_map_url(route):
@@ -235,7 +240,6 @@ def delete_group(request, group_id):
     if request.method == "POST":
         try:
             group = Group.objects.get(id=group_id)
-            # Проверка, что текущий пользователь - лидер группы
             if request.user.id == group.leader_id:
                 group.delete()
                 return JsonResponse({"status": "success", "message": "Группа успешно удалена."})
@@ -250,13 +254,11 @@ def group_page(request, route_id, group_id):
     route = get_object_or_404(Line, pk=route_id)
     group = get_object_or_404(Group, pk=group_id)
 
-    # Route information
     route_length = route.length / 1000
     route_time_sec = round(route_length / 5 * 3600)
     route_time = datetime.timedelta(seconds=route_time_sec)
     route_time_str = str(route_time)
 
-    # Group information
     ids = ast.literal_eval(group.participants)
     group.leader_name = get_person_name(group.leader_id)
     group.participant_quantity = len(ids)
@@ -269,9 +271,7 @@ def group_page(request, route_id, group_id):
 
     room_name = f"r_{route.id}_g_{group.id}"
 
-    # Загружаем только последние 40 сообщений
     messages = Message.objects.filter(room=room_name).order_by('-timestamp')[:40]
-    # Переворачиваем массив, чтобы самые новые сообщения были снизу
     messages = reversed(messages)
 
     context = {
@@ -288,9 +288,6 @@ def group_page(request, route_id, group_id):
         'messages': messages,
     }
     return render(request, 'group_page.html', context)
-
-from django.utils.dateparse import parse_datetime
-from django.utils import timezone
 
 def load_more_messages(request, room_name):
     last_timestamp_str = request.GET.get('last_timestamp', None)
@@ -321,12 +318,9 @@ def route_page(request, route_id):
     route_time_str = str(route_time)
     user_id = request.user.id
 
-    # Контекст для чата
-    room_name = f"route_{route.id}_chat"
-
-    # Загрузка последних 40 сообщений
+    room_name = f"route_{route.id}"
     messages = Message.objects.filter(room=room_name).order_by('-timestamp')[:40]
-    messages = reversed(messages)  # Для отображения старых сообщений первыми
+    messages = reversed(messages)
 
     context = {
         'route': route,
@@ -351,9 +345,7 @@ def delete_route(request, route_id):
             route = Line.objects.get(pk=route_id)
             if route.author_id != request.user.id:
                 return JsonResponse({"status": "error", "message": "У вас нет прав для удаления этого маршрута."}, status=403)
-            # Если вы не изменили on_delete на CASCADE, удалите связанные группы вручную
             Group.objects.filter(route_id=route).delete()
-            # Удалите сам маршрут
             route.delete()
             return JsonResponse({"status": "success", "message": "Маршрут успешно удален."}, status=200)
         except Line.DoesNotExist:

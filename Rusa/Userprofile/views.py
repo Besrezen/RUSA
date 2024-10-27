@@ -35,7 +35,7 @@ def view_profile(request):
         route.has_preview = bool(route.previewPhoto)
 
     # Pagination setup
-    paginator = Paginator(user_routes, 3)
+    paginator = Paginator(user_routes, 6)
     page = request.GET.get('page')
 
     try:

@@ -298,8 +298,6 @@
             <button type="button" id="upload-photo-btn" class="btn btn-edit change-photo-btn" style="margin-top: 1rem; display: none;">Изменить фото</button>
         </div>
         
-        
-
         <div class="profile-info">
             <div class="info-group">
                 <div class="info-label">Имя:</div>
@@ -341,12 +339,11 @@
 
     
     
-    <div class="profile-section">
+    <div id="routes-section" class="profile-section">
         <h2>Мои маршруты</h2>
         
         <div class="mb-3">
             <span>Сортировать по:</span>
-            <a href="#" class="sort-link" data-category="name" data-label="Имя">Имя</a> |
             <a href="#" class="sort-link" data-category="length" data-label="Длина">Длина</a> |
             <a href="#" class="sort-link" data-category="difficulty" data-label="Сложность">Сложность</a> |
             <a href="#" class="sort-link" data-category="popularity" data-label="Кол-во просмотров">Кол-во просмотров</a> |
@@ -361,7 +358,7 @@
                             <div class="route-card">
                                 <div class="image-container {% if not route.previewPhoto %}no-photo{% endif %}">
                                     {% if route.previewPhoto %}
-                                        <img src="{{ route.previewPhoto.url }}" alt="Preview Photo" class="route-photo" style="user-select: none; -webkit-user-drag: none; user-drag: none;">
+                                    <img src="{{ route.previewPhoto.url }}" alt="Preview Photo" class="route-photo" style="user-select: none; -webkit-user-drag: none; user-drag: none;" onerror="this.style.display='none'; this.nextElementSibling.style.opacity='1';">
                                     {% endif %}
                                     <div class="map-preview" id="map-preview-{{ route.id }}">
                                     </div>
@@ -388,10 +385,10 @@
         {% if is_paginated %}
             <nav aria-label="Page navigation">
                 <ul class="pagination justify-content-center">
-                    <!-- First Page Link -->
+                    <!-- Первая страница -->
                     {% if page_obj.number > 1 %}
                         <li class="page-item">
-                            <a class="page-link" href="?page=1&sort_by={{ sort_by }}&order={{ order }}" aria-label="First">
+                            <a class="page-link" href="?page=1&sort_by={{ sort_by }}&order={{ order }}#routes-section" aria-label="First">
                                 <span aria-hidden="true">&laquo;&laquo;</span>
                             </a>
                         </li>
@@ -402,22 +399,22 @@
                             </span>
                         </li>
                     {% endif %}
-        
-                    <!-- Page Numbers -->
+            
+                    <!-- Номера страниц -->
                     {% for num in paginator.page_range %}
                         {% if page_obj.number == num %}
                             <li class="page-item active"><span class="page-link">{{ num }}</span></li>
                         {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
                             <li class="page-item">
-                                <a class="page-link" href="?page={{ num }}&sort_by={{ sort_by }}&order={{ order }}">{{ num }}</a>
+                                <a class="page-link" href="?page={{ num }}&sort_by={{ sort_by }}&order={{ order }}#routes-section">{{ num }}</a>
                             </li>
                         {% endif %}
                     {% endfor %}
-        
-                    <!-- Last Page Link -->
+            
+                    <!-- Последняя страница -->
                     {% if page_obj.number < paginator.num_pages %}
                         <li class="page-item">
-                            <a class="page-link" href="?page={{ paginator.num_pages }}&sort_by={{ sort_by }}&order={{ order }}" aria-label="Last">
+                            <a class="page-link" href="?page={{ paginator.num_pages }}&sort_by={{ sort_by }}&order={{ order }}#routes-section" aria-label="Last">
                                 <span aria-hidden="true">&raquo;&raquo;</span>
                             </a>
                         </li>
@@ -473,13 +470,13 @@
         const order = params.get('order') || 'desc';
 
         const toggleSort = (category) => {
-            let newOrder = 'asc';
-            if (sortBy === category && order === 'asc') {
-                newOrder = 'desc';
+            let newOrder = 'desc';
+            if (sortBy === category && order === 'desc') {
+                newOrder = 'asc';
             }
             params.set('sort_by', category);
             params.set('order', newOrder);
-            window.location.search = params.toString();
+            window.location.href = window.location.pathname + '?' + params.toString() + '#routes-section';
         };
 
         const updateSortIndicators = () => {
@@ -505,6 +502,7 @@
         updateSortIndicators();
     });
 </script>
+
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="{% static 'userprofile/edit_profile.js' %}"></script>
