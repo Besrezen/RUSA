@@ -119,7 +119,7 @@
     }
 
     .season-button.autumn {
-        background-color: #ffd2c5;
+        background-color: #ffe4dc;
         color: #e64a19;
     }
 
@@ -152,110 +152,251 @@
         display: none;
     }
     .difficulty-container {
-    margin: 2rem 0;
-    padding: 1.5rem;
-    background-color: #f8f9fa;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-}
+        margin: 2rem 0;
+        padding: 1.5rem;
+        background-color: #f8f9fa;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    }
 
-.difficulty-header {
-    margin-bottom: 1.5rem;
-}
+    .difficulty-header {
+        margin-bottom: 1.5rem;
+    }
 
-.difficulty-label {
-    font-weight: 500;
-    color: #2c3e50;
-    font-size: 1.1rem;
-}
+    .difficulty-label {
+        font-weight: 500;
+        color: #2c3e50;
+        font-size: 1.1rem;
+    }
 
-#difficultyValue {
-    display: inline-block;
-    background-color: #3498db;
-    color: white;
-    padding: 0.25rem 0.75rem;
-    border-radius: 15px;
-    font-weight: 500;
-    margin-left: 0.5rem;
-}
+    #difficultyValue {
+        display: inline-block;
+        background-color: #3498db;
+        color: white;
+        padding: 0.25rem 0.75rem;
+        border-radius: 15px;
+        font-weight: 500;
+        margin-left: 0.5rem;
+    }
 
-.slider-container {
-    position: relative;
-    padding: 0;
-    margin: 0 10px;
-}
+    .slider-container {
+        position: relative;
+        padding: 0;
+        margin: 0 10px;
+    }
 
-input[type="range"] {
-    -webkit-appearance: none;
-    width: calc(100% - 20px);
-    height: 8px;
-    border-radius: 5px;
-    background: linear-gradient(to right, #2ecc71 0%, #f1c40f 50%, #e74c3c 100%);
-    outline: none;
-    margin: 1rem 10px;
-}
+    input[type="range"] {
+        -webkit-appearance: none;
+        width: calc(100% - 20px);
+        height: 8px;
+        border-radius: 5px;
+        background: linear-gradient(to right, #2ecc71 0%, #f1c40f 50%, #e74c3c 100%);
+        outline: none;
+        margin: 1rem 10px;
+    }
 
-input[type="range"]::-webkit-slider-thumb {
-    -webkit-appearance: none;
-    appearance: none;
-    width: 20px;
-    height: 20px;
-    border-radius: 50%;
-    background: #3498db;
-    cursor: pointer;
-    border: 2px solid #fff;
-    box-shadow: 0 0 5px rgba(0,0,0,0.2);
-}
+    input[type="range"]::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        appearance: none;
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        background: #3498db;
+        cursor: pointer;
+        border: 2px solid #fff;
+        box-shadow: 0 0 5px rgba(0,0,0,0.2);
+    }
 
-.slider-labels {
-    display: flex;
-    justify-content: space-between;
-    margin-top: 0.5rem;
-    padding: 0;
-}
+    .slider-labels {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 0.5rem;
+        padding: 0;
+    }
 
-.difficulty-min, .difficulty-max {
-    font-size: 0.9rem;
-    color: #666;
-    position: relative;
-    top: 20px;
-}
+    .difficulty-min, .difficulty-max {
+        font-size: 0.9rem;
+        color: #666;
+        position: relative;
+        top: 20px;
+    }
 
-.difficulty-min {
-    margin-left: 10px;
-}
+    .difficulty-min {
+        margin-left: 10px;
+    }
 
-.difficulty-max {
-    margin-right: 10px;
-}
+    .difficulty-max {
+        margin-right: 10px;
+    }
 
-.slider-ticks {
-    display: flex;
-    justify-content: space-between;
-    padding: 0 10px;
-    position: relative;
-    margin-top: -12px;
-}
+    .slider-ticks {
+        display: flex;
+        justify-content: space-between;
+        padding: 0 10px;
+        position: relative;
+        margin-top: -12px;
+    }
 
-.slider-ticks span {
-    font-size: 0.8rem;
-    color: #666;
-    position: relative;
-    width: 20px;
-    text-align: center;
-    padding-top: 15px;
-}
+    .slider-ticks span {
+        font-size: 0.8rem;
+        color: #666;
+        position: relative;
+        width: 20px;
+        text-align: center;
+        padding-top: 15px;
+    }
 
-.slider-ticks span::before {
-    content: '';
-    position: absolute;
-    top: 5px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 1px;
-    height: 5px;
-    background-color: #999;
-}
+    .slider-ticks span::before {
+        content: '';
+        position: absolute;
+        top: 5px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 1px;
+        height: 5px;
+        background-color: #999;
+    }
+    @media (max-width: 410px) {
+        .difficulty-container {
+            padding: 0.5rem;
+        }
+    }
+    .file-upload-container {
+        margin: 2rem 0;
+        padding: 1.5rem;
+        background-color: #f8f9fa;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    }
+
+    .file-upload-header {
+        margin-bottom: 1rem;
+        font-weight: 500;
+        color: #2c3e50;
+    }
+
+    .file-upload-input {
+        display: none;
+    }
+
+    .file-upload-label {
+        display: inline-block;
+        padding: 12px 24px;
+        background-color: #3498db;
+        color: white;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+
+    .file-upload-label:hover {
+        background-color: #2980b9;
+    }
+
+    .file-upload-preview {
+        margin-top: 1rem;
+        max-width: 300px;
+        display: none;
+    }
+
+    .preview-container {
+        position: relative;
+        display: inline-block;
+    }
+
+    .preview-image {
+        max-width: 100%;
+        height: auto;
+        border-radius: 5px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .remove-image {
+        position: absolute;
+        top: -10px;
+        right: -10px;
+        background-color: #e74c3c;
+        color: white;
+        border: none;
+        border-radius: 50%;
+        width: 25px;
+        height: 25px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 14px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    }
+
+    .file-name {
+        margin-top: 0.5rem;
+        font-size: 0.9rem;
+        color: #666;
+    }
+
+    @media (max-width: 768px) {
+        .constructor-controls {
+            grid-template-columns: 1fr;
+        }
+        
+        .season-container,
+        .difficulty-container,
+        .length-container {
+            padding: 1rem;
+        }
+        
+        .btn {
+            padding: 0.8rem 1rem;
+            font-size: 0.9rem;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .container {
+            padding: 1rem;
+        }
+        
+        .page-header h1 {
+            font-size: 2rem;
+        }
+    }
+
+    .season-container {
+        margin: 2rem 0;
+        padding: 1.5rem;
+        background-color: #f8f9fa;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    }
+
+    .season-header {
+        margin-bottom: 1rem;
+        font-weight: 500;
+        color: #2c3e50;
+    }
+
+    .constructor-controls {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 1rem;
+        margin-bottom: 2rem;
+    }
+
+    .constructor-controls .btn {
+        width: 100%;
+        white-space: nowrap;
+        text-align: center;
+    }
+
+    .constructor-controls input[type="text"] {
+        width: 100%;
+        padding: 0.7rem;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        font-size: 1rem;
+    }
+
 </style>
 {% endblock %}
 
@@ -267,32 +408,33 @@ input[type="range"]::-webkit-slider-thumb {
 
     <div class="constructor-content">
         <div id="constructor"></div>
-        <div class="btn-container">
+        <div class="constructor-controls">
             <button id="deleteButton" class="btn btn-danger">Удалить линию</button>
             <button id="backButton" class="btn btn-primary">Шаг назад</button>
-            <input type="text" id="lineName" placeholder="Введите название маршрута">
-            <button id="addPlacemarkButton" class="btn btn-primary">Добавить метку с комментарием</button>
+            <input type="text" id="lineName" placeholder="Имя маршрута">
+            <button id="addPlacemarkButton" class="btn btn-primary">Добавить метку</button>
             <button id="saveLineButton" class="btn btn-primary">Сохранить маршрут</button>
         </div>
+        
+        <div class="season-container">
+            <div class="season-header">Сезон:</div>
+            <form id="seasonForm">
+                <div class="season-buttons">
+                    <button type="button" class="season-button any" data-season="any" style="display: none;">Любой</button>
+                    <button type="button" class="season-button winter" data-season="winter">❄️ Зима</button>
+                    <button type="button" class="season-button spring" data-season="spring">🌷 Весна</button>
+                    <button type="button" class="season-button summer" data-season="summer">☀️ Лето</button>
+                    <button type="button" class="season-button autumn" data-season="autumn">🍂 Осень</button>
+                </div>
+                <input type="checkbox" id="any" name="season" value="any">
+                <input type="checkbox" id="winter" name="season" value="winter">
+                <input type="checkbox" id="spring" name="season" value="spring">
+                <input type="checkbox" id="summer" name="season" value="summer">
+                <input type="checkbox" id="autumn" name="season" value="autumn">
+            </form>
+            <div id="coordinates"></div>
+        </div>
 
-        <div id="coordinates"></div>
-        <p>Сезон:</p>
-        <form id="seasonForm">
-            <div class="season-buttons">
-                <button type="button" class="season-button any" data-season="any">Любой</button>
-                <button type="button" class="season-button winter" data-season="winter">❄️ Зима</button>
-                <button type="button" class="season-button spring" data-season="spring">🌷 Весна</button>
-                <button type="button" class="season-button summer" data-season="summer">☀️ Лето</button>
-                <button type="button" class="season-button autumn" data-season="autumn">🍂 Осень</button>
-            </div>
-            <input type="checkbox" id="any" name="season" value="any">
-            <input type="checkbox" id="winter" name="season" value="winter">
-            <input type="checkbox" id="spring" name="season" value="spring">
-            <input type="checkbox" id="summer" name="season" value="summer">
-            <input type="checkbox" id="autumn" name="season" value="autumn">
-        </form>
-
-        <!-- Замените блок difficulty-container на следующий код -->
         <div class="difficulty-container">
             <div class="difficulty-header">
                 <span class="difficulty-label">Сложность: <span id="difficultyValue">5</span></span>
@@ -311,15 +453,27 @@ input[type="range"]::-webkit-slider-thumb {
                     <span>9</span>
                     <span>10</span>
                 </div>
-                <div class="slider-labels">
+                <div class="slider-labels" style="margin-bottom:15px">
                     <span class="difficulty-min">Легкий</span>
                     <span class="difficulty-max">Сложный</span>
                 </div>
             </div>
         </div>
 
-        <label for="fileUpload">Загрузить превью маршрута:</label>
-        <input type="file" id="previewPhoto" name="previewPhoto" accept="image/*">
+        <div class="file-upload-container">
+            <div class="file-upload-header">Загрузить превью маршрута:</div>
+            <label for="previewPhoto" class="file-upload-label">
+                <i class="fas fa-upload"></i> Выберите фото
+            </label>
+            <input type="file" id="previewPhoto" class="file-upload-input" accept="image/*">
+            <div id="previewContainer" class="file-upload-preview">
+                <div class="preview-container">
+                    <img id="imagePreview" class="preview-image">
+                    <button type="button" class="remove-image" onclick="removeImage()">×</button>
+                </div>
+                <div class="file-name" id="fileName"></div>
+            </div>
+        </div>
     </div>
 
     <div id="description">
@@ -333,6 +487,44 @@ input[type="range"]::-webkit-slider-thumb {
         </ul>
     </div>
 </div>
+
+<script>
+    document.getElementById('previewPhoto').addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        const previewContainer = document.getElementById('previewContainer');
+        const imagePreview = document.getElementById('imagePreview');
+        const fileName = document.getElementById('fileName');
+    
+        if (file) {
+            // Проверяем, является ли файл изображением
+            if (!file.type.startsWith('image/')) {
+                alert('Пожалуйста, выберите файл изображения');
+                this.value = '';
+                return;
+            }
+    
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                imagePreview.src = e.target.result;
+                fileName.textContent = file.name;
+                previewContainer.style.display = 'block';
+            };
+            reader.readAsDataURL(file);
+        }
+    });
+    
+    function removeImage() {
+        const previewPhoto = document.getElementById('previewPhoto');
+        const previewContainer = document.getElementById('previewContainer');
+        const imagePreview = document.getElementById('imagePreview');
+        const fileName = document.getElementById('fileName');
+    
+        previewPhoto.value = '';
+        imagePreview.src = '';
+        fileName.textContent = '';
+        previewContainer.style.display = 'none';
+    }
+    </script>
 
 <script>
     var lineDifficulty = document.getElementById('lineDifficulty');
@@ -381,6 +573,9 @@ input[type="range"]::-webkit-slider-thumb {
                 }
             });
         });
+
+        anyButton.click();
+
     });
 </script>
 

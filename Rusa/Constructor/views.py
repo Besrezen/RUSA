@@ -216,6 +216,7 @@ def save_group_data(request, route_id):
         group = Group(name=data['name'], leader_id=data['leader_id'], participants=data['participants'], route_id=route)
         group.save()
     return JsonResponse({"status": "success"}, status=200)
+    
 @csrf_exempt
 def update_group_participants(request, group_id):
     if request.method == 'POST':

@@ -286,6 +286,10 @@
             <div class="parameter">
                 <p><span>Время:</span><br><i class="fas fa-clock"></i><b>{{ route_time }}</b></p>
             </div>
+            <div class="parameter">
+                <p><span>Сезонность:</span><br><i class="fas fa-leaf"></i><b id="seasons"></b></p>
+            </div>
+            
         </div>
         <div class="right-el">
             <h6>СТАТИСТИКА</h6>
@@ -549,6 +553,44 @@
         }, 200));
     });
 </script>
+
+<script>
+    // Получаем строку сезонности из контекста шаблона и экранируем её
+    var seasonsDataString = '{{ route.seasons|escapejs }}';
+    
+    // Заменяем одинарные кавычки на двойные для корректного парсинга JSON
+    var seasonsDataJsonString = seasonsDataString.replace(/'/g, '"');
+    
+    // Парсим строку в массив JavaScript
+    var seasonsData = JSON.parse(seasonsDataJsonString);
+
+    // Функция для отображения сезонности
+    function displaySeasons(seasons) {
+        var seasonsElement = document.getElementById('seasons');
+        if (!seasonsElement) return;
+
+        if (seasons.includes('any')) {
+            seasonsElement.textContent = 'Любой сезон';
+        } else {
+            var seasonsNames = {
+                'winter': 'Зима',
+                'spring': 'Весна',
+                'summer': 'Лето',
+                'autumn': 'Осень'
+            };
+            var seasonsDisplay = seasons.map(function(season) {
+                return seasonsNames[season] || season;
+            }).join(', ');
+            seasonsElement.textContent = seasonsDisplay;
+        }
+    }
+
+    // Вызываем функцию после загрузки контента
+    document.addEventListener('DOMContentLoaded', function() {
+        displaySeasons(seasonsData);
+    });
+</script>
+
 
 <script src="{% static 'js/current_route.js' %}" type="text/javascript"></script>
 <script src="{% static 'js/animated_line.js' %}"></script>
