@@ -12,6 +12,7 @@ from .models import Line, Group
 import json
 import requests
 import datetime
+from django.shortcuts import redirect
 import ast
 from Registration.models import CustomUser
 from Chat.models import Message
@@ -20,10 +21,8 @@ def map_view(request):
     api_key = settings.YANDEX_MAPS_API_KEY
     user_id = request.user.id
 
-    # Получаем три самых популярных маршрута по количеству просмотров
     top_routes = Line.objects.order_by('-popularity')[:3]
 
-    # Добавляем дополнительные атрибуты, как в функции route_list
     for route in top_routes:
         route.is_not_empty_coords = bool(route.coordinates)
         route.len_km = round(route.length / 1000, 1)
@@ -176,6 +175,9 @@ def calculate_center(coordinates):
     return avg_lon, avg_lat
 
 def groups_list_page(request, route_id):
+    sort_by = request.GET.get('sort_by', 'created_at')
+    order = request.GET.get('order', 'asc')
+
     try:
         route = Line.objects.get(pk=route_id)
     except Line.DoesNotExist:
@@ -183,23 +185,55 @@ def groups_list_page(request, route_id):
     except Line.MultipleObjectsReturned:
         print("Найдено более одного маршрута с таким ID")
 
-    groups = Group.objects.filter(route_id=route)
-    user_id = request.user.id
-    for group in groups:
+    if sort_by == 'participant_quantity':
+        groups = Group.objects.filter(route_id=route, privacy_setting='open')
+        groups_list = list(groups)
+        for group in groups_list:
+            ids = ast.literal_eval(group.participants)
+            group.participant_quantity = len(ids)
+        reverse = (order == 'desc')
+        groups_list.sort(key=lambda x: x.participant_quantity, reverse=reverse)
+    else:
+        if order == 'desc':
+            sort_field = '-' + sort_by
+        else:
+            sort_field = sort_by
+        groups_list = list(Group.objects.filter(route_id=route, privacy_setting='open').order_by(sort_field))
+        for group in groups_list:
+            ids = ast.literal_eval(group.participants)
+            group.participant_quantity = len(ids)
+
+    paginator = Paginator(groups_list, 9)
+    page = request.GET.get('page')
+
+    try:
+        groups_page = paginator.page(page)
+    except PageNotAnInteger:
+        groups_page = paginator.page(1)
+    except EmptyPage:
+        groups_page = paginator.page(paginator.num_pages)
+
+    user_id = request.user.id if request.user.is_authenticated else None
+    for group in groups_page:
         ids = ast.literal_eval(group.participants)
         group.leader_name = get_person_name(group.leader_id)
-        group.participant_quantity = len(ids)
         group.participants_names = []
         group.participants_ids = []
         for id in ids:
-                group.participants_names.append(get_person_name(id))
-                group.participants_ids.append(id)
-                group.zipped_participants = zip(ids, group.participants_names)
+            group.participants_names.append(get_person_name(id))
+            group.participants_ids.append(id)
+        group.zipped_participants = zip(ids, group.participants_names)
+
     context = {
-    'groups': groups,
-    'user_id': user_id,
-    'route_id': route_id,
-    'user_name': get_person_name(user_id)
+        'groups': groups_page,
+        'page_obj': groups_page,
+        'paginator': paginator,
+        'is_paginated': groups_page.has_other_pages(),
+        'sort_by': sort_by,
+        'order': order,
+        'user_id': user_id,
+        'route_id': route_id,
+        'user_name': get_person_name(user_id) if user_id else ''
     }
     return render(request, 'groups_list.html', context)
 
@@ -255,12 +289,47 @@ def group_page(request, route_id, group_id):
     route = get_object_or_404(Line, pk=route_id)
     group = get_object_or_404(Group, pk=group_id)
 
+    # Проверка приватности группы
+    if group.privacy_setting == 'private':
+        try:
+            participant_ids = ast.literal_eval(group.participants)
+            participant_ids = [int(id) for id in participant_ids]
+        except (ValueError, SyntaxError):
+            participant_ids = []
+        
+        is_leader = (request.user.id == int(group.leader_id))
+        is_participant = (request.user.id in participant_ids)
+        
+        if not (is_leader or is_participant):
+            return render(request, 'group_hidden.html') 
+
+    if request.method == 'POST':
+        if request.user.id == int(group.leader_id):
+            name = request.POST.get('name')
+            trip_datetime = request.POST.get('trip_datetime')
+            activity_description = request.POST.get('activity_description')
+            privacy_setting = request.POST.get('privacy_setting') 
+            if trip_datetime:
+                trip_datetime = datetime.datetime.strptime(trip_datetime, '%Y-%m-%dT%H:%M')
+            else:
+                trip_datetime = None
+            if name:
+                group.name = name.strip()
+            group.trip_datetime = trip_datetime
+            group.activity_description = activity_description
+            group.privacy_setting = privacy_setting
+            group.save()
+            return redirect('group_page', route_id=route_id, group_id=group_id)
+
     route_length = route.length / 1000
     route_time_sec = round(route_length / 5 * 3600)
     route_time = datetime.timedelta(seconds=route_time_sec)
     route_time_str = str(route_time)
 
     ids = ast.literal_eval(group.participants)
+    ids = [int(id) for id in ids]
+    group.leader_id = int(group.leader_id)
+
     group.leader_name = get_person_name(group.leader_id)
     group.participant_quantity = len(ids)
     group.participants_names = []

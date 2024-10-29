@@ -496,7 +496,6 @@
         const fileName = document.getElementById('fileName');
     
         if (file) {
-            // Проверяем, является ли файл изображением
             if (!file.type.startsWith('image/')) {
                 alert('Пожалуйста, выберите файл изображения');
                 this.value = '';

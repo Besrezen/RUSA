@@ -6,6 +6,12 @@ from datetime import date
 from .utils import user_profile_photo_path, portfolio_image_path  # Импорт функции
 
 class UserProfile(models.Model):
+
+    PRIVACY_CHOICES = [
+        ('open', 'Открытый'),
+        ('closed', 'Закрытый'),
+    ]
+
     user = models.OneToOneField(CustomUser, on_delete=models.CASCADE)
     name = models.CharField(max_length=100, blank=True, null=True)
     region = models.CharField(max_length=100, blank=True, null=True)
@@ -13,10 +19,16 @@ class UserProfile(models.Model):
     profession = models.CharField(max_length=100, blank=True, null=True)
     bio = models.TextField(blank=True, null=True)
     personal_photo = models.ImageField(
-        upload_to=user_profile_photo_path,  # Использование функции для уникальных имен
+        upload_to=user_profile_photo_path,
         default='profile_photos/anon.png',
         blank=True,
         null=True
+    )
+
+    privacy = models.CharField(
+        max_length=10,
+        choices=PRIVACY_CHOICES,
+        default='open'
     )
 
     def __str__(self):

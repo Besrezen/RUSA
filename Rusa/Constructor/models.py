@@ -27,9 +27,18 @@ class Line(models.Model):
         super(Line, self).delete(*args, **kwargs)
 
 class Group(models.Model):
+    PRIVACY_CHOICES = [
+        ('open', 'Открытая группа'),
+        ('link', 'Доступная по ссылке'),
+        ('private', 'Закрытая')
+    ]
+    
     leader_id = models.DecimalField(max_digits=5, decimal_places=0, null=True)
     name = models.TextField(null=True)
     participants = models.TextField(null=True)
     route_id = models.ForeignKey(Line, on_delete=models.CASCADE, null=True)
+    trip_datetime = models.DateTimeField(null=True, blank=True)
+    activity_description = models.TextField(null=True, blank=True, default='')
+    privacy_setting = models.CharField(max_length=10, choices=PRIVACY_CHOICES, default='open')
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

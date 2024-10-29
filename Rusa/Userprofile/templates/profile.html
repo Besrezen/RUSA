@@ -119,7 +119,7 @@
     }
     .btn-container {
         display: flex;
-        justify-content: center; /* Центрирование кнопок */
+        justify-content: center;
         margin-top: 2rem;
     }
     .btn {
@@ -207,7 +207,7 @@
         top: 10px;
         left: 20px;
         z-index: 10;
-        transform: scale(1.5); /* Увеличение размеров чекбокса */
+        transform: scale(1.5);
     }
 
     @media (min-width: 768px) {
@@ -263,14 +263,78 @@
     }
     .map-preview {
         width: 100%;
-        height: 400px; /* Установите высоту, которая вам нужна */
+        height: 400px; 
         background-color: #f0f0f0;
         border: 1px solid #ccc;
     }
     .sort-link {
-        font-weight: bold; /* Делает текст ссылок жирным */
+        font-weight: bold; 
+    }
+
+    .group-sort-link {
+        font-weight: bold; 
+    }
+
+    .groups-container {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 2rem;
+    }
+    .group-card {
+        background-color: #fff;
+        border-radius: 10px;
+        box-shadow: 0 0 20px rgba(0,0,0,0.1);
+        padding: 1.5rem;
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+    }
+    .group-card h3 {
+        text-align: center;
+        margin-bottom: 1rem;
+    }
+    .group-card h5 {
+        font-size: 1.2rem;
+        color: #3498db;
+        margin-bottom: 0.5rem;
+    }
+    .group-card p {
+        margin-bottom: 1rem;
+        color: #7f8c8d;
+    }
+    .group-info {
+        flex-grow: 1;
+    }
+    .participants {
+        margin-bottom: 1rem;
+    }
+    .participant-badge {
+        display: inline-block;
+        background-color: #f0f0f0;
+        padding: 0.2em 0.6em;
+        margin: 0.2em;
+        border-radius: 0.2em;
+        font-size: 0.9rem;
+        color: inherit;
+    }
+    .participant-badge.current-user {
+        color: #3498db;
+        font-weight: 600;
+    }
+    .group-actions {
+        margin-top: auto;
+    }
+    .group-actions button {
+        width: 100%;
+        margin-top: 1rem;
     }
 </style>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+<script>
+    var updateProfileUrl = "{% url 'update_profile' %}";
+</script>
 
 <script src="https://api-maps.yandex.ru/2.1/?apikey=403f644f-4840-426e-b2df-bea42d662d87&lang=ru_RU" type="text/javascript"></script>
 <script>
@@ -282,10 +346,15 @@
 
 {% block content %}
 <div class="container">
-    <div class="page-header">
-        <h1>Профиль</h1>
-    </div>
-    
+    {% if is_owner %}
+        <div class="page-header">
+            <h1>Профиль</h1>
+        </div>
+    {% else %}
+        <div class="page-header">
+            <h1>Профиль {{ profile.user.username }}</h1>
+        </div>
+    {% endif %}
     <form method="post" class="profile-content" action="{% url 'update_profile' %}" enctype="multipart/form-data">
         {% csrf_token %}
         <div class="profile-photo">
@@ -295,53 +364,83 @@
             <img src="{% static 'userprofile/assets/png/anon.png' %}" alt="Фото профиля" id="profile-photo">
             {% endif %}
             <input type="file" name="personal_photo" id="id_personal_photo" style="display: none;">
+            {% if is_owner %}
             <button type="button" id="upload-photo-btn" class="btn btn-edit change-photo-btn" style="margin-top: 1rem; display: none;">Изменить фото</button>
+            {% endif %}
         </div>
         
         <div class="profile-info">
+            {% if is_owner %}
+                <div class="info-group">
+                    <div class="info-label">
+                        <i style="display: none;" class="fas fa-user"></i> Никнейм:
+                    </div>
+                    <span class="info-value username">{{ profile.user.username }}</span>
+                </div>
+            {% endif %}
             <div class="info-group">
-                <div class="info-label">Имя:</div>
-                <div class="info-value name">{{ profile.name|default:"Не указано" }}</div>
+                <div class="info-label">
+                    <i style="display: none;" class="fas fa-id-badge"></i> Имя:
+                </div>
+                <span class="info-value name">{{ profile.name|default:"Не указано" }}</span>
             </div>
             <div class="info-group">
-                <div class="info-label">Регион:</div>
-                <div class="info-value region">{{ profile.region|default:"Не указано" }}</div>
+                <div class="info-label">
+                    <i style="display: none;" class="fas fa-map-marker-alt"></i> Регион:
+                </div>
+                <span class="info-value region">{{ profile.region|default:"Не указано" }}</span>
             </div>
             <div class="info-group">
-                <div class="info-label">Дата рождения:</div>
-                <div class="info-value birth_date">
+                <div class="info-label">
+                    <i style="display: none;" class="fas fa-calendar-alt"></i> Дата рождения:
+                </div>
+                <span class="info-value birth_date">
                     {% if profile.birth_date %}
                         {{ profile.birth_date|date:"d.m.Y" }}
                     {% else %}
                         Не указано
                     {% endif %}
-                </div>
+                </span>
             </div>
             <div class="info-group">
-                <div class="info-label">Email:</div>
-                <div class="info-value email">{{ profile.user.email }}</div>
+                <div class="info-label">
+                    <i style="display: none;" class="fas fa-envelope"></i> Email:
+                </div>
+                <span class="info-value email">{{ profile.user.email }}</span>
             </div>
 
-            <div class="info-group">
-                <div class="info-label">Специальность:</div>
-                <div class="info-value text_spcecialization">{{ profile.profession|default:"Не указано" }}</div>
+            <div style="display: none;" class="info-group">
+                <div class="info-label">
+                    <i style="display: none;" class="fas fa-briefcase"></i> Специальность:
+                </div>
+                <span class="info-value text_spcecialization">{{ profile.profession|default:"Не указано" }}</span>
             </div>
            
             <div class="info-group">
-                <div class="info-label">О себе</div>
-                <div class="info-value text_area">{{ profile.bio|default:"Информация отсутствует" }}</div>
+                <div class="info-label">
+                    <i style="display: none;" class="fas fa-info-circle"></i> О себе
+                </div>
+                <span class="info-value text_area">{{ profile.bio|default:"Информация отсутствует" }}</span>
             </div>
-
-            <button type="button" class="btn btn-edit edit_profile">Редактировать</button>
+            {% if is_owner %}
+                <div class="info-group">
+                    <div class="info-label">
+                        <i style="display: none;" class="fas fa-lock"></i> Приватность профиля:
+                    </div>
+                    <span class="info-value privacy">{{ profile.get_privacy_display }}</span>
+                </div>
+                <button type="button" class="btn btn-edit edit_profile">Редактировать</button>
+            {% endif %}
         </div>
-
     </form>
 
-    
-    
     <div id="routes-section" class="profile-section">
-        <h2>Мои маршруты</h2>
-        
+        {% if is_owner %}
+            <h2>Мои маршруты</h2>
+        {% else %}
+            <h2>Маршруты пользователя</h2>
+        {% endif %}
+        {% if user_routes %}
         <div class="mb-3">
             <span>Сортировать по:</span>
             <a href="#" class="sort-link" data-category="length" data-label="Длина">Длина</a> |
@@ -349,6 +448,7 @@
             <a href="#" class="sort-link" data-category="popularity" data-label="Кол-во просмотров">Кол-во просмотров</a> |
             <a href="#" class="sort-link" data-category="created_at" data-label="Дата создания">Дата создания</a> |
         </div>
+        {% endif %}
     
         <div class="row">
             {% for route in user_routes %}
@@ -377,15 +477,17 @@
                     </div>
                 {% endif %}
             {% empty %}
-                <p>У вас нет созданных маршрутов.</p>
+                {% if is_owner %}
+                    <p>У вас нет созданных маршрутов.</p>
+                {% else %}
+                    <p>У пользователя нет созданных маршрутов.</p>
+                {% endif %}
             {% endfor %}
         </div>
     
-        <!-- Pagination Controls -->
         {% if is_paginated %}
             <nav aria-label="Page navigation">
                 <ul class="pagination justify-content-center">
-                    <!-- Первая страница -->
                     {% if page_obj.number > 1 %}
                         <li class="page-item">
                             <a class="page-link" href="?page=1&sort_by={{ sort_by }}&order={{ order }}#routes-section" aria-label="First">
@@ -400,7 +502,6 @@
                         </li>
                     {% endif %}
             
-                    <!-- Номера страниц -->
                     {% for num in paginator.page_range %}
                         {% if page_obj.number == num %}
                             <li class="page-item active"><span class="page-link">{{ num }}</span></li>
@@ -411,7 +512,6 @@
                         {% endif %}
                     {% endfor %}
             
-                    <!-- Последняя страница -->
                     {% if page_obj.number < paginator.num_pages %}
                         <li class="page-item">
                             <a class="page-link" href="?page={{ paginator.num_pages }}&sort_by={{ sort_by }}&order={{ order }}#routes-section" aria-label="Last">
@@ -429,6 +529,106 @@
             </nav>
         {% endif %}
     </div>
+
+    <div id="groups-section" class="profile-section">
+
+        {% if is_owner %}
+            <h2>Мои группы</h2>
+        {% else %}
+            <h2>Группы пользователя</h2>
+        {% endif %}
+    
+        {% if user_groups %}
+            <div class="mb-3">
+                <span>Сортировать по:</span>
+                <a href="#" class="group-sort-link" data-category="participant_quantity" data-label="Кол-во участников">Кол-во участников</a> |
+                <a href="#" class="group-sort-link" data-category="created_at" data-label="Дата создания">Дата создания</a>
+            </div>
+
+            <div class="groups-container">
+                {% for group in user_groups %}
+                    <div class="group-card" id="group_card_{{ group.id }}">
+                        <div class="group-info">
+                            <h3><a href="{% url 'group_page' route_id=group.route_id.id group_id=group.id %}">{{ group.name }}</a></h3>
+                            <h5>Лидер группы:</h5>
+                            <p>{{ group.leader_name }}</p>
+                            <h5>Кол-во участников:</h5>
+                            <p>{{ group.participant_quantity }}</p>
+                            <h5>Участники:</h5>
+                            <div id="all_participants_{{ group.id }}" class="participants">
+                                {% for id, name in group.zipped_participants %}
+                                    {% if id|stringformat:"s" == user.id|stringformat:"s" %}
+                                        <a href="{% url 'view_profile_by_username' username=name %}" id="{{ id }}" class="participant-badge current-user">{{ name }}</a>
+                                    {% else %}
+                                        <a href="{% url 'view_profile_by_username' username=name %}" id="{{ id }}" class="participant-badge">{{ name }}</a>
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+                        </div>
+                        <input id="participants_{{ group.id }}" type="hidden" name="group_participants" value="{{ group.participants }}">
+                        <input id="group_id_{{ group.id }}" type="hidden" name="group_id" value="{{ group.id }}">
+                        <input id="group_leader_id_{{ group.id }}" type="hidden" name="group_leader_id" value="{{ group.leader_id }}">
+                        {% if user.is_authenticated %}
+                            <a href="{% url 'group_page' route_id=group.route_id.id group_id=group.id %}" class="btn btn-primary" style="background-color: #3498db;">
+                                Перейти к группе
+                            </a>            
+                        {% else %}
+                            <span>Для присоединения необходимо <a href="' + loginUrl + '">авторизоваться</a>.</span>
+                        {% endif %}
+                        
+                    </div>
+                {% endfor %}
+            </div>
+    
+            {% if group_is_paginated %}
+                <nav aria-label="Page navigation" style="margin-top:20px">
+                    <ul class="pagination justify-content-center">
+                        {% if group_page_obj.has_previous %}
+                            <li class="page-item">
+                                <a class="page-link" href="?group_page=1&group_sort_by={{ group_sort_by }}&group_order={{ group_order }}#groups-section" aria-label="First">
+                                    <span aria-hidden="true">&laquo;&laquo;</span>
+                                </a>
+                            </li>
+                        {% else %}
+                            <li class="page-item disabled">
+                                <span class="page-link">&laquo;&laquo;</span>
+                            </li>
+                        {% endif %}
+    
+                        {% for num in group_paginator.page_range %}
+                            {% if group_page_obj.number == num %}
+                                <li class="page-item active"><span class="page-link">{{ num }}</span></li>
+                            {% elif num > group_page_obj.number|add:'-3' and num < group_page_obj.number|add:'3' %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?group_page={{ num }}&group_sort_by={{ group_sort_by }}&group_order={{ group_order }}#groups-section">{{ num }}</a>
+                                </li>
+                            {% endif %}
+                        {% endfor %}
+    
+                        {% if group_page_obj.has_next %}
+                            <li class="page-item">
+                                <a class="page-link" href="?group_page={{ group_paginator.num_pages }}&group_sort_by={{ group_sort_by }}&group_order={{ group_order }}#groups-section" aria-label="Last">
+                                    <span aria-hidden="true">&raquo;&raquo;</span>
+                                </a>
+                            </li>
+                        {% else %}
+                            <li class="page-item disabled">
+                                <span class="page-link">&raquo;&raquo;</span>
+                            </li>
+                        {% endif %}
+                    </ul>
+                </nav>
+            {% endif %}
+        {% else %}
+
+            {% if is_owner %}
+                <p>Вы не состоите ни в одной группе.</p>
+            {% else %}
+                <p>Пользователь не состоит ни в одной группе.</p>
+            {% endif %}
+            
+        {% endif %}
+    </div>
     
     <div class="profile-section">
         <h2>Портфолио</h2>
@@ -440,26 +640,39 @@
                     <a href="{{ image.image.url }}" data-lightbox="portfolio" data-title="Портфолио изображение {{ forloop.counter }}">
                         <img src="{{ image.image.url }}" alt="Portfolio Image" class="slider-image">
                     </a>
+                    {% if is_owner %}
                     <input type="checkbox" class="image-checkbox" data-image-id="{{ image.id }}" style="display: none;">
+                    {% endif %}
                 </li>
                 {% endfor %}
+                {% if is_owner %}
                 <li class="add-image">
                     <button id="add-image-btn" class="add-image-button">
                         <input type="file" id="upload-portfolio-image" style="display: none;" accept="image/*">
                         +
                     </button>
                 </li>
+                {% endif %}
             </ul>
             <button class="slider-btn next">></button>
         </div>
-        <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
-        <button id="delete-mode-btn" class="delete-mode-btn">Удалить фотографии</button>
-        <button id="cancel-delete-btn" class="cancel-delete-btn" style="display: none;">Отмена удаления</button>
-        <button id="confirm-delete-btn" class="confirm-delete-btn" style="display: none;">Подтвердить удаление</button>
+        {% if not portfolio_images %}
+            {% if not is_owner %}
+                <p>Нет фотографий.</p>
+            {% endif %}
+        {% endif %}
+        {% if is_owner %}
+            <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
+            <button id="delete-mode-btn" class="delete-mode-btn">Удалить фотографии</button>
+            <button id="cancel-delete-btn" class="cancel-delete-btn" style="display: none;">Отмена удаления</button>
+            <button id="confirm-delete-btn" class="confirm-delete-btn" style="display: none;">Подтвердить удаление</button>
+        {% endif %}
     </div>
-    
+
     <div class="btn-container">
+        {% if is_owner %}
         <button class="btn btn-logout" onclick="window.location.href='{% url 'logout' %}';">Выйти</button>
+        {% endif %}
     </div>
 </div>
 
@@ -503,10 +716,53 @@
     });
 </script>
 
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        // Group sorting logic
+        const groupParams = new URLSearchParams(window.location.search);
+        const groupSortBy = groupParams.get('group_sort_by');
+        const groupOrder = groupParams.get('group_order') || 'desc';
+
+        const groupToggleSort = (category) => {
+            let newOrder = 'desc';
+            if (groupSortBy === category && groupOrder === 'desc') {
+                newOrder = 'asc';
+            }
+            groupParams.set('group_sort_by', category);
+            groupParams.set('group_order', newOrder);
+            window.location.href = window.location.pathname + '?' + groupParams.toString() + '#groups-section';
+        };
+
+        const updateGroupSortIndicators = () => {
+            document.querySelectorAll('.group-sort-link').forEach(link => {
+                const category = link.dataset.category;
+                if (category === groupSortBy) {
+                    const arrow = groupOrder === 'asc' ? '↑' : '↓';
+                    link.innerHTML = `${link.dataset.label} ${arrow}`;
+                } else {
+                    link.innerHTML = link.dataset.label;
+                }
+            });
+        };
+
+        document.querySelectorAll('.group-sort-link').forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                const category = link.dataset.category;
+                groupToggleSort(category);
+            });
+        });
+
+        updateGroupSortIndicators();
+    });
+</script>
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+{% if is_owner %}
 <script src="{% static 'userprofile/edit_profile.js' %}"></script>
+{% endif %}
 <script>
+    {% if is_owner %}
     document.getElementById("upload-photo-btn").addEventListener("click", function() {
         document.getElementById("id_personal_photo").click();
     });
@@ -516,6 +772,7 @@
             document.getElementById("profile-photo").src = URL.createObjectURL(file);
         }
     });
+    {% endif %}
 </script>
 
 
@@ -527,46 +784,36 @@
         const profilePhotoImg = document.getElementById("profile-photo");
         const profilePhotoDiv = document.querySelector(".profile-photo");
 
-        // Функция для определения яркости цвета (используем для проверки темного цвета)
         function getBrightness(rgb) {
             return (rgb[0] * 299 + rgb[1] * 587 + rgb[2] * 114) / 1000;
         }
 
-        // Функция для установки градиента фона
         function setProfilePhotoBackground(img) {
-            // Убедитесь, что изображение загружено
             if (img.complete && img.naturalWidth !== 0) {
                 try {
                     const palette = colorThief.getPalette(img, 2);
                     const primaryColor = palette[0];
                     const secondaryColor = palette[1];
 
-                    // Проверяем яркость основного цвета
                     const primaryBrightness = getBrightness(primaryColor);
                     const secondaryBrightness = getBrightness(secondaryColor);
 
-                    // Если основной цвет темный, делаем его светлее
                     const gradientOpacity = primaryBrightness < 128 ? 0.3 : 0.4;
 
-                    // Создаем градиент с динамической прозрачностью
                     const gradient = `linear-gradient(135deg, rgba(${primaryColor.join(',')}, ${gradientOpacity}), rgba(${secondaryColor.join(',')}, 0.4))`;
 
-                    // Устанавливаем фон
                     profilePhotoDiv.style.background = gradient;
                 } catch (e) {
                     console.error("Ошибка при извлечении цветов:", e);
-                    profilePhotoDiv.style.background = "#ecf0f1"; // Дефолтный фон
+                    profilePhotoDiv.style.background = "#ecf0f1";
                 }
             } else {
-                // Если изображение еще не загрузилось, повторяем попытку через 100ms
                 setTimeout(() => setProfilePhotoBackground(img), 100);
             }
         }
 
-        // Устанавливаем фон при загрузке страницы
         setProfilePhotoBackground(profilePhotoImg);
 
-        // Устанавливаем фон при изменении аватарки
         document.getElementById("id_personal_photo").addEventListener("change", function() {
             const [file] = this.files;
             if (file) {
@@ -585,7 +832,6 @@
 <script>
     var deleteUrl = "{% url 'delete_portfolio_image' %}";
 
-    // Функция для слайдера
     (function() {
         const slider = document.querySelector('.portfolio-slider ul');
         const prevBtn = document.querySelector('.prev');
@@ -627,12 +873,10 @@
         showSlide(0);
     })();
 
-    // Инициализация Lightbox
     lightbox.option({
         'resizeDuration': 200,
         'wrapAround': true
     });
-    // Загрузка изображения
     document.getElementById('add-image-btn').addEventListener('click', function () {
         document.getElementById('upload-portfolio-image').click();
     });
@@ -652,19 +896,15 @@
                 contentType: false,
                 success: function (response) {
                     if (response.status === 'success') {
-                        // Create a new <li> element
                         let newImage = document.createElement('li');
                         newImage.style.position = 'relative';
 
-                        // Add the image link and image
                         newImage.innerHTML = `
                             <a href="${response.image_url}" data-lightbox="portfolio" data-title="Портфолио изображение ${$('.portfolio-slider ul li').length}">
                                 <img src="${response.image_url}" alt="Portfolio Image" class="slider-image">
                             </a>
                             <input type="checkbox" class="image-checkbox" data-image-id="${response.image_id}" style="display: ${isDeleteMode ? 'block' : 'none'};">
                         `;
-
-                        // Insert the new image before the add-image button
                         document.querySelector('.portfolio-slider ul').insertBefore(newImage, document.querySelector('.portfolio-slider .add-image'));
 
                     } else {
@@ -678,8 +918,6 @@
         }
     });
 
-
-    // Enter Delete Mode
     document.getElementById('delete-mode-btn').addEventListener('click', function () {
         isDeleteMode = true; // Set flag to true
         const checkboxes = document.querySelectorAll('.image-checkbox');
@@ -690,7 +928,6 @@
         document.getElementById('cancel-delete-btn').style.display = 'inline-block';
     });
 
-    // Cancel Delete Mode
     document.getElementById('cancel-delete-btn').addEventListener('click', function () {
         isDeleteMode = false; // Set flag to false
         const checkboxes = document.querySelectorAll('.image-checkbox');
@@ -702,7 +939,6 @@
         document.getElementById('cancel-delete-btn').style.display = 'none';
     });
 
-    // Confirm Delete Mode
     document.getElementById('confirm-delete-btn').addEventListener('click', function () {
         const checkboxes = document.querySelectorAll('.image-checkbox:checked');
         if (checkboxes.length > 0) {
@@ -734,7 +970,6 @@
                     });
                 });
 
-                // Exit Delete Mode After Deletion
                 isDeleteMode = false;
                 const allCheckboxes = document.querySelectorAll('.image-checkbox');
                 allCheckboxes.forEach(cb => {
@@ -748,9 +983,8 @@
             alert('Пожалуйста, выберите хотя бы одну фотографию для удаления.');
         }
     });
-
 </script>
 
-<script src="../../static/js/map-preview.js"></script>
-<script src="../../static/js/animated_line.js"></script>
+<script src="{% static 'js/map-preview.js' %}"></script>
+<script src="{% static 'js/animated_line.js' %}"></script>
 {% endblock content %}

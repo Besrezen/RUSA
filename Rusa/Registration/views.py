@@ -9,10 +9,6 @@ def logout_view(request):
     logout(request)
     return redirect('view_login')
 
-@login_required
-def view_admin(request):
-    return render(request, "html/home_admin.html")
-
 def show_login(request):
     return redirect('view_login')
 
@@ -31,19 +27,6 @@ def user_signup(request):
     else:
         form = UserSignUpForm()
     return render(request, 'html/signup_user.html', {'form': form})
-
-def admin_signup(request):
-    if request.method == 'POST':
-        form = AdminSignUpForm(request.POST)
-        if form.is_valid():
-            user = form.save()
-            login(request, user)
-            # Перенаправление на страницу администратора
-            return redirect('view_admin')
-    else:
-        form = AdminSignUpForm()
-    return render(request, 'html/signup_admin.html', {'form': form})
-
 
 def view_login(request):
     if request.method == "POST":

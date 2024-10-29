@@ -4,6 +4,18 @@ $(document).ready(function() {
     });
 
     function editProfile() {
+
+        let privacySpan = $(".privacy");
+        let privacyValue = privacySpan.text().trim();
+        let privacyOptionOpen = privacyValue === 'Открытый' ? 'selected' : '';
+        let privacyOptionClosed = privacyValue === 'Закрытый' ? 'selected' : '';
+        privacySpan.replaceWith(`
+            <select class="privacy_select">
+                <option value="open" ${privacyOptionOpen}>Открытый</option>
+                <option value="closed" ${privacyOptionClosed}>Закрытый</option>
+            </select>
+        `);
+
         let birthDateSpan = $(".birth_date");
         let birthDateValue = birthDateSpan.text().trim();
 
@@ -15,17 +27,21 @@ $(document).ready(function() {
             birthDateSpan.replaceWith('<input type="date" class="birth_date_input" value="">');
         }
 
+        let usernameSpan = $(".username");
+        let usernameValue = usernameSpan.text().trim();
+        usernameSpan.replaceWith('<input type="text" class="username_input" value="' + usernameValue + '">');
+
         let emailSpan = $(".email");
         let nameSpan = $(".name");
         let regionSpan = $(".region");
         let specializationSpan = $(".text_spcecialization");
         let aboutMeSpan = $(".text_area");
 
-        let emailValue = emailSpan.text();
-        let nameValue = nameSpan.text();
-        let regionValue = regionSpan.text();
-        let specializationValue = specializationSpan.text();
-        let aboutMeValue = aboutMeSpan.text();
+        let emailValue = emailSpan.text().trim();
+        let nameValue = nameSpan.text().trim();
+        let regionValue = regionSpan.text().trim();
+        let specializationValue = specializationSpan.text().trim();
+        let aboutMeValue = aboutMeSpan.text().trim();
 
         emailSpan.replaceWith('<input type="email" class="email_input" value="' + emailValue + '">');
         nameSpan.replaceWith('<input type="text" class="name_input" value="' + nameValue + '">');
@@ -38,30 +54,45 @@ $(document).ready(function() {
 
         $(".save_profile").click(function() {
             let newBirthDate = $(".birth_date_input").val() || null;
-            let newEmail = $(".email_input").val();
-            let newName = $(".name_input").val();
-            let newRegion = $(".region_input").val();
-            let newSpecialization = $(".specialization_input").val();
-            let newAboutMe = $(".about_me_input").val();
+            let newUsername = $(".username_input").val().trim() || '';
+            let newEmail = $(".email_input").val().trim();
+            let newName = $(".name_input").val().trim() || '';
+            let newRegion = $(".region_input").val().trim() || '';
+            let newSpecialization = $(".specialization_input").val().trim() || '';
+            let newAboutMe = $(".about_me_input").val().trim() || '';
+
+            let emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (newEmail && !emailRegex.test(newEmail)) {
+                alert('Пожалуйста, введите корректный email.');
+                return;
+            }
+
+            if (!newEmail || /^\s*$/.test(newEmail)) {
+                newEmail = '';
+            }
+
             let personalPhoto = $("#id_personal_photo")[0].files[0];
 
-            // Преобразование даты в ISO формат (YYYY-MM-DD)
-
-            let birthDateFormatted = newBirthDate;
             let formData = new FormData();
-            formData.append('birth_date', birthDateFormatted);
+            formData.append('birth_date', newBirthDate);
+            formData.append('username', newUsername);
+            formData.append('email', newEmail);
             formData.append('name', newName);
             formData.append('region', newRegion);
             formData.append('profession', newSpecialization);
             formData.append('about_me', newAboutMe);
+
+            // Приватность
+            let newPrivacy = $(".privacy_select").val();
+            formData.append('privacy', newPrivacy);
+
             if (personalPhoto) {
                 formData.append('personal_photo', personalPhoto);
             }
             formData.append('csrfmiddlewaretoken', $('input[name="csrfmiddlewaretoken"]').val());
 
-            // Отправка данных на сервер с помощью AJAX
             $.ajax({
-                url: 'update_profile/',  // URL для обновления профиля
+                url: updateProfileUrl,
                 type: 'POST',
                 data: formData,
                 processData: false,
@@ -70,22 +101,22 @@ $(document).ready(function() {
                     if (response.status === 'success') {
                         let displayDateFormatted = 'Не указано';
 
-                    // Преобразование даты обратно для отображения, если она существует
-                    if (birthDateFormatted) {
-                        let displayDateParts = birthDateFormatted.split('-');
-                        if (displayDateParts.length === 3) { // Убедитесь, что дата правильно разбивается
-                            displayDateFormatted = `${displayDateParts[2]}.${displayDateParts[1]}.${displayDateParts[0]}`;
+                        if (newBirthDate) {
+                            let displayDateParts = newBirthDate.split('-');
+                            if (displayDateParts.length === 3) { // Убедитесь, что дата правильно разбивается
+                                displayDateFormatted = `${displayDateParts[2]}.${displayDateParts[1]}.${displayDateParts[0]}`;
+                            }
                         }
-                    }
+                        $(".privacy_select").replaceWith('<span class="info-value privacy">' + (newPrivacy === 'open' ? 'Открытый' : 'Закрытый') + '</span>');
+                        $(".birth_date_input").replaceWith('<span class="info-value birth_date">' + displayDateFormatted + '</span>');
+                        $(".email_input").replaceWith('<span class="info-value email">' + (newEmail !== '' ? newEmail : 'Не указано') + '</span>');
+                        $(".name_input").replaceWith('<span class="info-value name">' + (newName !== '' ? newName : 'Не указано') + '</span>');
+                        $(".region_input").replaceWith('<span class="info-value region">' + (newRegion !== '' ? newRegion : 'Не указано') + '</span>');
+                        $(".specialization_input").replaceWith('<span class="info-value text_spcecialization">' + (newSpecialization !== '' ? newSpecialization : 'Не указано') + '</span>');
+                        $(".about_me_input").replaceWith('<span class="info-value text_area">' + (newAboutMe !== '' ? newAboutMe : 'Информация отсутствует') + '</span>');
 
-                        $(".birth_date_input").replaceWith('<span class="birth_date">' + displayDateFormatted + '</span>');
-                        $(".email_input").replaceWith('<span class="email">' + newEmail + '</span>');
-                        $(".name_input").replaceWith('<span class="name">' + newName + '</span>');
-                        $(".region_input").replaceWith('<span class="region">' + newRegion + '</span>');
-                        $(".specialization_input").replaceWith('<span class="text_spcecialization">' + newSpecialization + '</span>');
-                        $(".about_me_input").replaceWith('<span class="text_area">' + newAboutMe + '</span>');
+                        $(".username_input").replaceWith('<span class="info-value username">' + (newUsername !== '' ? newUsername : 'Не указано') + '</span>');
 
-                        // Обновление фото профиля
                         if (personalPhoto) {
                             let reader = new FileReader();
                             reader.onload = function(e) {

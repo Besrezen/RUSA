@@ -15,6 +15,7 @@
 <input type="hidden" id="route-coordinates" value="{{ route.coordinates }}">
 <input type="hidden" id="participants_{{ group.id }}" value="{{ group.participants }}">
 <input type="hidden" id="group_leader_id_{{ group.id }}" value="{{ group.leader_id }}">
+<input type="hidden" id="group-privacy-setting_{{ group.id }}" value="{{ group.privacy_setting }}">
 <script>
     var customIconImage = "{% static 'img/rusa.png' %}";
     var customFinishImage = "{% static 'img/finish_flag.png' %}";
@@ -71,7 +72,7 @@
         color: #7f8c8d;
     }
     .right-el {
-        margin-bottom: 1.5rem;
+        margin-bottom: 0.5rem;
     }
     .right-el h6 {
         font-size: 1.1rem;
@@ -99,6 +100,7 @@
     }
     .participant-badge {
         display: inline-block;
+        color: inherit;
         background-color: #f0f0f0;
         padding: 0.2em 0.6em;
         margin: 0.2em;
@@ -173,7 +175,6 @@
         }
     }
 
-    /* Стили для чата */
     #chat-section {
         margin-top: 2rem;
         padding: 1rem;
@@ -194,17 +195,19 @@
         margin-bottom: 10px;
         background-color: #f9f9f9;
         border-radius: 10px;
-        word-wrap: break-word; /* Перенос длинных слов на новые строки */
-        overscroll-behavior: contain; /* Добавлено для предотвращения прокрутки страницы */
+        word-wrap: break-word;
+        overscroll-behavior: contain;
     }
 
-    /* Новые стили для отображения даты и времени */
+    .message {
+        margin-bottom: 0.6rem;
+    }
     .message-header {
         display: flex;
         justify-content: space-between;
         font-size: 0.85rem;
         color: #7f8c8d;
-        margin-bottom: 0.2rem;
+        margin-bottom: 0.1rem;
     }
     .message-timestamp {
         font-size: 0.75rem;
@@ -216,13 +219,10 @@
         margin-bottom: 0.5rem;
     }
 
-    #chat-log div {
-        margin-bottom: 0.5rem;
-    }
     #chat-log strong {
         color: #3498db;
     }
-    /* Updated styles for chat input and button */
+
     .chat-input-container {
         width: 100%;
         display: flex;
@@ -253,7 +253,6 @@
     }
 
     @media (max-width: 480px) {
-        /* Adjust font size and padding for very small screens */
         #chat-message-input {
             padding: 0.5rem;
             font-size: 0.9rem;
@@ -267,13 +266,96 @@
     }
 
     @media (min-width: 768px) {
-        /* Adjustments for medium screens if necessary */
         #chat-message-input {
             font-size: 1rem;
         }
         #chat-message-submit {
             font-size: 1rem;
             min-width: 80px;
+        }
+    }
+
+    .modal {
+        display: none;
+        position: fixed;
+        z-index: 1000;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0,0,0,0.5);
+    }
+
+    .modal-content {
+        background-color: #fff;
+        margin: 10% auto;
+        padding: 2rem;
+        border-radius: 10px;
+        box-shadow: 0 0 20px rgba(0,0,0,0.2);
+        width: 90%;
+        max-width: 600px;
+        position: relative;
+    }
+
+    .close-modal {
+        position: absolute;
+        right: 1rem;
+        top: 1rem;
+        font-size: 1.5rem;
+        cursor: pointer;
+        color: #7f8c8d;
+    }
+
+    .close-modal:hover {
+        color: #2c3e50;
+    }
+
+    .modal-header {
+        margin-bottom: 1.5rem;
+    }
+
+    .modal-header h3 {
+        color: #2c3e50;
+        margin: 0;
+    }
+
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+
+    .form-group label {
+        display: block;
+        margin-bottom: 0.5rem;
+        color: #7f8c8d;
+        font-weight: 600;
+    }
+
+    .form-group input,
+    .form-group textarea,
+    .form-group select {
+        width: 100%;
+        padding: 0.8rem;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        font-size: 1rem;
+    }
+
+    .form-group textarea {
+        min-height: 100px;
+        resize: vertical;
+    }
+
+    .modal-footer {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 2rem;
+    }
+
+    @media (max-width: 768px) {
+        .modal-content {
+            margin: 5% auto;
+            width: 95%;
+            padding: 1.5rem;
         }
     }
 
@@ -291,7 +373,9 @@
             <h2>{{ route.name }}</h2>
         </div>
         <div id="map"></div>
-        <p class="author">Автор маршрута: {{ route_author }}</p>
+        <p class="author">
+            Автор маршрута: <a href="{% url 'view_profile_by_username' username=route_author %}">{{ route_author }}</a>
+        </p>
     </div>
     
     <div class="right-column">
@@ -303,21 +387,37 @@
             <div class="parameter">
                 <p><span>Длина:</span><br><i class="fas fa-ruler"></i><b>{{ route_length }} км</b></p>
             </div>
-            <div class="parameter">
-                <p><span>Время:</span><br><i class="fas fa-clock"></i><b>{{ route_time }}</b></p>
-            </div>   
         </div>
         
         <div class="right-el">
             <h6>ИНФОРМАЦИЯ О ГРУППЕ</h6>
             <div class="parameter">
-                <p><span>Название группы:</span><br><i class="fas fa-users"></i><b>{{ group.name }}</b></p>
-            </div>
-            <div class="parameter">
                 <p><span>Лидер группы:</span><br><i class="fas fa-user"></i><b>{{ group.leader_name }}</b></p>
             </div>
             <div class="parameter">
-                <p><span>Кол-во участников:</span><br><i class="fas fa-users"></i><b>{{ group.participant_quantity }}</b></p>
+                <p><span>Кол-во участников:</span><br><i class="fas fa-users"></i><b id="participant_quantity_{{ group.id }}">{{ group.participant_quantity }}</b></p>
+            </div>
+            
+            {% if group.trip_datetime %}
+                <div class="parameter">
+                    <p><span>Дата похода:</span><br><i class="fas fa-calendar-alt"></i><b>{{ group.trip_datetime|date:"d.m.Y H:i" }}</b></p>
+                </div>
+            {% endif %}
+            {% if group.activity_description and group.activity_description != "None" %}
+                <div class="parameter">
+                    <p><span>Описание деятельности:</span><br><i class="fas fa-info-circle"></i><b>{{ group.activity_description }}</b></p>
+                </div>
+            {% endif %}
+            <div class="parameter">
+                <p><span>Настройка приватности:</span><br><i class="fas fa-lock"></i><b>
+                {% if group.privacy_setting == 'open' %}
+                    Открытая группа
+                {% elif group.privacy_setting == 'link' %}
+                    Доступная по ссылке
+                {% elif group.privacy_setting == 'private' %}
+                    Закрытая
+                    {% endif %}
+                </b></p>
             </div>
         </div>
         
@@ -326,20 +426,20 @@
             <div id="all_participants_{{ group.id }}" class="participants">
                 {% for id, name in group.zipped_participants %}
                     {% if id != user_id %}
-                        <span id="{{ id }}" class="participant-badge">{{ name }}</span>
+                        <a href="{% url 'view_profile_by_username' username=name %}" id="{{ id }}" class="participant-badge">{{ name }}</a>
                     {% else %}
-                        <span id="{{ id }}" class="participant-badge current-user">{{ name }}</span>
+                        <a href="{% url 'view_profile_by_username' username=name %}" id="{{ id }}" class="participant-badge current-user">{{ name }}</a>
                     {% endif %}
                 {% endfor %}
             </div>
         </div>
         
-        <div id="buttons_{{ group.id }}"></div>
+        <div style="margin-top: auto;" id="buttons_{{ group.id }}"></div>
     </div>
 
     <!-- Чат  -->
     <div id="chat-section">
-        <h2>Чат группы</h2>
+        <h2>Чат группы: {{ group.name }}</h2>
         <div id="chat-log">
             {% for message in messages %}
                 <div class="message" data-timestamp="{{ message.timestamp.isoformat }}">
@@ -367,6 +467,65 @@
     </div>
 </div>
 
+<div id="editGroupModal" class="modal">
+    <div class="modal-content">
+        <span class="close-modal" onclick="closeEditModal()">&times;</span>
+        <div class="modal-header">
+            <h3>Редактирование группы</h3>
+        </div>
+        <form id="editGroupForm" method="post" action="">
+            {% csrf_token %}
+            <div class="form-group">
+                <label>Название группы</label>
+                <input type="text" name="name" value="{{ group.name }}" required pattern=".*\S.*" title="Название группы не должно быть пустым или состоять только из пробелов">
+            </div>
+            <div class="form-group">
+                <label>Дата похода</label>
+                <input type="datetime-local" name="trip_datetime" value="{{ group.trip_datetime|date:'Y-m-d\\TH:i' }}">
+            </div>
+            <div class="form-group">
+                <label>Описание деятельности</label>
+                <textarea name="activity_description">{{ group.activity_description }}</textarea>
+            </div>
+            <div class="form-group">
+                <label>Настройка приватности</label>
+                <select name="privacy_setting">
+                    <option value="open" {% if group.privacy_setting == 'open' %}selected{% endif %}>Открытая группа</option>
+                    <option value="link" {% if group.privacy_setting == 'link' %}selected{% endif %}>Доступная по ссылке</option>
+                    <option value="private" {% if group.privacy_setting == 'private' %}selected{% endif %}>Закрытая</option>
+                </select>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" onclick="confirmDeleteGroup()">Удалить группу</button>
+                <button type="submit" class="btn">Сохранить изменения</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    function openEditModal() {
+        document.getElementById('editGroupModal').style.display = 'block';
+    }
+
+    function closeEditModal() {
+        document.getElementById('editGroupModal').style.display = 'none';
+    }
+
+    function confirmDeleteGroup() {
+        if (confirm('Вы уверены, что хотите удалить группу?')) {
+            // Здесь добавьте логику удаления группы
+            window.location.href = '/delete-group/' + {{ group.id }};
+        }
+    }
+
+    // Закрытие модального окна при клике вне его
+    window.onclick = function(event) {
+        if (event.target == document.getElementById('editGroupModal')) {
+            closeEditModal();
+        }
+    }
+</script>
 
 <script>
     const roomName = "{{ room_name }}";
@@ -382,11 +541,9 @@
     const chatLog = document.getElementById('chat-log');
     const noMessagesMessage = document.getElementById('no-messages-message');
 
-    // Функция для форматирования метки времени
     function formatTimestamp(timestamp) {
         const date = new Date(timestamp);
         if (isNaN(date.getTime())) {
-            // Если timestamp некорректен, используем текущее время
             return new Date().toLocaleDateString('ru-RU', {
                 day: '2-digit',
                 month: '2-digit',
@@ -405,7 +562,6 @@
         return date.toLocaleDateString('ru-RU', options);
     }
 
-    // Debounce function to limit the rate at which a function can fire.
     function debounce(func, wait = 100) {
         let timeout;
         return function(...args) {
@@ -414,7 +570,6 @@
         };
     }
 
-    // Функция для загрузки дополнительных сообщений
     function loadMoreMessages() {
         if (loading || allMessagesLoaded) return;
         loading = true;
@@ -445,13 +600,11 @@
                             </div>
                         `;
                         chatLog.insertBefore(msgElement, chatLog.firstChild);
-                        // Обновляем 'oldestTimestamp'
                         if (!oldestTimestamp || new Date(message.timestamp) < new Date(oldestTimestamp)) {
                             oldestTimestamp = new Date(message.timestamp).toISOString();
                         }
                     });
 
-                    // Регулируем позицию прокрутки для сохранения текущего вида
                     const newScrollHeight = chatLog.scrollHeight;
                     chatLog.scrollTop = newScrollHeight - currentScrollHeight;
                 }
@@ -463,22 +616,19 @@
             });
     }
 
-    // Функция для прокрутки чата вниз
     function scrollToBottom() {
         chatLog.scrollTop = chatLog.scrollHeight;
     }
 
-    // Обработка входящих сообщений
     chatSocket.onmessage = function(e) {
         try {
             const data = JSON.parse(e.data);
-            console.log('Received data:', data); // Для отладки
+            console.log('Received data:', data);
 
             const message = data.message;
             const username = data.username;
-            let timestamp = data.timestamp; // Предполагается, что сервер отправляет метку времени
+            let timestamp = data.timestamp;
 
-            // Проверяем, есть ли timestamp и корректен ли он
             if (!timestamp || isNaN(new Date(timestamp).getTime())) {
                 console.warn('Invalid or missing timestamp. Using current time.');
                 timestamp = new Date().toISOString();
@@ -498,7 +648,6 @@
             `;
             chatLog.appendChild(msgElement);
 
-            // Удаляем сообщение "Нет сообщений", если оно существует
             if (noMessagesMessage) {
                 noMessagesMessage.remove();
             }
@@ -513,11 +662,10 @@
         console.error('Chat socket closed unexpectedly');
     };
 
-    // Функция для отправки сообщения
     function sendMessage() {
         const messageInputDom = document.getElementById('chat-message-input');
         const message = messageInputDom.value.trim();
-        const maxLength = 500; // Максимальная длина сообщения
+        const maxLength = 500;
 
         if (message === "") {
             return;
@@ -543,13 +691,11 @@
             oldestTimestamp = firstMessage.getAttribute('data-timestamp');
         }
 
-        // Прокручиваем чат вниз при загрузке
         scrollToBottom();
 
-        // Обработчики событий для отправки сообщений
         {% if user.is_authenticated %}
             document.getElementById('chat-message-input').addEventListener('keyup', function(e) {
-                if (e.key === 'Enter') {  // Современный подход
+                if (e.key === 'Enter') { 
                     sendMessage();
                 }
             });
@@ -558,13 +704,11 @@
             });
         {% endif %}
 
-        // Обработчик события прокрутки для загрузки дополнительных сообщений
         chatLog.addEventListener('scroll', debounce(function() {
-            // Загружаем при прокрутке вверх, если пользователь близко к верху
             if (chatLog.scrollTop < 250 && !loading && !allMessagesLoaded) {
                 loadMoreMessages();
             }
-        }, 200)); // Настройте задержку debounce по необходимости
+        }, 200));
     });
 </script>
 
