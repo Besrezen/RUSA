@@ -368,14 +368,12 @@
         </div>
         
         <div class="profile-info">
-            {% if is_owner %}
-                <div class="info-group">
-                    <div class="info-label">
-                        <i style="display: none;" class="fas fa-user"></i> Никнейм:
-                    </div>
-                    <span class="info-value username">{{ profile.user.username }}</span>
+            <div class="info-group">
+                <div class="info-label">
+                    <i style="display: none;" class="fas fa-user"></i> Никнейм:
                 </div>
-            {% endif %}
+                <span class="info-value username">{{ profile.user.username }}</span>
+            </div>
             <div class="info-group">
                 <div class="info-label">
                     <i style="display: none;" class="fas fa-id-badge"></i> Имя:
@@ -400,13 +398,14 @@
                     {% endif %}
                 </span>
             </div>
-            <div class="info-group">
-                <div class="info-label">
-                    <i style="display: none;" class="fas fa-envelope"></i> Email:
+            {% if is_owner %}
+                <div class="info-group">
+                    <div class="info-label">
+                        <i style="display: none;" class="fas fa-envelope"></i> Email:
+                    </div>
+                    <span class="info-value email">{{ profile.user.email }}</span>
                 </div>
-                <span class="info-value email">{{ profile.user.email }}</span>
-            </div>
-
+            {% endif %}
             <div style="display: none;" class="info-group">
                 <div class="info-label">
                     <i style="display: none;" class="fas fa-briefcase"></i> Специальность:

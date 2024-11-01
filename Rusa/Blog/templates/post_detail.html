@@ -35,7 +35,8 @@
     </div>
   </div>
 
-  <div class="card shadow-sm mb-4">
+  <!-- Секция Комментариев с ID для якоря -->
+  <div class="card shadow-sm mb-4" id="comments-section">
     <div class="card-body">
       <h2 class="card-title h4">Комментарии</h2>
       
@@ -70,6 +71,48 @@
       {% empty %}
         <p class="text-muted">Нет комментариев.</p>
       {% endfor %}
+
+      <!-- Контролы Пагинации -->
+      {% if comments.has_other_pages %}
+        <nav aria-label="Комментарии навигация">
+          <ul class="pagination justify-content-center">
+            <!-- Первая страница -->
+            {% if comments.number > 1 %}
+              <li class="page-item">
+                <a class="page-link" href="?page=1#comments-section" aria-label="Первая">
+                  <span aria-hidden="true">&laquo;</span>
+                </a>
+              </li>
+            {% else %}
+              <li class="page-item disabled">
+                <span class="page-link" aria-hidden="true">&laquo;</span>
+              </li>
+            {% endif %}
+
+            <!-- Номера страниц -->
+            {% for num in comments.paginator.page_range %}
+              {% if comments.number == num %}
+                <li class="page-item active"><span class="page-link">{{ num }}</span></li>
+              {% elif num > comments.number|add:'-3' and num < comments.number|add:'3' %}
+                <li class="page-item"><a class="page-link" href="?page={{ num }}#comments-section">{{ num }}</a></li>
+              {% endif %}
+            {% endfor %}
+
+            <!-- Последняя страница -->
+            {% if comments.number < comments.paginator.num_pages %}
+              <li class="page-item">
+                <a class="page-link" href="?page={{ comments.paginator.num_pages }}#comments-section" aria-label="Последняя">
+                  <span aria-hidden="true">&raquo;</span>
+                </a>
+              </li>
+            {% else %}
+              <li class="page-item disabled">
+                <span class="page-link" aria-hidden="true">&raquo;</span>
+              </li>
+            {% endif %}
+          </ul>
+        </nav>
+      {% endif %}
 
       {% if user.is_authenticated %}
         <div class="mt-4">

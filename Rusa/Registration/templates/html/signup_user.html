@@ -157,6 +157,26 @@
             display: none;
         }
     }
+    .btn-google {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: #fff;
+        color: #555;
+        border: 1px solid #ccc;
+        transition: background-color 0.3s, border-color 0.3s;
+    }
+
+    .btn-google:hover {
+        background-color: #f7f7f7;
+        border-color: #bbb;
+    }
+
+    .btn-google img {
+        width: 25px;
+        height: 25px;
+        margin-right: 10px;
+    }
 </style>
 
 <div class="registration-container">
@@ -173,6 +193,12 @@
             <button type="submit">Зарегистрироваться</button>
         </form>
         <p>Уже есть аккаунт? <a href="{% url 'view_login' %}">Войдите</a>.</p>
+        {% if SOCIAL_AUTH_GOOGLE_OAUTH2_KEY %}
+            <a href="{% url 'social:begin' 'google-oauth2' %}" class="btn btn-google mt-3">
+                <img src="https://developers.google.com/identity/images/g-logo.png" alt="Google Logo">
+                Войти через Google
+            </a>
+        {% endif %}
     </div>
     <div class="right-section">
         <img src="{% static 'generic/img/illustration.png' %}" alt="Иллюстрация">

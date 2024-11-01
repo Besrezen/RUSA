@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     "Blog",
     "ckeditor",
     "ckeditor_uploader",
+    'social_django',
 ]
 
 MIDDLEWARE = [
@@ -71,10 +72,14 @@ TEMPLATES = [
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
+                'social_django.context_processors.backends',
+                'social_django.context_processors.login_redirect',
+                'Rusa.context_processors.google_auth',
             ],
         },
     },
 ]
+
 
 WSGI_APPLICATION = "Rusa.wsgi.application"
 
@@ -102,7 +107,20 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = None # Google Consumer Key
 
+SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = None # Google Consumer Secret
+
+
+if SOCIAL_AUTH_GOOGLE_OAUTH2_KEY and SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET:
+    AUTHENTICATION_BACKENDS = (
+        'social_core.backends.google.GoogleOAuth2',
+        'django.contrib.auth.backends.ModelBackend',
+    )
+else:
+    AUTHENTICATION_BACKENDS = (
+        'django.contrib.auth.backends.ModelBackend',
+    )
 
 AUTH_USER_MODEL = 'Registration.CustomUser'
 

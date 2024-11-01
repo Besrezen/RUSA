@@ -34,6 +34,14 @@ class UserProfile(models.Model):
     def __str__(self):
         return self.user.username
 
+    class Meta:
+        verbose_name = "Профиль"
+        verbose_name_plural = "Профили"
+
 class PortfolioImage(models.Model):
     image = models.ImageField(upload_to=portfolio_image_path)
     user = models.ForeignKey(UserProfile, on_delete=models.CASCADE, related_name='portfolio_images')
+
+    class Meta:
+        verbose_name = "Фотография портфолио"
+        verbose_name_plural = "Фотографии портфолио"

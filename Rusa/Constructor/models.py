@@ -1,4 +1,4 @@
-# main/models.py
+# Constructor/models.py
 
 from django.db import models
 from django.conf import settings
@@ -13,6 +13,7 @@ def generate_uuid_filename(instance, filename):
 class Line(models.Model):
     author_id = models.DecimalField(max_digits=5, decimal_places=0, null=True)
     name = models.TextField(null=True)
+    description = models.TextField(null=True, blank=True, verbose_name="Описание маршрута")
     coordinates = models.TextField(null=True)
     length = models.DecimalField(max_digits=7, decimal_places=2, null=True)
     difficulty = models.DecimalField(max_digits=5, decimal_places=2, null=True)
@@ -28,6 +29,10 @@ class Line(models.Model):
             if os.path.isfile(self.previewPhoto.path):
                 os.remove(self.previewPhoto.path)
         super(Line, self).delete(*args, **kwargs)
+    
+    class Meta:
+        verbose_name = "Маршрут"
+        verbose_name_plural = "Маршруты"
 
 class Group(models.Model):
     PRIVACY_CHOICES = [
@@ -45,6 +50,10 @@ class Group(models.Model):
     privacy_setting = models.CharField(max_length=10, choices=PRIVACY_CHOICES, default='open')
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = "Группа"
+        verbose_name_plural = "Группы"
 
 
 class Review(models.Model):
@@ -80,3 +89,7 @@ class Review(models.Model):
 
     def get_display_name(self):
         return self.name if self.name else (self.user.get_full_name() or self.user.username)
+
+    class Meta:
+        verbose_name = "Отзыв"
+        verbose_name_plural = "Отзывы"

@@ -370,7 +370,11 @@
     
     <div class="left-column">
         <div class="route-header">
-            <h2>{{ route.name }}</h2>
+            <h2>
+                <a href="{% url 'route_page' route.id %}" style="text-decoration: none; color: inherit;">
+                    {{ route.name }}
+                </a>
+            </h2>
         </div>
         <div id="map"></div>
         <p class="author">
