@@ -6,5 +6,6 @@ class MessageAdmin(admin.ModelAdmin):
     search_fields = ('room', 'user__username', 'content')
     list_filter = ('room', 'timestamp')
     ordering = ('-timestamp',)
+    
 
 admin.site.register(Message, MessageAdmin)

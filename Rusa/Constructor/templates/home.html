@@ -8,7 +8,7 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <link rel="stylesheet" type="text/css" href="../static/css/style.css"> 
+    <link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}"> 
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>WEB Руза - Путешествуйте в интересной компании</title>
@@ -113,25 +113,113 @@
             border-radius: 10px;
             text-decoration: none;
         }
-        .testimonials {
+        .reviews {
+            background-color: #f5f5f5;
             padding: 80px 0;
+        }
+        .reviews-title {
+            text-align: center;
+            margin-bottom: 50px;
+            font-size: 2.5rem;
+            color: #2c3e50;
+            position: relative;
         }
         .testimonial-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 30px;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
         }
         .testimonial-item {
-            background: #f9f9f9;
-            padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            background: #ffffff;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+        .testimonial-item:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.1);
         }
         .testimonial-item img {
-            width: 80px;
-            height: 80px;
+            width: 90px;
+            height: 90px;
             border-radius: 50%;
+            object-fit: cover;
+            margin-bottom: 20px;
+            transition: transform 0.3s ease;
+        }
+
+        .testimonial-item:hover img {
+            transform: scale(1.05);
+        }
+        .testimonial-item h3 {
+            color: #2c3e50;
+            font-size: 1.3rem;
             margin-bottom: 15px;
+            font-weight: 600;
+        }
+        .testimonial-item p {
+            color: #666;
+            line-height: 1.6;
+            font-size: 1rem;
+            margin: 0;
+        }
+        .submit-review {
+            background: #ffffff;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            max-width: 800px;
+            margin: 40px auto 0;
+        }
+
+        .submit-review h3 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 25px;
+            font-size: 1.8rem;
+        }
+
+        .submit-review form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .submit-review input,
+        .submit-review textarea {
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+
+        .submit-review input:focus,
+        .submit-review textarea:focus {
+            border-color: #8bc34a;
+            outline: none;
+        }
+
+        .submit-review button {
+            background: #8bc34a;
+            color: white;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: background 0.3s ease;
+            align-self: center;
+        }
+
+        .submit-review button:hover {
+            background: #7cb342;
         }
         .cta {
             background: #2c3e50;
@@ -144,12 +232,18 @@
             margin-bottom: 30px;
         }
         .route-card {
-        background-color: #fff;
-        border-radius: 10px;
-        box-shadow: 0 0 10px rgba(0,0,0,0.1);
-        overflow: hidden;
-        margin-bottom: 1.5rem;
-        height: 97%;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+            overflow: hidden;
+            margin-bottom: 1.5rem;
+            height: 97%;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .route-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.1);
         }
         .route-card img {
             width: 100%;
@@ -207,6 +301,148 @@
             border: 1px solid #ccc;
             pointer-events: none;
         }
+
+        /* Стили для всплывающих сообщений */
+        .popup {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #333;
+            color: #fff;
+            padding: 15px 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+            opacity: 0;
+            transition: opacity 0.5s ease;
+            z-index: 10000;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            max-width: 90%;
+            word-wrap: break-word;
+        }
+
+        .popup.success {
+            background-color: #4CAF50; /* Зелёный для успеха */
+        }
+
+        .popup.error {
+            background-color: #f44336; /* Красный для ошибок */
+        }
+
+        .popup .close-btn {
+            margin-left: 15px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+
+        /* Стили для ссылок на профили */
+        .user-link {
+            text-decoration: none;
+            color: inherit; /* Наследует цвет текста */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .user-link:hover {
+            opacity: 0.8;
+        }
+
+        /* Стили для пагинации */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 30px;
+            flex-wrap: wrap;
+        }
+
+        .pagination-btn {
+            background: #8bc34a;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .pagination-btn:hover:not(:disabled) {
+            background: #7cb342;
+            transform: translateY(-2px);
+        }
+
+        .pagination-btn.active {
+            background: #558b2f;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            cursor: default;
+        }
+
+        .pagination-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
+        /* Адаптивность для мобильных устройств */
+        @media (max-width: 768px) {
+            .hero-content h1 {
+                font-size: 2.5rem;
+            }
+
+            .hero-content p {
+                font-size: 1rem;
+            }
+
+            .reviews-title {
+                font-size: 2rem;
+                margin-bottom: 30px;
+            }
+
+            .testimonial-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .testimonial-item img {
+                width: 70px;
+                height: 70px;
+            }
+
+            .testimonial-item h3 {
+                font-size: 1.2rem;
+            }
+
+            .submit-review {
+                padding: 20px;
+                margin: 30px 15px 0;
+            }
+
+            .submit-review h3 {
+                font-size: 1.5rem;
+            }
+
+            .submit-review button {
+                width: 100%;
+                padding: 10px 20px;
+            }
+
+            .pagination-btn {
+                padding: 6px 10px;
+                margin: 1px;
+                font-size: 0.9rem;
+            }
+        }
+
+        /* Центрирование заголовка "Популярные маршруты" */
+        .top-routes h2 {
+            text-align: center;
+            margin-bottom: 40px;
+            font-size: 2.5rem;
+            color: #2c3e50;
+        }
     </style>
 </head>
 <body>
@@ -217,7 +453,7 @@
             <a href="{% url 'route_list' %}" class="btn">Начать путешествие</a>
         </div>
     </section>
-
+    
     <section class="features">
         <div class="container">
             <div class="feature-grid">
@@ -239,7 +475,7 @@
             </div>
         </div>
     </section>
-
+    
     <section class="map-section">
         <div class="container">
             <div class="route-selector">
@@ -251,7 +487,7 @@
             </div>
         </div>
     </section>
-
+    
     <section class="top-routes">
         <div class="container">
             <h2>Популярные маршруты</h2>
@@ -286,40 +522,227 @@
         </div>
     </section>
     
-
-    <section class="testimonials">
+    <section class="reviews">
         <div class="container">
-            <h2>Отзывы путешественников</h2>
-            <div class="testimonial-grid">
-                <div class="testimonial-item">
-                    <img src="{% static 'main/avatar.jpg' %}" alt="Петр А.">
-                    <h3>Петр А.</h3>
-                    <p>"Невероятные впечатления! WEB Руза помог мне спланировать идеальное путешествие."</p>
-                </div>
-                <div class="testimonial-item">
-                    <img src="{% static 'main/avatar.jpg' %}" alt="Елена Ф.">
-                    <h3>Елена Ф.</h3>
-                    <p>"Нашла отличных попутчиков и открыла для себя новые места. Спасибо WEB Руза!"</p>
-                </div>
-                <div class="testimonial-item">
-                    <img src="{% static 'main/avatar.jpg' %}" alt="Иван И.">
-                    <h3>Иван И.</h3>
-                    <p>"Как организатор, я в восторге от возможностей, которые предоставляет платформа."</p>
-                </div>
+            <h2 class="reviews-title">Отзывы путешественников</h2>
+            <div id="messages" class="messages"></div> <!-- Блок для сообщений -->
+            <div class="testimonial-grid" id="reviews-container">
+                {% for review in reviews_page.object_list %}
+                    <div class="testimonial-item">
+                        {% if review.user %}
+                            <a href="{% url 'view_profile_by_username' username=review.user.username %}" class="user-link">
+                                {% if review.user.userprofile.personal_photo %}
+                                    <img src="{{ review.user.userprofile.personal_photo.url }}" alt="{{ review.get_display_name }}" onerror="this.onerror=null;this.src='{% static 'userprofile/assets/png/anon.png' %}';">
+                                {% else %}
+                                    <img src="{% static 'main/avatar.jpg' %}" alt="{{ review.get_display_name }}">
+                                {% endif %}
+                                <h3>{{ review.get_display_name }}</h3>
+                            </a>
+                        {% else %}
+                            <img src="{% static 'main/avatar.jpg' %}" alt="Аноним">
+                            <h3>{{ review.get_display_name }}</h3>
+                        {% endif %}
+                        <p>{{ review.text }}</p>
+                    </div>
+                {% empty %}
+                    <p style="text-align: center; width: 100%;">Пока нет отзывов. Будьте первым!</p>
+                {% endfor %}
+            </div>
+            <div class="pagination" id="pagination-controls">
+                {% if reviews_page.number > 1 %}
+                    <button class="pagination-btn" data-page="1">««</button>
+                    <button style="display: none;" class="pagination-btn" data-page="{{ reviews_page.previous_page_number }}">«</button>
+                {% else %}
+                    <button class="pagination-btn" disabled>««</button>
+                    <button style="display: none;" class="pagination-btn" disabled>«</button>
+                {% endif %}
+            
+                {% for num in reviews_page.paginator.page_range %}
+                    {% if num >= reviews_page.number|add:'-2' and num <= reviews_page.number|add:'2' %}
+                        {% if reviews_page.number == num %}
+                            <button class="pagination-btn active" data-page="{{ num }}">{{ num }}</button>
+                        {% else %}
+                            <button class="pagination-btn" data-page="{{ num }}">{{ num }}</button>
+                        {% endif %}
+                    {% endif %}
+                {% endfor %}
+            
+                {% if reviews_page.number < reviews_page.paginator.num_pages %}
+                    <button style="display: none;" class="pagination-btn" data-page="{{ reviews_page.next_page_number }}">»</button>
+                    <button class="pagination-btn" data-page="{{ reviews_page.paginator.num_pages }}">»»</button>
+                {% else %}
+                    <button style="display: none;" class="pagination-btn" disabled>»</button>
+                    <button class="pagination-btn" disabled>»»</button>
+                {% endif %}
+            </div>
+        
+            <div class="submit-review">
+                <h3>Оставить отзыв</h3>
+                <form id="review-form">
+                    {% csrf_token %}
+                    {% if user.is_authenticated %}
+                        <input type="hidden" id="id_name" name="name" value="{{ user.userprofile.name|default:user.get_full_name|default:user.username }}">
+                    {% else %}
+                        <input type="text" id="id_name" name="name" required placeholder="Введите ваше имя">
+                    {% endif %}
+                    <textarea id="id_text" name="text" rows="4" required placeholder="Напишите ваш отзыв"></textarea>
+                    <button type="submit" name="submit_review">Отправить отзыв</button>
+                </form>
             </div>
         </div>
     </section>
-
+    
     <section class="cta">
         <div class="container">
             <h2>Готовы к новым приключениям?</h2>
             <a href="{% url 'signup_user' %}" class="btn">Присоединиться сейчас</a>
         </div>
     </section>
+    
+    <!-- Подключение скриптов -->
     <script src="{% static 'js/map.js' %}?v={{ now|date:'U' }}"></script>
-    <script src="../static/js/map-preview.js"></script>
-    <script src="../static/js/animated_line.js"></script>
+    <script src="{% static 'js/map-preview.js' %}"></script>
+    <script src="{% static 'js/animated_line.js' %}"></script>
+    
+    <!-- Скрипт для обработки формы и отображения сообщений -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('review-form');
+            const messagesDiv = document.getElementById('messages');
+            const reviewsContainer = document.getElementById('reviews-container');
+            const paginationControls = document.getElementById('pagination-controls');
+            const reviewsTitle = document.querySelector('.reviews-title');
 
+            form.addEventListener('submit', function(event) {
+                event.preventDefault();
+
+                const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+                const name = document.getElementById('id_name').value;
+                const text = document.getElementById('id_text').value;
+
+                fetch("{% url 'add_review_ajax' %}", {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': csrfToken
+                    },
+                    body: JSON.stringify({
+                        'name': name,
+                        'text': text
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    // Очистка предыдущих сообщений
+                    messagesDiv.innerHTML = '';
+
+                    if (data.status === 'success') {
+                        // Создание всплывающего сообщения об успехе
+                        createPopup('success', data.message);
+
+                        // Очищение формы
+                        form.reset();
+
+                        // Обновление списка отзывов (если необходимо)
+                        // Можно реализовать обновление списка отзывов автоматически после добавления
+                    } else if (data.status === 'error') {
+                        // Создание всплывающего сообщения об ошибке
+                        createPopup('error', data.message);
+                    }
+                })
+                .catch((error) => {
+                    // Создание всплывающего сообщения при ошибке сети
+                    createPopup('error', 'Произошла ошибка при отправке отзыва. Пожалуйста, попробуйте позже.');
+                    console.error('Error:', error);
+                });
+            });
+
+            function createPopup(type, message) {
+                // Создание контейнера всплывающего окна
+                const popup = document.createElement('div');
+                popup.className = `popup ${type}`;
+
+                // Добавление сообщения
+                const messageText = document.createElement('span');
+                messageText.innerText = message;
+                popup.appendChild(messageText);
+
+                // Добавление кнопки закрытия
+                const closeButton = document.createElement('span');
+                closeButton.className = 'close-btn';
+                closeButton.innerHTML = '&times;';
+                closeButton.onclick = function() {
+                    popup.style.opacity = '0';
+                    setTimeout(() => popup.remove(), 500);
+                };
+                popup.appendChild(closeButton);
+
+                // Добавление всплывающего окна в body
+                document.body.appendChild(popup);
+
+                // Плавное появление
+                setTimeout(() => {
+                    popup.style.opacity = '1';
+                }, 10);
+
+                // Автоматическое закрытие через 5 секунд
+                setTimeout(() => {
+                    popup.style.opacity = '0';
+                    setTimeout(() => popup.remove(), 500);
+                }, 5000);
+            }
+
+            // Обработка кликов по пагинации
+            if (paginationControls) {
+                paginationControls.addEventListener('click', function(event) {
+                    if (event.target.tagName.toLowerCase() === 'button' && !event.target.disabled) {
+                        const page = event.target.getAttribute('data-page');
+                        loadReviewsPage(page);
+                    }
+                });
+            }
+
+            function loadReviewsPage(page) {
+                // Получение текущего URL и добавление параметра page
+                const url = new URL(window.location.href);
+                url.searchParams.set('page', page);
+
+                fetch(url, {
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                })
+                .then(response => response.text())
+                .then(html => {
+                    // Парсинг полученного HTML
+                    const parser = new DOMParser();
+                    const doc = parser.parseFromString(html, 'text/html');
+
+                    // Извлечение новых отзывов
+                    const newReviews = doc.querySelector('#reviews-container').innerHTML;
+
+                    // Извлечение новых пагинационных контролей
+                    const newPagination = doc.querySelector('#pagination-controls').innerHTML;
+
+                    // Обновление текущих отзывов и пагинации
+                    reviewsContainer.innerHTML = newReviews;
+                    paginationControls.innerHTML = newPagination;
+
+                    // Плавный переход к разделу отзывов
+                    const reviewsSection = document.querySelector('.reviews');
+                    const offset = reviewsSection.getBoundingClientRect().top + window.pageYOffset - 20;
+                    window.scrollTo({
+                        top: offset,
+                        behavior: 'smooth'
+                    });
+                })
+                .catch((error) => {
+                    console.error('Error loading reviews page:', error);
+                });
+            }
+        });
+    </script>
 </body>
 </html>
+
 {% endblock %}

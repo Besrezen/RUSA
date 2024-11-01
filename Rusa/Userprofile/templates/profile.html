@@ -129,8 +129,6 @@
         font-weight: 600;
         text-transform: uppercase;
         cursor: pointer;
-        transition: all 0.3s ease;
-        flex: 1;
     }
     .btn-logout {
         background-color: #e74c3c;
@@ -671,7 +669,7 @@
 
     <div class="btn-container">
         {% if is_owner %}
-        <button class="btn btn-logout" onclick="window.location.href='{% url 'logout' %}';">Выйти</button>
+        <button class="btn btn-logout" style="flex: 1;" onclick="window.location.href='{% url 'logout' %}';">Выйти</button>
         {% endif %}
     </div>
 </div>
@@ -718,7 +716,6 @@
 
 <script>
     document.addEventListener("DOMContentLoaded", function () {
-        // Group sorting logic
         const groupParams = new URLSearchParams(window.location.search);
         const groupSortBy = groupParams.get('group_sort_by');
         const groupOrder = groupParams.get('group_order') || 'desc';

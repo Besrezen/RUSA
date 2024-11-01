@@ -42,7 +42,10 @@ INSTALLED_APPS = [
     "Constructor",
     "Userprofile",
     "django_bootstrap5",
-    'Chat',
+    "Chat",
+    "Blog",
+    "ckeditor",
+    "ckeditor_uploader",
 ]
 
 MIDDLEWARE = [
@@ -124,6 +127,16 @@ USE_TZ = True
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
+MARKDOWNX_MEDIA_PATH = 'markdownx/'
+
+CKEDITOR_UPLOAD_PATH = "uploads/"
+CKEDITOR_CONFIGS = {
+    'default': {
+        'toolbar': 'full',
+        'height': 800,
+        'width': '100%',
+    },
+}
 
 
 # Static files (CSS, JavaScript, Images)

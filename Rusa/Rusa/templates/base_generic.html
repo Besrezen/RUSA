@@ -197,6 +197,8 @@
 
     {% block content %}
     {% endblock content %}
+    {% block extra_js %}
+    {% endblock %}
 
     <div class="mt-auto" style="width: 100%;">
         <footer class="footer-bottom">
@@ -212,7 +214,7 @@
                                 <a class="nav-link custom-font-size btn-custom" style="color: #ffffff;" aria-current="page" href="{% url 'route_list' %}">Маршруты</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link custom-font-size btn-custom" style="color: #ffffff;" href="{% url 'about' %}">О нас</a>
+                                <a class="nav-link custom-font-size btn-custom" style="color: #ffffff;" href="{% url 'post_list' %}">Блог</a>
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link custom-font-size btn-custom" style="color: #ffffff;" href="https://vk.com">Контакты</a>

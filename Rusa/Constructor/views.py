@@ -7,8 +7,9 @@ from django.utils.dateparse import parse_datetime
 from django.utils import timezone
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
+from django.middleware.csrf import get_token
 from django.http import JsonResponse
-from .models import Line, Group
+from .models import Line, Group, Review
 import json
 import requests
 import datetime
@@ -16,10 +17,11 @@ from django.shortcuts import redirect
 import ast
 from Registration.models import CustomUser
 from Chat.models import Message
+from django.contrib import messages
 
 def map_view(request):
     api_key = settings.YANDEX_MAPS_API_KEY
-    user_id = request.user.id
+    user_id = request.user.id if request.user.is_authenticated else None
 
     top_routes = Line.objects.order_by('-popularity')[:3]
 
@@ -29,13 +31,61 @@ def map_view(request):
         route.diff_rounded = round(route.difficulty)
         route.has_preview = bool(route.previewPhoto)
 
+    # Получение одобренных отзывов
+    approved_reviews = Review.objects.filter(status='approved').select_related('user__userprofile').order_by('-created_at')
+
+    # Пагинация: 3 отзыва на страницу
+    paginator = Paginator(approved_reviews, 3)
+    page = request.GET.get('page', 1)
+
+    try:
+        reviews_page = paginator.page(page)
+    except PageNotAnInteger:
+        reviews_page = paginator.page(1)
+    except EmptyPage:
+        reviews_page = paginator.page(paginator.num_pages)
+
     context = {
         'api_key': api_key,
         'user_id': user_id,
         'top_routes': top_routes,
+        'reviews_page': reviews_page,
     }
     return render(request, 'home.html', context)
 
+@require_POST
+def add_review_ajax(request):
+    try:
+        data = json.loads(request.body)
+        text = data.get('text', '').strip()
+        if request.user.is_authenticated:
+            user = request.user
+            name = user.userprofile.name if hasattr(user, 'userprofile') and user.userprofile.name else (user.get_full_name() or user.username)
+            review_user = user
+            name_field = ''
+        else:
+            name = data.get('name', '').strip()
+            review_user = None
+            name_field = name
+
+        if not text:
+            return JsonResponse({'status': 'error', 'message': 'Текст отзыва не может быть пустым.'})
+
+        if not (name or review_user):
+            return JsonResponse({'status': 'error', 'message': 'Пожалуйста, укажите ваше имя.'})
+
+        review = Review.objects.create(
+            user=review_user,
+            name=name_field if not review_user else '',
+            text=text,
+            status='pending'
+        )
+
+        return JsonResponse({'status': 'success', 'message': 'Ваш отзыв отправлен и будет опубликован после проверки.'})
+    except json.JSONDecodeError:
+        return JsonResponse({'status': 'error', 'message': 'Некорректные данные.'})
+    except Exception as e:
+        return JsonResponse({'status': 'error', 'message': 'Произошла ошибка при обработке вашего отзыва.'})
 
 @login_required
 def constructor_view(request):

@@ -1,4 +1,7 @@
+# main/models.py
+
 from django.db import models
+from django.conf import settings
 import uuid
 import os
 
@@ -42,3 +45,38 @@ class Group(models.Model):
     privacy_setting = models.CharField(max_length=10, choices=PRIVACY_CHOICES, default='open')
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
+
+class Review(models.Model):
+    STATUS_CHOICES = [
+        ('pending', 'На рассмотрении'),
+        ('approved', 'Одобрен'),
+        ('rejected', 'Отклонен'),
+    ]
+
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='reviews'
+    )
+    name = models.CharField(
+        max_length=100,
+        blank=True,
+        help_text='Имя пользователя (для неавторизованных)'
+    )
+    text = models.TextField(help_text='Текст отзыва')
+    created_at = models.DateTimeField(auto_now_add=True)
+    status = models.CharField(
+        max_length=10,
+        choices=STATUS_CHOICES,
+        default='pending',
+        help_text='Статус отзыва'
+    )
+
+    def __str__(self):
+        return f"{self.get_display_name()} - {self.status}"
+
+    def get_display_name(self):
+        return self.name if self.name else (self.user.get_full_name() or self.user.username)
