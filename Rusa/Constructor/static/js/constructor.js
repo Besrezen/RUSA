@@ -211,6 +211,18 @@ function saveData(myMap, myPolyline, lineCoordinates, notes, length) {
         alert("Пожалуйста, заполните все обязательные поля.");
         return;
     }
+    if (lineCoordinates.length < 2) {
+        alert("Нельзя сохранить маршрут, состоящий менее, чем из 2 точек.");
+        return;
+    }
+    if (lineCoordinates.length > 50) {
+        alert("Нельзя сохранить маршрут, состоящий более, чем из 50 точек.");
+        return;
+    }
+    if (length >= 100000) {
+        alert("Нельзя сохранить маршрут длиной более, чем 100 км.");
+        return;
+    }
 
     // var lineData = {
     //     userId: userId,
