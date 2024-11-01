@@ -226,8 +226,23 @@ function saveData(myMap, myPolyline, lineCoordinates, notes, length) {
     formData.append('previewPhoto', previewPhoto);
     var xhr = new XMLHttpRequest();
     xhr.open("POST", "/save_coordinates/", true);
+    xhr.onload = function () {
+        if (xhr.status === 200) {
+            var response = JSON.parse(xhr.responseText);
+            var routeId = response.routeId; // предполагается, что сервер возвращает идентификатор маршрута
+            window.location.href = "/route/" + routeId;
+        } else {
+            alert("Ошибка при сохранении маршрута. Попробуйте еще раз.");
+        }
+    };
+
+    xhr.onerror = function () {
+        alert("Произошла ошибка сети. Пожалуйста, проверьте подключение.");
+    };
+
     xhr.send(formData);
     // lineCoordinates = [];
+    
     lineCoordinates.splice(0, lineCoordinates.length);
     length = 0;
     myPolyline.geometry.setCoordinates(lineCoordinates);

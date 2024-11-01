@@ -123,7 +123,7 @@ def save_coordinates(request):
         )
         line.save()
             
-    return JsonResponse({"status": "success"}, status=200)
+    return JsonResponse({"status": "success", "routeId": line.pk}, status=200)
     
 def get_lines(request):
     lines = Line.objects.all()

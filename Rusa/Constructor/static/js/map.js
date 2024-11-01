@@ -46,7 +46,7 @@ function loadAllRoutes(myMap) {
             cluster.properties.set('balloonContent', balloonContent);
         });
         myMap.geoObjects.add(clusterer);
-        myMap.setBounds(myMap.geoObjects.getBounds(), { checkZoomRange: true, zoomMargin: 20 });
+        myMap.setBounds(myMap.geoObjects.getBounds(), { checkZoomRange: true, zoomMargin: 10 });
 
         
     };
