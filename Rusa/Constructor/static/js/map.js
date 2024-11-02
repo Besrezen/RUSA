@@ -19,6 +19,13 @@ function loadAllRoutes(myMap) {
         groupByCoordinates: false,
         clusterDisableClickZoom: true,
         clusterOpenBalloonOnClick: true,
+        clusterBalloonContentLayout: ymaps.templateLayoutFactory.createClass(
+            '<div style="max-height: 200px; overflow-y: auto;">' +  // Ограничение высоты и прокрутка
+                '{% for geoObject in properties.geoObjects %}' +
+                    '<a href="/route/{{ geoObject.properties.routeId }}">{{ geoObject.properties.routeName }}</a><br>' +
+                '{% endfor %}' +
+            '</div>'
+        ),
     });
     var xhr = new XMLHttpRequest();
     xhr.open("GET", "/get_routes/", true);
@@ -29,29 +36,18 @@ function loadAllRoutes(myMap) {
             if (routes[i].fields.coordinates != "[]") {
                 var startCoordinates = JSON.parse(routes[i].fields.coordinates)[0];
                 var placemark = new ymaps.Placemark(startCoordinates, {
-                    balloonContentHeader: '<a href="/route/' + routes[i].pk + '">' + routes[i].fields.name + '</a>'
+                    routeId: routes[i].pk,
+                    routeName: routes[i].fields.name
                 });
                 clusterer.add(placemark);
             }
         }
-        clusterer.events.add('balloonopen', function (e) {
-            var cluster = e.get('target');
-            var geoObjects = cluster.getGeoObjects();
-            var balloonContent = '<ul>';
-            for (var i = 0; i < geoObjects.length; i++) {
-                var placemark = geoObjects[i];
-                balloonContent += '<li><a href="' + placemark.properties.get('balloonContentBody') + '">' + placemark.properties.get('balloonContentBody') + '</a></li>';
-            }
-            balloonContent += '</ul>';
-            cluster.properties.set('balloonContent', balloonContent);
-        });
         myMap.geoObjects.add(clusterer);
-        myMap.setBounds(myMap.geoObjects.getBounds(), { checkZoomRange: true, zoomMargin: 10 });
-
-        
+        myMap.setBounds(myMap.geoObjects.getBounds(), { checkZoomRange: true, zoomMargin: 20 });
     };
     xhr.send();
 }
+
 
 function putRusaIcon(myMap) {
     var myPlacemark = new ymaps.Placemark(
