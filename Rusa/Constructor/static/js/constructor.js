@@ -56,15 +56,19 @@ function init() {
     });
     
     document.getElementById('backButton').addEventListener('click', function () {
+        if (lineCoordinates.length == 1) {
+        deleteCurrentPlacemark(myMap, lineCoordinates[0]);
         lineCoordinates.pop();
         length = 0;
-        for (var i = 0; i < lineCoordinates.length - 1; i++) {
-            length += ymaps.coordSystem.geo.getDistance(lineCoordinates[i], lineCoordinates[i + 1]);
+        } else {
+            lineCoordinates.pop();
+            length = 0;
+            for (var i = 0; i < lineCoordinates.length - 1; i++) {
+                length += ymaps.coordSystem.geo.getDistance(lineCoordinates[i], lineCoordinates[i + 1]);
+            }
+            length != 0 ? (document.getElementById('coordinates').innerText = "Длина маршрута: " + length.toFixed(2) + " м") : (document.getElementById('coordinates').innerText = "");
+            myPolyline.geometry.setCoordinates(lineCoordinates);
         }
-        length != 0 ? (document.getElementById('coordinates').innerText = "Длина маршрута: " + length.toFixed(2) + " м") : (document.getElementById('coordinates').innerText = "");
-        // console.log(length != 0);
-        // document.getElementById('coordinates').innerText = "Длина маршрута: " + length.toFixed(2) + " м";
-        myPolyline.geometry.setCoordinates(lineCoordinates);
     });
     
     document.getElementById('saveLineButton').addEventListener('click', function () {
@@ -149,6 +153,14 @@ function init() {
     }
 }
 
+function deleteCurrentPlacemark(myMap, coordinates) {
+    myMap.geoObjects.each(function (geoObject) {
+        if (geoObject instanceof ymaps.Placemark && geoObject.geometry.getCoordinates() == coordinates[0] + "," + coordinates[1]) {
+            myMap.geoObjects.remove(geoObject);
+        }
+    });
+}
+
 function deleteAllPlacemarks(myMap, centerCoordinates) {
     var placemarks = [];
         myMap.geoObjects.each(function (geoObject) {
@@ -197,6 +209,18 @@ function saveData(myMap, myPolyline, lineCoordinates, notes, length) {
     // console.log(previewPhoto);
     if (!lineName || !lineDifficulty || seasons.length === 0) {
         alert("Пожалуйста, заполните все обязательные поля.");
+        return;
+    }
+    if (lineCoordinates.length < 2) {
+        alert("Нельзя сохранить маршрут, состоящий менее, чем из 2 точек.");
+        return;
+    }
+    if (lineCoordinates.length > 50) {
+        alert("Нельзя сохранить маршрут, состоящий более, чем из 50 точек.");
+        return;
+    }
+    if (length >= 100000) {
+        alert("Нельзя сохранить маршрут длиной более, чем 100 км.");
         return;
     }
 
