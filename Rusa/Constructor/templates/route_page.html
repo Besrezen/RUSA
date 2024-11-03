@@ -36,6 +36,7 @@
         padding: 1.5rem;
         margin-bottom: 1.5rem;
         width: 100%;
+        min-width: 0;
     }
     .right-column {
         display: flex;
@@ -232,7 +233,125 @@
             flex: 1 1 30%;
         }
     }
+
+    .route-description p {
+        overflow-wrap: break-word; 
+        word-wrap: break-word;
+        word-break: break-all;
+        hyphens: auto;
+    }
+
+    .modal {
+        display: none;
+        position: fixed;
+        z-index: 1000;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0,0,0,0.5);
+        justify-content: center;
+        align-items: center;
+        padding: 1rem;
+        box-sizing: border-box;
+    }
+
+
+    .modal-content {
+        background-color: #fff;
+        margin: 10% auto;
+        padding: 2rem;
+        border-radius: 10px;
+        box-shadow: 0 0 20px rgba(0,0,0,0.2);
+        width: 90%;
+        max-width: 600px;
+        position: relative;
+    }
+
+    .close {
+        color: #aaa;
+        float: right;
+        font-size: 28px;
+        font-weight: bold;
+        position: absolute;
+        right: 20px;
+        top: 10px;
+        cursor: pointer;
+    }
+
+    .close:hover,
+    .close:focus {
+        color: black;
+        text-decoration: none;
+        cursor: pointer;
+    }
+
+    .modal-buttons {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 20px;
+        flex-wrap: wrap;
+    }
+
+    .save-button, .delete-button {
+        padding: 10px 0;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        flex: 1 1 48%;
+        margin: 1%;
+        box-sizing: border-box;
+        font-size: 1rem;
+    }
+
+    .save-button {
+        background-color: #3498db;
+        color: #fff;
+    }
+
+    .save-button:hover {
+        background-color: #2980b9;
+    }
+
+    .delete-button {
+        background-color: #e74c3c;
+        color: #fff;
+    }
+
+    .delete-button:hover {
+        background-color: #c0392b;
+    }
+
+    .modal label {
+        display: block;
+        margin-top: 10px;
+    }
+
+    .modal input[type="text"],
+    .modal textarea {
+        width: 100%;
+        padding: 10px;
+        margin-top: 5px;
+        box-sizing: border-box;
+    }
+
+    #edit-route-button {
+        padding: 0.5rem 1rem;
+        background-color: #3498db;
+        color: #fff;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-weight: bold;
+        transition: background-color 0.3s ease;
+    }
+
+    #edit-route-button:hover {
+        background-color: #2980b9;
+    }
+
 </style>
+
 <script src="https://api-maps.yandex.ru/2.1/?apikey=403f644f-4840-426e-b2df-bea42d662d87&lang=ru_RU" type="text/javascript"></script>
 <input type="hidden" id="route-id" value="{{ route.id }}">
 <input type="hidden" id="user-id" value="{{ user_id }}">
@@ -258,12 +377,14 @@
         <div class="route-header">
             <h2>{{ route.name }}</h2>
         </div>
-        <div id="map"></div>
+        <div id="map" style="min-height: 400px;"></div>
         <div id="author">
-            {% if user.id == route.author_id %}
+            {% if user.id == route.author_id or user.is_superuser %}
                 <div class="author-container">
-                    <p class="author">Вы - создатель этого маршрута</p>
-                    <button id="delete-route-button">Удалить маршрут</button>
+                    <p class="author">
+                        Автор маршрута: <a href="{% url 'view_profile_by_username' username=route_author %}">{{ route_author }}</a>
+                    </p>
+                    <button id="edit-route-button">Изменить маршрут</button>
                 </div>
             {% else %}
                 <p class="author">
@@ -299,6 +420,12 @@
             <div class="parameter">
                 <p><span>Дата создания:</span><br><i class="fas fa-calendar-alt"></i><b>{{ route_created_at|date:"d.m.Y" }}</b></p>
             </div>
+            {% if route.description %}
+                <div class="route-description">
+                    <h6>ОПИСАНИЕ</h6>
+                    <p>{{ route.description }}</p>
+                </div>
+            {% endif %}
         </div>
         <h5 class="card-title">
             <a href="{% url 'groups_list_page' route.id %}">Список групп</a>
@@ -339,44 +466,117 @@
 </div>
 
 
-    <script>
-        const csrfToken = '{{ csrf_token }}';
-    
-        document.addEventListener('DOMContentLoaded', function() {
-            const deleteButton = document.getElementById('delete-route-button');
-            if (deleteButton) {
-                deleteButton.addEventListener('click', function() {
-                    if (confirm('Вы уверены, что хотите удалить этот маршрут? Это действие необратимо.')) {
-                        fetch("{% url 'delete_route' route.id %}", {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                                'X-CSRFToken': csrfToken,
-                            },
-                            body: JSON.stringify({})
-                        })
-                        .then(response => response.json())
-                        .then(data => {
-                            if (data.status === 'success') {
-                                alert(data.message);
-                                window.location.href = "{% url 'home' %}";
-                            } else {
-                                alert(data.message);
-                            }
-                        })
-                        .catch(error => {
-                            console.error('Error:', error);
-                            alert('Произошла ошибка при удалении маршрута.');
-                        });
-                    }
-                });
-            }
-        });
-    </script>
-    
+<div id="edit-route-modal" class="modal">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <h2>Изменить маршрут</h2>
+        <form id="edit-route-form">
+            <label for="route-name">Название маршрута:</label>
+            <input type="text" id="route-name" name="route_name" value="{{ route.name }}" required>
+
+            <label for="route-description">Описание маршрута:</label>
+            <textarea id="route-description" name="route_description" style="min-height: 150px;">{{ route.description }}</textarea>
+
+            <div class="modal-buttons">
+                <button type="button" id="delete-route-button" class="delete-button">Удалить маршрут</button>
+                <button type="submit" class="save-button">Сохранить изменения</button>
+            </div>
+        </form>
+    </div>
+</div>
+
 
 <script>
-    // Инициализация WebSocket
+    const csrfToken = '{{ csrf_token }}';
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const editButton = document.getElementById('edit-route-button');
+        const modal = document.getElementById('edit-route-modal');
+        const closeModal = document.getElementsByClassName('close')[0];
+        const editForm = document.getElementById('edit-route-form');
+        const deleteButton = document.getElementById('delete-route-button');
+
+        if (editButton) {
+            editButton.addEventListener('click', function() {
+                modal.style.display = 'block';
+            });
+        }
+
+        if (closeModal) {
+            closeModal.addEventListener('click', function() {
+                modal.style.display = 'none';
+            });
+        }
+
+        window.addEventListener('click', function(event) {
+            if (event.target == modal) {
+                modal.style.display = 'none';
+            }
+        });
+
+        if (editForm) {
+            editForm.addEventListener('submit', function(event) {
+                event.preventDefault();
+                const routeName = document.getElementById('route-name').value;
+                const routeDescription = document.getElementById('route-description').value;
+
+                fetch("{% url 'edit_route' route.id %}", {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': csrfToken,
+                    },
+                    body: JSON.stringify({
+                        'route_name': routeName,
+                        'route_description': routeDescription,
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        location.reload();
+                    } else {
+                        alert(data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Ошибка:', error);
+                    alert('Произошла ошибка при сохранении изменений.');
+                });
+            });
+        }
+
+        if (deleteButton) {
+            deleteButton.addEventListener('click', function() {
+                if (confirm('Вы уверены, что хотите удалить этот маршрут? Это действие необратимо.')) {
+                    fetch("{% url 'delete_route' route.id %}", {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRFToken': csrfToken,
+                        },
+                        body: JSON.stringify({})
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.status === 'success') {
+                            window.location.href = "{% url 'route_list' %}"; // Выберите нужное перенаправление
+                        } else {
+                            alert(data.message);
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Ошибка:', error);
+                        alert('Произошла ошибка при удалении маршрута.');
+                    });
+                }
+            });
+        }
+    });
+</script>
+
+
+<script>
     const wsScheme = window.location.protocol === "https:" ? "wss" : "ws";
     const commentsSocket = new WebSocket(
         wsScheme + '://' + window.location.host + '/ws/chat/' + encodeURIComponent(roomName) + '/'
@@ -389,7 +589,6 @@
     const commentsLog = document.getElementById('comments-log');
     const noCommentsMessage = document.getElementById('no-comments-message');
 
-    // Функция для форматирования метки времени
     function formatTimestamp(timestamp) {
         const date = new Date(timestamp);
         if (isNaN(date.getTime())) {
@@ -411,7 +610,6 @@
         return date.toLocaleDateString('ru-RU', options);
     }
 
-    // Функция debounce
     function debounce(func, wait = 100) {
         let timeout;
         return function(...args) {
@@ -420,7 +618,6 @@
         };
     }
 
-    // Функция для загрузки дополнительных комментариев
     function loadMoreComments() {
         if (loading || allCommentsLoaded) return;
         loading = true;
@@ -471,12 +668,10 @@
             });
     }
 
-    // Функция для прокрутки комментариев вниз
     function scrollToBottom() {
         commentsLog.scrollTop = commentsLog.scrollHeight;
     }
 
-    // Обработка входящих комментариев
     commentsSocket.onmessage = function(e) {
         try {
             const data = JSON.parse(e.data);
@@ -507,7 +702,6 @@
             `;
             commentsLog.appendChild(commentElement);
 
-            // Удаляем сообщение "Нет комментариев", если оно существует
             if (noCommentsMessage) {
                 noCommentsMessage.remove();
             }
@@ -522,7 +716,6 @@
         console.error('WebSocket комментарии закрыт неожиданно');
     };
 
-    // Функция для отправки комментария
     function sendComment() {
         const commentInput = document.getElementById('comment-input');
         const comment = commentInput.value;
@@ -565,16 +758,12 @@
 </script>
 
 <script>
-    // Получаем строку сезонности из контекста шаблона и экранируем её
     var seasonsDataString = '{{ route.seasons|escapejs }}';
     
-    // Заменяем одинарные кавычки на двойные для корректного парсинга JSON
     var seasonsDataJsonString = seasonsDataString.replace(/'/g, '"');
     
-    // Парсим строку в массив JavaScript
     var seasonsData = JSON.parse(seasonsDataJsonString);
 
-    // Функция для отображения сезонности
     function displaySeasons(seasons) {
         var seasonsElement = document.getElementById('seasons');
         if (!seasonsElement) return;
@@ -595,7 +784,6 @@
         }
     }
 
-    // Вызываем функцию после загрузки контента
     document.addEventListener('DOMContentLoaded', function() {
         displaySeasons(seasonsData);
     });

@@ -20,4 +20,6 @@ urlpatterns = [
     path('delete_group/<int:group_id>/', views.delete_group, name='delete_group'),
     path('load-more-messages/<str:room_name>/', views.load_more_messages, name='load_more_messages'),
     path('add_review_ajax/', views.add_review_ajax, name='add_review_ajax'),
+    path('edit-route/<int:route_id>/', views.edit_route, name='edit_route'),
+
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

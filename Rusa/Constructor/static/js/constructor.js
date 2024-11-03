@@ -23,9 +23,9 @@ function init() {
     putRusaIcon(myMap, myPlacemark);
 
     var myPolyline = new ymaps.Polyline([], {}, {
-        strokeColor: "#0000FF", // цвет линии
-        strokeWidth: 4, // ширина линии
-        strokeOpacity: 0.5, // прозрачность линии
+        strokeColor: "#0000FF",
+        strokeWidth: 4,
+        strokeOpacity: 0.5,
         strokeStyle: "dash"
     });
     myMap.geoObjects.add(myPolyline);
@@ -203,10 +203,11 @@ function putRusaIcon(myMap, myPlacemark) {
 
 function saveData(myMap, myPolyline, lineCoordinates, notes, length) {
     var lineName = document.getElementById('lineName').value;
+    var description = document.getElementById('descriptionInput').value;
     var lineDifficulty = document.getElementById('lineDifficulty').value;
     var seasons = Array.from(document.querySelectorAll('input[name="season"]:checked')).map(function(el) { return el.value; });
     var previewPhoto = document.getElementById('previewPhoto').files[0];
-    // console.log(previewPhoto);
+
     if (!lineName || !lineDifficulty || seasons.length === 0) {
         alert("Пожалуйста, заполните все обязательные поля.");
         return;
@@ -223,37 +224,28 @@ function saveData(myMap, myPolyline, lineCoordinates, notes, length) {
         alert("Нельзя сохранить маршрут длиной более, чем 100 км.");
         return;
     }
+    if (description.length > 330) {
+        alert("Описание не может превышать 330 символов.");
+        return;
+    }
 
-    // var lineData = {
-    //     userId: userId,
-    //     name: lineName,
-    //     coordinates: lineCoordinates,
-    //     seasons: seasons,
-    //     difficulty: lineDifficulty,
-    //     length: length.toFixed(2),
-    //     notes: notes,
-    //     previewPhoto: previewPhoto
-    // };
-    // var lineDataJSON = JSON.stringify(lineData, null, 2);
-    // console.log(lineDataJSON);
-    
     var formData = new FormData();
     formData.append('userId', userId);
     formData.append('name', lineName);
+    formData.append('description', description);
     formData.append('coordinates', JSON.stringify(lineCoordinates));
     formData.append('seasons', JSON.stringify(seasons));
     formData.append('difficulty', lineDifficulty);
     formData.append('length', length.toFixed(2));
     formData.append('notes', JSON.stringify(notes));
-    // console.log(notes)
-    // console.log(JSON.stringify(notes))
     formData.append('previewPhoto', previewPhoto);
+
     var xhr = new XMLHttpRequest();
     xhr.open("POST", "/save_coordinates/", true);
     xhr.onload = function () {
         if (xhr.status === 200) {
             var response = JSON.parse(xhr.responseText);
-            var routeId = response.routeId; // предполагается, что сервер возвращает идентификатор маршрута
+            var routeId = response.routeId;
             window.location.href = "/route/" + routeId;
         } else {
             alert("Ошибка при сохранении маршрута. Попробуйте еще раз.");
@@ -265,8 +257,7 @@ function saveData(myMap, myPolyline, lineCoordinates, notes, length) {
     };
 
     xhr.send(formData);
-    // lineCoordinates = [];
-    
+
     lineCoordinates.splice(0, lineCoordinates.length);
     length = 0;
     myPolyline.geometry.setCoordinates(lineCoordinates);

@@ -3,7 +3,7 @@
 from django.db import models
 from Registration.models import CustomUser
 from datetime import date
-from .utils import user_profile_photo_path, portfolio_image_path  # Импорт функции
+from .utils import user_profile_photo_path, portfolio_image_path
 
 class UserProfile(models.Model):
 
@@ -37,6 +37,7 @@ class UserProfile(models.Model):
     class Meta:
         verbose_name = "Профиль"
         verbose_name_plural = "Профили"
+
 
 class PortfolioImage(models.Model):
     image = models.ImageField(upload_to=portfolio_image_path)

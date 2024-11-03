@@ -22,23 +22,27 @@ def user_signup(request):
         if form.is_valid():
             user = form.save()
             login(request, user)
-            # Перенаправление на страницу пользователя
             return redirect('view_main')
     else:
         form = UserSignUpForm()
     return render(request, 'html/signup_user.html', {'form': form})
 
 def view_login(request):
+    error_message = None
+
     if request.method == "POST":
         form = CustomAuthenticationForm(request, data=request.POST)
         if form.is_valid():
             user = form.get_user()
-            if user.is_admin == 0:
-                login(request, user)
-                return redirect('view_main')
-            else:
-                login(request, user)
-                return redirect('view_main')
+            login(request, user)
+            return redirect('view_main')
+        else:
+            error_message = "Неправильный логин или пароль."
     else:
         form = CustomAuthenticationForm()
-    return render(request, 'html/login.html', {'form': form})
+
+    context = {
+        'form': form,
+        'error_message': error_message,
+    }
+    return render(request, 'html/login.html', context)

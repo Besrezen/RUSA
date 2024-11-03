@@ -383,18 +383,45 @@
         margin-bottom: 2rem;
     }
 
-    .constructor-controls .btn {
-        width: 100%;
-        white-space: nowrap;
-        text-align: center;
-    }
-
     .constructor-controls input[type="text"] {
         width: 100%;
         padding: 0.7rem;
         border: 1px solid #ddd;
         border-radius: 5px;
         font-size: 1rem;
+        grid-column: 1 / -1;
+        order: -1;
+    }
+
+    .constructor-controls .btn {
+        width: 100%;
+        white-space: nowrap;
+        text-align: center;
+        min-width: 150px;
+    }
+
+    .description-container {
+        margin: 2rem 0;
+        padding: 1.5rem;
+        background-color: #f8f9fa;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    }
+
+    .description-header {
+        margin-bottom: 1rem;
+        font-weight: 500;
+        color: #2c3e50;
+    }
+
+    #descriptionInput {
+        width: 100%;
+        min-height: 100px;
+        padding: 0.7rem;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        font-size: 1rem;
+        resize: vertical;
     }
 
 </style>
@@ -459,6 +486,12 @@
                 </div>
             </div>
         </div>
+
+        <div class="description-container">
+            <div class="description-header">Описание маршрута:</div>
+            <textarea id="descriptionInput" name="description" placeholder="Введите описание маршрута (необязательно)"></textarea>
+        </div>
+
 
         <div class="file-upload-container">
             <div class="file-upload-header">Загрузить превью маршрута:</div>
@@ -542,7 +575,7 @@
 
         function updateAnyButton() {
             const activeSeasons = document.querySelectorAll('.season-button.active:not([data-season="any"])').length;
-            const totalSeasons = seasonButtons.length - 1; // Исключаем кнопку "Любой"
+            const totalSeasons = seasonButtons.length - 1; 
             
             if (activeSeasons === totalSeasons) {
                 anyButton.classList.add('active');

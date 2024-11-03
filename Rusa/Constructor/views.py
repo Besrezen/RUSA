@@ -1,6 +1,6 @@
 from django.shortcuts import render, get_object_or_404
 from django.conf import settings
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, user_passes_test
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.core import serializers
 from django.utils.dateparse import parse_datetime
@@ -31,10 +31,8 @@ def map_view(request):
         route.diff_rounded = round(route.difficulty)
         route.has_preview = bool(route.previewPhoto)
 
-    # Получение одобренных отзывов
     approved_reviews = Review.objects.filter(status='approved').select_related('user__userprofile').order_by('-created_at')
 
-    # Пагинация: 3 отзыва на страницу
     paginator = Paginator(approved_reviews, 3)
     page = request.GET.get('page', 1)
 
@@ -102,18 +100,19 @@ def save_coordinates(request):
         previewFile = request.FILES.get('previewPhoto')
         userId = request.POST.get('userId')
         name = request.POST.get('name')
+        description = request.POST.get('description', '')
         coordinates = request.POST.get('coordinates')
         seasons = request.POST.get('seasons')
         difficulty = request.POST.get('difficulty')
         length = request.POST.get('length')
         notes = request.POST.get('notes')
-        previewFile = request.FILES.get('previewPhoto')
         notesJson = json.loads(notes)
         seasonsJson = json.loads(seasons)
 
         line = Line(
             author_id=userId,
             name=name,
+            description=description,
             coordinates=coordinates,
             seasons=seasonsJson,
             difficulty=difficulty,
@@ -124,6 +123,7 @@ def save_coordinates(request):
         line.save()
             
     return JsonResponse({"status": "success", "routeId": line.pk}, status=200)
+
     
 def get_lines(request):
     lines = Line.objects.all()
@@ -339,7 +339,6 @@ def group_page(request, route_id, group_id):
     route = get_object_or_404(Line, pk=route_id)
     group = get_object_or_404(Group, pk=group_id)
 
-    # Проверка приватности группы
     if group.privacy_setting == 'private':
         try:
             participant_ids = ast.literal_eval(group.participants)
@@ -457,13 +456,37 @@ def route_page(request, route_id):
     }
     return render(request, 'route_page.html', context)
 
+@login_required
+def edit_route(request, route_id):
+    if request.method == 'POST':
+        try:
+            route = Line.objects.get(pk=route_id)
+            if route.author_id != request.user.id and not request.user.is_superuser:
+                return JsonResponse({"status": "error", "message": "У вас нет прав для редактирования этого маршрута."}, status=403)
+
+            data = json.loads(request.body)
+            route_name = data.get('route_name', '').strip()
+            route_description = data.get('route_description', '').strip()
+
+            if not route_name:
+                return JsonResponse({"status": "error", "message": "Название маршрута не может быть пустым."}, status=400)
+
+            route.name = route_name
+            route.description = route_description
+            route.save()
+
+            return JsonResponse({"status": "success", "message": "Маршрут успешно обновлен."}, status=200)
+        except Line.DoesNotExist:
+            return JsonResponse({"status": "error", "message": "Маршрут не найден."}, status=404)
+    else:
+        return JsonResponse({"status": "error", "message": "Неверный метод запроса."}, status=400)
 
 @login_required
 def delete_route(request, route_id):
     if request.method == 'POST':
         try:
             route = Line.objects.get(pk=route_id)
-            if route.author_id != request.user.id:
+            if route.author_id != request.user.id and not request.user.is_superuser:
                 return JsonResponse({"status": "error", "message": "У вас нет прав для удаления этого маршрута."}, status=403)
             Group.objects.filter(route_id=route).delete()
             route.delete()
